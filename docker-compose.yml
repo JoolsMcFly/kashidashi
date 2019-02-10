@@ -1,0 +1,63 @@
+version: '3'
+services:
+  apache:
+    build: .docker/apache
+    container_name: tosyo_apache
+    ports:
+    - 80:80
+    expose:
+    - 80
+    - 9000 # x-debug
+    volumes:
+    - .docker/config/vhosts:/etc/apache2/sites-enabled
+    - .:/var/www/
+    depends_on:
+    - php
+
+  mysql:
+    image: mysql
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    container_name: tosyo_mysql
+    volumes:
+    - .docker/data/db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tosyo
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+
+  php:
+    build: .docker/php
+    container_name: tosyo_php
+    volumes:
+    - .:/var/www/
+    environment:
+    - PHP_IDE_CONFIG=serverName=tosyo.local
+    - PHP_MEMORY_LIMIT=1G
+    depends_on:
+    - mysql
+    expose:
+        - 9000 # x-debug
+
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    container_name: tosyo_phpmyadmin
+#    depends_on:
+#    - mysql
+#    ports:
+#    - 8080:80
+#    links:
+#    - mysql
+#    environment:
+#      PMA_HOSTS: mysql
+#
+#  node:
+#    build:
+#      context: ./.docker/node
+#    container_name: tosyo_node
+#    hostname: tosyo-node
+#    domainname: local
+#    tty: true
+#    #    command: bash -c "npm update; npm run start;"
+#    volumes:
+#    - .:/home/nodeuser/app

@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity()
+ * @ORM\Table(name="`user`")
  */
 class User implements EncoderAwareInterface, UserInterface
 {

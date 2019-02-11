@@ -3,9 +3,9 @@ FROM php:7.2.3-fpm
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim curl debconf subversion git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip zlib1g-dev \
-    gnupg gnupg1 gnupg2 \
-    && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
-    && docker-php-ext-install -j$(nproc) pdo_mysql \
+    libpq-dev gnupg gnupg1 gnupg2 \
+    && docker-php-ext-configure pdo_pgsql --with-pdo-pgsql \
+    && docker-php-ext-install -j$(nproc) pdo_pgsql \
     && docker-php-ext-install -j$(nproc) zip
 
 RUN pecl install xdebug \

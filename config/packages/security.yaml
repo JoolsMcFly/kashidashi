@@ -1,4 +1,8 @@
 security:
+    encoders:
+        harsh:
+            algorithm: bcrypt
+            cost: 13
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         in_memory: { memory: ~ }

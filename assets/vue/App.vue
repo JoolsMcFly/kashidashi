@@ -11,9 +11,5 @@
 <script>
     export default {
         name: 'app',
-
-        created() {
-            this.$store.dispatch('borrower/getAll')
-        },
     }
 </script>

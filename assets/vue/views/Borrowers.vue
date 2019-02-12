@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <h1>Borrowers</h1>
+            <h1>Current orrowers</h1>
         </div>
 
         <div v-for="borrower in borrowers">

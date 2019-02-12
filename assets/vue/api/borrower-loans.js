@@ -1,9 +1,7 @@
 import axios from 'axios'
 
 export default {
-    actions: {
-        getLoans() {
-            return axios.get('/loans-by-user/{id}')
-        }
+    getLoans(id) {
+        return axios.get(`/api/loans/by-user/${id}`)
     }
 }

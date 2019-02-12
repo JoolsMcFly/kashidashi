@@ -1,4 +1,4 @@
-import axios from 'axios'
+import BorrowerLoansApi from '../api/borrower-loans'
 
 export default {
     namespaced: true,
@@ -14,7 +14,6 @@ export default {
         },
 
         details(state) {
-            console.log("returning details");
             return state.details
         }
     },
@@ -25,7 +24,6 @@ export default {
         },
 
         setDetails(state, details) {
-            console.log("settingh details");
             state.details = details
         }
     },
@@ -36,7 +34,7 @@ export default {
         },
 
         fetchDetails({commit}, id) {
-            axios.get('/api/loans/by-user/' + id)
+            BorrowerLoansApi.getLoans(id)
                 .then(res => commit('setDetails', res.data))
                 .catch(err => console.log("erreur fetching details", err))
         }

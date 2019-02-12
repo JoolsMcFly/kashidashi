@@ -38,7 +38,7 @@ class ApiBorrowerController
     }
 
     /**
-     * @Route("/", methods={"GET"})
+     * @Route("", methods={"GET"})
      */
     public function list()
     {

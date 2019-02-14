@@ -1,9 +1,9 @@
 <template>
     <div class="col-xs-12">
         <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-            <h1>Upload a book file</h1>
+            <h1>Upload a borrower file</h1>
             <div class="dropbox">
-                <input type="file" ref="book" :disabled="isSaving"
+                <input type="file" ref="user" :disabled="isSaving"
                        @change="filesChange();"
                        accept="text/csv"
                        class="input-file"/>
@@ -14,9 +14,9 @@
                     Uploading file...
                 </p>
             </div>
-            <div v-show="Boolean(book)">
+            <div v-show="Boolean(user)">
                 Click to upload <span v-text="fileName"></span>
-                <button type="button" @click="upload()" class="btn btn-primary" :disabled="!Boolean(book)">
+                <button type="button" @click="upload()" class="btn btn-primary" :disabled="!Boolean(user)">
                     Upload
                 </button>
                 or
@@ -30,20 +30,20 @@
     import axios from 'axios';
 
     export default {
-        name: 'bookUpload',
+        name: 'userUpload',
 
         data() {
             return {
                 isInitial: true,
                 isSaving: false,
-                book: null,
+                user: null,
             }
         },
 
         computed: {
             fileName() {
-                if (Boolean(this.book)) {
-                    return this.book.name
+                if (Boolean(this.user)) {
+                    return this.user.name
                 }
 
                 return ''
@@ -52,19 +52,19 @@
 
         methods: {
             filesChange() {
-                this.book = this.$refs.book.files[0]
+                this.user = this.$refs.user.files[0]
             },
             reset() {
-                this.book = null
-                this.$refs.book.value = ''
+                this.user = null
+                this.$refs.user.value = ''
             },
             upload() {
                 let data = new FormData()
-                data.append('books', this.book)
+                data.append('users', this.user)
                 this.isSaving = true
                 axios
                     .post(
-                        '/api/books-upload',
+                        '/api/borrowers-upload',
                         data,
                         {
                             headers: {

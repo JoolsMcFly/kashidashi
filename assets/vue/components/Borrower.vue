@@ -1,8 +1,6 @@
 <template>
-    <div>
-        <div class="row" @click="$emit('show-borrower', borrower)">
-            <div class="borrower"><span class="borrower-id">{{ this.borrower.id }}</span>{{ fullname }}</div>
-        </div>
+    <div @click="$emit('show-borrower', borrower)">
+        <div class="borrower"><span class="borrower-id">{{ this.borrower.id }}</span>{{ fullname }}</div>
     </div>
 </template>
 

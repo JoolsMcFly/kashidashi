@@ -81,10 +81,10 @@ final class BookUploadService
     }
 
     /**
-     * @param $bookDetails
+     * @param array $bookDetails
      * @throws \Exception
      */
-    private function addBook($bookDetails): void
+    private function addBook(array $bookDetails): void
     {
         $book = new Book();
         $book

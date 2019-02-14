@@ -14,7 +14,7 @@
                     Uploading file...
                 </p>
             </div>
-            <div v-show="1 || Boolean(book)">
+            <div v-show="Boolean(book)">
                 Click to upload <span v-text="fileName"></span>
                 <button type="button" @click="upload()" class="btn btn-primary" :disabled="!Boolean(book)">
                     Upload

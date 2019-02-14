@@ -5,11 +5,17 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity()
+ * @Table(indexes={
+ *     @Index(name="book_title", columns={"title"}),
+ *     @Index(name="book_code", columns={"code"})
+ * })
  */
 class Book
 {

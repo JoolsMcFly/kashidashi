@@ -3,12 +3,12 @@
 namespace App\Service;
 
 use App\DataStructures\UploadStats;
-use App\Entity\Book;
+use App\Entity\Borrower;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final class BookUploadService
+final class BorrowerUploadService
 {
     /**
      * @var EntityManagerInterface
@@ -18,7 +18,7 @@ final class BookUploadService
     /**
      * @var \Doctrine\Common\Persistence\ObjectRepository
      */
-    private $bookRepo;
+    private $borrowerRepo;
 
     /**
      * @var UploadStats
@@ -32,7 +32,7 @@ final class BookUploadService
     public function __construct(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
-        $this->bookRepo = $this->manager->getRepository(Book::class);
+        $this->borrowerRepo = $this->manager->getRepository(Borrower::class);
         $this->stats = new UploadStats();
     }
 
@@ -51,17 +51,18 @@ final class BookUploadService
 
         $delimiter = ';';
         $length = 1024;
-        while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
-            if (count($bookDetails) !== 2 || (int)($bookDetails[0]) === 0) {
+        $headers = fgetcsv($handle, $length, $delimiter);
+        while ($borrowerDetails = fgetcsv($handle, $length, $delimiter)) {
+            if (count($borrowerDetails) !== 2) {
                 continue;
             }
 
-            if ($this->bookExists($bookDetails[0])) {
+            if ($this->borrowerExists($borrowerDetails)) {
                 $this->stats->addExisting();
                 continue;
             }
 
-            $this->addBook($bookDetails);
+            $this->addBorrower($borrowerDetails);
         }
         $this->manager->flush();
         fclose($handle);
@@ -70,29 +71,32 @@ final class BookUploadService
     }
 
     /**
-     * @param int $bookCode
+     * @param array $borrower
      * @return bool
      */
-    private function bookExists(int $bookCode)
+    private function borrowerExists(array $borrower)
     {
-        $book = $this->bookRepo->findOneBy(['code' => $bookCode]);
+        $borrower = $this->borrowerRepo->findOneBy([
+            'surname' => $borrower[0],
+            'firstname' => $borrower[1],
+        ]);
 
-        return !empty($book);
+        return !empty($borrower);
     }
 
     /**
-     * @param array $bookDetails
+     * @param array $borrowerDetails
      * @throws \Exception
      */
-    private function addBook(array $bookDetails): void
+    private function addBorrower(array $borrowerDetails): void
     {
-        $book = new Book();
-        $book
-            ->setCode($bookDetails[0])
-            ->setTitle($bookDetails[1])
+        $borrower = new Borrower();
+        $borrower
+            ->setFirstname($borrowerDetails[0])
+            ->setSurname($borrowerDetails[1])
             ->setCreatedAt(new \DateTime())
         ;
-        $this->manager->persist($book);
+        $this->manager->persist($borrower);
 
         $this->stats->addUploaded();
     }

@@ -4,6 +4,7 @@ import Home from '../views/Home';
 import Borrowers from '../views/Borrowers'
 import BorrowerDetails from "../views/BorrowerDetails";
 import BookUpload from "../views/BookUpload";
+import BorrowerUpload from "../views/BorrowerUpload";
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,7 @@ export default new VueRouter({
         { path: '/borrowers', component: Borrowers },
         { path: '/borrower-details', component: BorrowerDetails },
         { path: '/books', component: BookUpload },
+        { path: '/borrowers-upload', component: BorrowerUpload },
         { path: '*', redirect: '/home' }
     ],
 });

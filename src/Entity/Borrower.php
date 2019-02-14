@@ -4,11 +4,13 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity()
+ * @ORM\Table(indexes={@Index(name="surname_firstname", columns={"surname", "firstname"})})
  */
 class Borrower
 {
@@ -23,7 +25,7 @@ class Borrower
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $email;
 
@@ -36,7 +38,7 @@ class Borrower
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100, nullable=true)
+     * @ORM\Column(type="string", length=100)
      * @Serializer\Groups({"list"})
      */
     private $surname;

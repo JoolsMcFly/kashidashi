@@ -14,7 +14,11 @@
                     Uploading file...
                 </p>
             </div>
-            <input @click="upload()" type="text" :disabled="!Boolean(book)" value="Upload"/>
+            <div v-show="Boolean(book)">
+                Click to upload <span v-text="fileName"></span>
+                <input @click="upload()" type="button" class="btn btn-primary" :disabled="!Boolean(book)" value="Upload"/>
+                or <input @click="reset()" type="button" class="btn btn-secondary" value="Reset"/>
+            </div>
         </form>
     </div>
 </template>
@@ -33,9 +37,23 @@
             }
         },
 
+        computed: {
+            fileName() {
+                if (Boolean(this.book)) {
+                    return this.book.name
+                }
+
+                return ''
+            }
+        },
+
         methods: {
             filesChange() {
                 this.book = this.$refs.book.files[0]
+            },
+            reset() {
+                this.book = null
+                this.$refs.book.value = ''
             },
             upload() {
                 let data = new FormData()

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="col-xs-12">
         <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
             <h1>Upload a book file</h1>
             <div class="dropbox">
@@ -14,10 +14,13 @@
                     Uploading file...
                 </p>
             </div>
-            <div v-show="Boolean(book)">
+            <div v-show="1 || Boolean(book)">
                 Click to upload <span v-text="fileName"></span>
-                <input @click="upload()" type="button" class="btn btn-primary" :disabled="!Boolean(book)" value="Upload"/>
-                or <input @click="reset()" type="button" class="btn btn-secondary" value="Reset"/>
+                <button type="button" @click="upload()" class="btn btn-primary" :disabled="!Boolean(book)">
+                    Upload
+                </button>
+                or
+                <button type="button" @click="reset()" class="btn btn-secondary">Reset</button>
             </div>
         </form>
     </div>
@@ -70,11 +73,11 @@
                         }
                     )
                     .then((res) => {
-                        this.book = null
-                        // TODO
-                        this.$refs.book.files = []
+                        this.reset()
+                        // TODO show success message
                     })
                     .catch((err) => {
+                        // TODO show error message
                     })
                     .finally(() => {
                         this.isSaving = false

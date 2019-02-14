@@ -1,13 +1,15 @@
 <template>
     <div>
-        <div class="row">
+        <div class="col-xs-12">
             <div class="form-group">
                 <input type="text" v-model="filterBorrowers" class="form-input" placeholder="recherche"/>
             </div>
         </div>
 
-        <div v-for="borrower in borrowers">
-            <borrower :borrower="borrower" @show-borrower="showBorrower(borrower)"></borrower>
+        <div class="col-xs-12">
+            <div v-for="borrower in borrowers">
+                <borrower :borrower="borrower" @show-borrower="showBorrower(borrower)"></borrower>
+            </div>
         </div>
     </div>
 </template>

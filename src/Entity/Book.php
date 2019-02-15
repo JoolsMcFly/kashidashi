@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @Table(indexes={
  *     @Index(name="book_title", columns={"title"}),
  *     @Index(name="book_code", columns={"code"})
@@ -128,6 +128,10 @@ class Book
         return $this->loans;
     }
 
+    /**
+     * @param Loan $loan
+     * @return Book
+     */
     public function addLoan(Loan $loan): self
     {
         if (!$this->loans->contains($loan)) {
@@ -138,6 +142,10 @@ class Book
         return $this;
     }
 
+    /**
+     * @param Loan $loan
+     * @return Book
+     */
     public function removeLoan(Loan $loan): self
     {
         if ($this->loans->contains($loan)) {

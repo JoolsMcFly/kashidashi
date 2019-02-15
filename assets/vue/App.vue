@@ -4,6 +4,7 @@
             <router-link class="navbar-brand" to="/home"><i class="fas fa-home"></i></router-link>
             <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
             <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i></router-link>
+            <router-link class="navbar-brand" to="/inventory"><i class="fas fa-book"></i></router-link>
         </nav>
 
         <router-view></router-view>

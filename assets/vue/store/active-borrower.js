@@ -22,7 +22,6 @@ export default {
         setCurrent(state, borrower) {
             state.current = borrower
         },
-
         setDetails(state, details) {
             state.details = details
         },

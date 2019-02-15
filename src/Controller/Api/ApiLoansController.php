@@ -64,9 +64,15 @@ class ApiLoansController extends AbstractController
      */
     public function addLoan(Borrower $borrower, string $bookCode)
     {
-        $book = $this->getDoctrine()->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
+        $doctrine = $this->getDoctrine();
+        $book = $doctrine->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
         if (empty($book)) {
             return $this->json(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy(['book' => $book]);
+        if (!empty($existingLoan)) {
+            return $this->json(null, Response::HTTP_CONFLICT);
         }
 
         $loan = new Loan();
@@ -75,7 +81,7 @@ class ApiLoansController extends AbstractController
             ->setStartedAt(new \DateTime())
         ;
 
-        $manager = $this->getDoctrine()->getManager();
+        $manager = $doctrine->getManager();
         $manager->persist($loan);
         $manager->flush();
 

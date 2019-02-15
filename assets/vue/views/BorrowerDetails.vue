@@ -16,24 +16,24 @@
                 <p>Add book by number</p>
                 <div class="numpad">
                     <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('7')">7</div>
-                        <div class="col-3 p-2" @click="handleInput('8')">8</div>
-                        <div class="col-3 p-2" @click="handleInput('9')">9</div>
+                        <div class="col-3 p-2" @click="handleInput('7')"><button class="btn btn-primary">7</button></div>
+                        <div class="col-3 p-2" @click="handleInput('8')"><button class="btn btn-primary">8</button></div>
+                        <div class="col-3 p-2" @click="handleInput('9')"><button class="btn btn-primary">9</button></div>
                     </div>
                     <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('4')">4</div>
-                        <div class="col-3 p-2" @click="handleInput('5')">5</div>
-                        <div class="col-3 p-2" @click="handleInput('6')">6</div>
+                        <div class="col-3 p-2" @click="handleInput('4')"><button class="btn btn-primary">4</button></div>
+                        <div class="col-3 p-2" @click="handleInput('5')"><button class="btn btn-primary">5</button></div>
+                        <div class="col-3 p-2" @click="handleInput('6')"><button class="btn btn-primary">6</button></div>
                     </div>
                     <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('1')">1</div>
-                        <div class="col-3 p-2" @click="handleInput('2')">2</div>
-                        <div class="col-3 p-2" @click="handleInput('3')">3</div>
+                        <div class="col-3 p-2" @click="handleInput('1')"><button class="btn btn-primary">1</button></div>
+                        <div class="col-3 p-2" @click="handleInput('2')"><button class="btn btn-primary">2</button></div>
+                        <div class="col-3 p-2" @click="handleInput('3')"><button class="btn btn-primary">3</button></div>
                     </div>
                     <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('del')">Del</div>
-                        <div class="col-3 p-2" @click="handleInput('0')">0</div>
-                        <div class="col-3 p-2" @click="saveLoan()">OK</div>
+                        <div class="col-3 p-2" @click="handleInput('del')"><button class="btn btn-primary">Del</button></div>
+                        <div class="col-3 p-2" @click="handleInput('0')"><button class="btn btn-primary">0</button></div>
+                        <div class="col-3 p-2" @click="saveLoan()"><button class="btn btn-primary">OK</button></div>
                     </div>
                 </div>
                 <div class="row">
@@ -67,6 +67,7 @@
             },
 
             loans() {
+                this.bookCode = ''
                 return this.$store.getters['activeBorrower/details']
             }
         },

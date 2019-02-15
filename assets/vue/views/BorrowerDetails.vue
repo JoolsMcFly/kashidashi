@@ -5,7 +5,10 @@
                 <p>{{ fullname }}</p>
                 <p>Loan info</p>
                 <div v-if="loans && loans.length > 0" v-for="loan in loans" class="loan-detasils">
-                    <loan :loan="loan"></loan>
+                    <loan
+                        :loan="loan"
+                        @clicked="endLoan(loan)"
+                    ></loan>
                 </div>
                 <p v-if="loans && loans.length === 0">No current loans.</p>
             </div>
@@ -79,7 +82,13 @@
                 }
             },
             saveLoan() {
-                this.$store.dispatch('activeBorrower/borrow', {code: this.bookCode, borrower: this.$store.getters['activeBorrower/current']})
+                this.$store.dispatch('activeBorrower/borrow', {
+                    code: this.bookCode,
+                    borrower: this.$store.getters['activeBorrower/current']
+                })
+            },
+            endLoan(loan) {
+                this.$store.dispatch('activeBorrower/endLoan', loan)
             }
         },
 

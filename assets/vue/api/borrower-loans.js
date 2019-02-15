@@ -6,5 +6,8 @@ export default {
     },
     saveLoan(loanInfo) {
         return axios.post(`/api/loans/by-user/${loanInfo.borrower.id}/${loanInfo.code}`)
+    },
+    endLoan(loan) {
+        return axios.put(`/api/loans/${loan.id}`)
     }
 }

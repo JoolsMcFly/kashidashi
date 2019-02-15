@@ -26,8 +26,8 @@ export default {
         setDetails(state, details) {
             state.details = details
         },
-        addLoan(loanInfo) {
-
+        addLoan(state, loan) {
+            state.details.push(loan)
         }
     },
 
@@ -44,8 +44,14 @@ export default {
 
         borrow({commit}, loanInfo) {
             BorrowerLoansApi.saveLoan(loanInfo)
-                .then(commit('addLoan', loanInfo))
+                .then(res => commit('addLoan', res.data))
                 .catch(err => console.log("erreur saving loan", err))
+        },
+
+        endLoan({commit}, loan) {
+            BorrowerLoansApi.endLoan(loan)
+                .then(commit('endLoan', loan))
+                .catch(err => console.log("erreur ending loan", err))
         }
     }
 }

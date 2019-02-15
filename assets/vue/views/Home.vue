@@ -35,13 +35,15 @@
         },
 
         computed: {
-            borrowers() {
+            borrowers: function () {
                 let borrowers = this.$store.getters['borrower/borrowers']
                 if (this.filterBorrowers === '') {
                     return borrowers
                 }
 
-                return borrowers.filter((borrower) => borrower.surname.indexOf(this.filterBorrowers) !== -1)
+                let lowercaseFilter = this.filterBorrowers.toLowerCase()
+
+                return borrowers.filter(borrower => borrower.surname.toLowerCase().indexOf(lowercaseFilter) !== -1)
             }
         }
     }

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Book;
 use App\Entity\Borrower;
 use App\Entity\Loan;
 use JMS\Serializer\SerializationContext;
@@ -41,7 +42,8 @@ class ApiLoansController extends AbstractController
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->findBy([
             'borrower' => $borrower,
-        ]);
+        ])
+        ;
 
         $context = (new SerializationContext())->setGroups(['details']);
 
@@ -51,5 +53,32 @@ class ApiLoansController extends AbstractController
             [],
             true
         );
+    }
+
+    /**
+     * @Route("/by-user/{borrower}/{bookCode}", methods={"POST"})
+     * @param Borrower $borrower
+     * @param string $bookCode
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function addLoan(Borrower $borrower, string $bookCode)
+    {
+        $book = $this->getDoctrine()->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
+        if (empty($book)) {
+            return $this->json(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $loan = new Loan();
+        $loan->setBorrower($borrower)
+            ->setBook($book)
+            ->setStartedAt(new \DateTime())
+        ;
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($loan);
+        $manager->flush();
+
+        return $this->json(null);
     }
 }

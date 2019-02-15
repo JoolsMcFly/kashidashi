@@ -25,6 +25,9 @@ export default {
 
         setDetails(state, details) {
             state.details = details
+        },
+        addLoan(loanInfo) {
+
         }
     },
 
@@ -37,6 +40,12 @@ export default {
             BorrowerLoansApi.getLoans(id)
                 .then(res => commit('setDetails', res.data))
                 .catch(err => console.log("erreur fetching details", err))
+        },
+
+        borrow({commit}, loanInfo) {
+            BorrowerLoansApi.saveLoan(loanInfo)
+                .then(commit('addLoan', loanInfo))
+                .catch(err => console.log("erreur saving loan", err))
         }
     }
 }

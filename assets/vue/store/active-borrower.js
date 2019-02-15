@@ -28,6 +28,9 @@ export default {
         },
         addLoan(state, loan) {
             state.details.push(loan)
+        },
+        endLoan(state, loan) {
+            state.details = state.details.filter(l => l.id !== loan.id)
         }
     },
 

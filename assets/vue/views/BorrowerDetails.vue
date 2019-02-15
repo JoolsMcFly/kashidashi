@@ -31,7 +31,7 @@
                         <div class="col-3 p-2" @click="handleInput('3')"><button class="btn btn-primary">3</button></div>
                     </div>
                     <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('del')"><button class="btn btn-primary">Del</button></div>
+                        <div class="col-3 p-2" @click="handleInput('del')"><button class="btn btn-primary">X</button></div>
                         <div class="col-3 p-2" @click="handleInput('0')"><button class="btn btn-primary">0</button></div>
                         <div class="col-3 p-2" @click="saveLoan()"><button class="btn btn-primary">OK</button></div>
                     </div>

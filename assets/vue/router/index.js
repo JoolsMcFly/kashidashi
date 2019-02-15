@@ -5,6 +5,7 @@ import Borrowers from '../views/Borrowers'
 import BorrowerDetails from "../views/BorrowerDetails";
 import BookUpload from "../views/BookUpload";
 import BorrowerUpload from "../views/BorrowerUpload";
+import Inventory from "../views/Inventory";
 
 Vue.use(VueRouter);
 
@@ -17,6 +18,7 @@ export default new VueRouter({
         { path: '/borrower-details', component: BorrowerDetails },
         { path: '/books', component: BookUpload },
         { path: '/borrowers-upload', component: BorrowerUpload },
+        { path: '/inventory', component: Inventory },
         { path: '*', redirect: '/home' }
     ],
 });

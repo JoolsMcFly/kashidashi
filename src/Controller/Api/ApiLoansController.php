@@ -38,10 +38,11 @@ class ApiLoansController extends AbstractController
      * @param Borrower $borrower
      * @return JsonResponse
      */
-    public function loanByUser(Borrower $borrower)
+    public function getLoansByUser(Borrower $borrower)
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->findBy([
             'borrower' => $borrower,
+            'stoppedAt' => null,
         ])
         ;
 
@@ -70,7 +71,10 @@ class ApiLoansController extends AbstractController
             return $this->json(null, Response::HTTP_NOT_FOUND);
         }
 
-        $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy(['book' => $book]);
+        $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy([
+            'book' => $book,
+            'stoppedAt' => null
+        ]);
         if (!empty($existingLoan)) {
             return $this->json(null, Response::HTTP_CONFLICT);
         }
@@ -85,6 +89,30 @@ class ApiLoansController extends AbstractController
         $manager->persist($loan);
         $manager->flush();
 
-        return $this->json(null);
+        $context = (new SerializationContext())->setGroups(['details']);
+
+        return new JsonResponse(
+            $this->serializer->serialize($loan, 'json', $context), Response::HTTP_OK, [], true);
     }
+
+    /**
+     * @Route("/{loan}", methods={"PUT"})
+     * @param Loan $loan
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function endLoan(Loan $loan)
+    {
+        try {
+            $loan->setStoppedAt(new \DateTime());
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($loan);
+            $manager->flush();
+
+            return $this->json(null);
+        } catch (\Exception $e) {
+            return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

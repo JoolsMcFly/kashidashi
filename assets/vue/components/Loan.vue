@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row" @click="$emit('clicked')">
         <div class="col" :title="loan.book.title">
             <span class="badge badge-pill badge-primary">{{ loan.book.code }}</span>
         </div>

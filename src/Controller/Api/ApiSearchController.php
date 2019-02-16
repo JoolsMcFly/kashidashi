@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Service\BookService;
 use App\Service\BorrowerService;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -12,9 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class ApiBorrowerController
  * @package App\Controller\Api
- * @Route("/api/borrowers")
+ * @Route("/api/search")
  */
-class ApiBorrowerController
+class ApiSearchController
 {
     /**
      * @var BorrowerService
@@ -27,14 +28,24 @@ class ApiBorrowerController
     private $serializer;
 
     /**
+     * @var BookService
+     */
+    private $bookService;
+
+    /**
      * ApiBorrowerController constructor.
      * @param BorrowerService $borrowerService
+     * @param BookService $bookService
      * @param SerializerInterface $serializer
      */
-    public function __construct(BorrowerService $borrowerService, SerializerInterface $serializer)
-    {
+    public function __construct(
+        BorrowerService $borrowerService,
+        BookService $bookService,
+        SerializerInterface $serializer
+    ) {
         $this->borrowerService = $borrowerService;
         $this->serializer = $serializer;
+        $this->bookService = $bookService;
     }
 
     /**
@@ -56,14 +67,20 @@ class ApiBorrowerController
     }
 
     /**
-     * @Route("/search/{borrowerName}", methods={"GET"})
-     * @param string $borrowerName
+     * @Route("/{search}", methods={"GET"})
+     * @param string $search
      * @return JsonResponse
      */
-    public function search(string $borrowerName)
+    public function search($search)
     {
-        $borrowers = $this->borrowerService->findSuggestions($borrowerName);
+        if (is_numeric($search)) {
+            $suggestions = $this->bookService->findSuggestions($search);
+        } else {
+            $suggestions = $this->borrowerService->findSuggestions($search);
+        }
 
-        return new JsonResponse($borrowers);
+        $context = (new SerializationContext())->setGroups(['details']);
+
+        return new JsonResponse($suggestions);
     }
 }

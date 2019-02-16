@@ -1,59 +1,51 @@
 <template>
     <div>
-        <div class="row">
+        <h3 class="mt-4">{{ fullname }}</h3>
+        <div class="row mb-4">
             <div class="col">
-                <p>{{ fullname }}</p>
-                <p>Loan info</p>
-                <div v-if="loans && loans.length > 0" v-for="loan in loans" class="loan-detasils">
-                    <loan
-                        :loan="loan"
-                        @clicked="endLoan(loan)"
-                    ></loan>
+                <vue-bootstrap-typeahead
+                    ref="typeahead"
+                    v-model="bookCode"
+                    :data="suggestions"
+                    placeholder="enter a book code"
+                    :serializer="s => s.text"
+                    @hit="saveLoan($event)"
+                    :minMatchingChars="0"
+                />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Loan info
+                    </div>
+                    <ul v-if="loans && loans.length > 0" class="list-group list-group-flush">
+                        <li v-for="loan in loans" class="list-group-item">
+                            <loan
+                                :loan="loan"
+                                @clicked="endLoan(loan)"
+                            ></loan>
+                        </li>
+                    </ul>
                 </div>
                 <p v-if="loans && loans.length === 0">No current loans.</p>
-            </div>
-            <div class="col">
-                <p>Add book by number</p>
-                <div class="numpad">
-                    <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('7')"><button class="btn btn-primary">7</button></div>
-                        <div class="col-3 p-2" @click="handleInput('8')"><button class="btn btn-primary">8</button></div>
-                        <div class="col-3 p-2" @click="handleInput('9')"><button class="btn btn-primary">9</button></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('4')"><button class="btn btn-primary">4</button></div>
-                        <div class="col-3 p-2" @click="handleInput('5')"><button class="btn btn-primary">5</button></div>
-                        <div class="col-3 p-2" @click="handleInput('6')"><button class="btn btn-primary">6</button></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('1')"><button class="btn btn-primary">1</button></div>
-                        <div class="col-3 p-2" @click="handleInput('2')"><button class="btn btn-primary">2</button></div>
-                        <div class="col-3 p-2" @click="handleInput('3')"><button class="btn btn-primary">3</button></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-3 p-2" @click="handleInput('del')"><button class="btn btn-primary">X</button></div>
-                        <div class="col-3 p-2" @click="handleInput('0')"><button class="btn btn-primary">0</button></div>
-                        <div class="col-3 p-2" @click="saveLoan()"><button class="btn btn-primary">OK</button></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <input type="text" :value="bookCode" readonly/>
-                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
     import Loan from '../components/Loan'
 
     export default {
-        components: {Loan},
+        components: {Loan, VueBootstrapTypeahead},
 
         data() {
             return {
                 borrower: null,
-                bookCode: ''
+                bookCode: '',
             }
         },
 
@@ -69,27 +61,31 @@
             loans() {
                 this.bookCode = ''
                 return this.$store.getters['activeBorrower/details']
+            },
+
+            suggestions() {
+                return this.$store.getters['search/results']
             }
         },
 
         methods: {
-            handleInput(key) {
-                if (key === 'del') {
-                    return this.bookCode = this.bookCode.substring(0, this.bookCode.length - 1)
-                }
-                let code = parseInt(key, 10)
-                if (!isNaN(code)) {
-                    this.bookCode += key
-                }
-            },
-            saveLoan() {
+            saveLoan(loan) {
                 this.$store.dispatch('activeBorrower/borrow', {
-                    code: this.bookCode,
+                    code: loan.code,
                     borrower: this.$store.getters['activeBorrower/current']
                 })
+                this.$refs.typeahead.inputValue = ''
             },
             endLoan(loan) {
                 this.$store.dispatch('activeBorrower/endLoan', loan)
+            }
+        },
+
+        watch: {
+            bookCode() {
+                if (this.bookCode !== '') {
+                    this.$store.dispatch('search/search', this.bookCode)
+                }
             }
         },
 

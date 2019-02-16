@@ -3,12 +3,12 @@
 namespace App\Service;
 
 use App\DataStructures\TypeahedSuggestion;
-use App\Entity\Borrower;
+use App\Entity\Book;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 
-final class BorrowerService
+final class BookService
 {
     /**
      * @var EntityManagerInterface
@@ -32,32 +32,23 @@ final class BorrowerService
     }
 
     /**
-     * @return Borrower[]
-     */
-    public function getBorrowers()
-    {
-        return $this->manager->getRepository(Borrower::class)->findAll();
-    }
-
-    /**
-     * @param string $borrowerName
+     * @param string $bookCode
      * @return TypeahedSuggestion[]
      */
-    public function findSuggestions(string $borrowerName): array
+    public function findSuggestions(string $bookCode): array
     {
-        $borrowers = $this->manager->getRepository(Borrower::class)->searchBySurname($borrowerName);
+        $books = $this->manager->getRepository(Book::class)->findByCode($bookCode);
 
         $suggestions = [];
-        foreach ($borrowers as $borrower) {
+        foreach ($books as $book) {
             $suggestions[] = [
-                'id' => $borrower->getId(),
-                'text' => $borrower->getSurname() . ' ' . $borrower->getFirstname(),
+                'text' => $book->getCode() . ' - ' . $book->getTitle(),
                 'item' => [
-                    'id' => $borrower->getId(),
-                    'firstname' => $borrower->getFirstname(),
-                    'surname' => $borrower->getSurname(),
+                    'id' => $book->getId(),
+                    'title' => $book->getTitle(),
+                    'code' => $book->getCode(),
                 ],
-                'type' => 'borrower',
+                'type' => 'book',
             ];
         }
 

@@ -71,7 +71,7 @@
         methods: {
             saveLoan(loan) {
                 this.$store.dispatch('activeBorrower/borrow', {
-                    code: loan.code,
+                    code: loan.item.code,
                     borrower: this.$store.getters['activeBorrower/current']
                 })
                 this.$refs.typeahead.inputValue = ''

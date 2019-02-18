@@ -3,7 +3,8 @@
         <div class="col-sm-12 col-md-6">
             <div class="card">
                 <div class="card-header">
-                    {{ book.title }}<span class="float-right ml-2 badge badge-primary">{{ book.code }}</span>
+                    <span class="float-right ml-2 badge badge-primary">{{ book.code }}</span>
+                    <span>{{ book.title }}</span>
                 </div>
                 <ul v-if="activeLoans && activeLoans.length > 0" class="list-group list-group-flush">
                     <li v-for="loan in activeLoans" class="list-group-item">
@@ -22,14 +23,23 @@
 
         data() {
             return {
-                book: null
+                // activeLoans: null
             }
         },
 
         computed: {
+            book() {
+                let book = this.$store.getters['activeBook/current']
+                if (!Boolean(book)) {
+                    return this.$router.replace('/home')
+                }
+
+                return book
+            },
+
             activeLoans() {
                 return this.$store.getters['activeBook/activeLoans']
-            },
+            }
         },
 
         methods: {
@@ -42,13 +52,16 @@
             }
         },
 
-        mounted() {
-            this.book = this.$store.getters['activeBook/current']
-            if (!Boolean(this.book)) {
-                return this.$router.replace('/home')
+        watch: {
+            book() {
+                this.$store.dispatch('activeBook/activeLoans', this.book.id)
             }
+        },
 
-            this.details = this.$store.dispatch('activeBook/activeLoans', this.book.id)
+        mounted() {
+            if (Boolean(this.book)) {
+                this.$store.dispatch('activeBook/activeLoans', this.book.id)
+            }
         }
     }
 </script>

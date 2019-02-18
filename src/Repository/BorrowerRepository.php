@@ -20,8 +20,8 @@ class BorrowerRepository extends ServiceEntityRepository
     public function searchBySurname(string $surname)
     {
         return $this->createQueryBuilder('b')
-            ->where('b.surname like :name')
-            ->setParameter('name', "$surname%")
+            ->where('LOWER(b.surname) like :name')
+            ->setParameter('name', mb_strtolower("$surname%"))
             ->getQuery()
             ->getResult()
             ;

@@ -48,7 +48,7 @@
                 let action, route
                 if (suggestion.type === 'book') {
                     action = 'activeBook/setCurrent'
-                    route = '/book-details/' + suggestion.item.code
+                    route = '/book-details'
                 } else {
                     action = 'activeBorrower/setCurrent'
                     route = '/borrower-details/'

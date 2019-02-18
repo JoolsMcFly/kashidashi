@@ -17,7 +17,7 @@ export default new VueRouter({
         { path: '/home', component: Home },
         { path: '/borrowers', component: Borrowers },
         { path: '/borrower-details', component: BorrowerDetails },
-        { path: '/book-details/:id', component: BookDetails },
+        { path: '/book-details', component: BookDetails },
         { path: '/books', component: BookUpload },
         { path: '/borrowers-upload', component: BorrowerUpload },
         { path: '/inventory', component: Inventory },

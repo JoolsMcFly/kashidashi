@@ -57,6 +57,25 @@ class ApiLoansController extends AbstractController
     }
 
     /**
+     * @Route("/by-book/{book}", methods={"GET"})
+     * @param Book $book
+     * @return JsonResponse
+     */
+    public function getLoansByBook(Book $book)
+    {
+        $loans = $this->getDoctrine()->getRepository(Loan::class)->getByBook($book);
+
+        $context = (new SerializationContext())->setGroups(['details']);
+
+        return new JsonResponse(
+            $this->serializer->serialize($loans, 'json', $context),
+            Response::HTTP_OK,
+            [],
+            true
+        );
+    }
+
+    /**
      * @Route("/by-user/{borrower}/{bookCode}", methods={"POST"})
      * @param Borrower $borrower
      * @param string $bookCode
@@ -73,8 +92,9 @@ class ApiLoansController extends AbstractController
 
         $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy([
             'book' => $book,
-            'stoppedAt' => null
-        ]);
+            'stoppedAt' => null,
+        ])
+        ;
         if (!empty($existingLoan)) {
             return $this->json(null, Response::HTTP_CONFLICT);
         }

@@ -7,7 +7,7 @@ use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Type;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\LoanRepository")
  */
 class Loan
 {
@@ -29,6 +29,7 @@ class Loan
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Borrower", inversedBy="loans")
      * @ORM\JoinColumn(nullable=false)
+     * @Serializer\Groups("details")
      */
     private $borrower;
 
@@ -128,5 +129,14 @@ class Loan
         $this->stoppedAt = $stoppedAt;
 
         return $this;
+    }
+
+    /**
+     * @Serializer\VirtualProperty(name="duration")
+     * @Serializer\Groups("details")
+     */
+    public function duration()
+    {
+        return (new \DateTime())->diff($this->startedAt, true)->format('%a');
     }
 }

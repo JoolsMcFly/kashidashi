@@ -39,6 +39,7 @@ class ApiBorrowerController
 
     /**
      * @Route("", methods={"GET"})
+     * @return JsonResponse
      */
     public function list()
     {
@@ -52,5 +53,17 @@ class ApiBorrowerController
             [],
             true
         );
+    }
+
+    /**
+     * @Route("/search/{borrowerName}", methods={"GET"})
+     * @param string $borrowerName
+     * @return JsonResponse
+     */
+    public function search(string $borrowerName)
+    {
+        $borrowers = $this->borrowerService->findSuggestions($borrowerName);
+
+        return new JsonResponse($borrowers);
     }
 }

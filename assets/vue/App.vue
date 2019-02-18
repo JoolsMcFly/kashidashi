@@ -43,14 +43,15 @@
 
         methods: {
             handleSuggestion(suggestion) {
+                this.query = ''
                 this.$refs.typeahead.inputValue = ''
                 let action, route
                 if (suggestion.type === 'book') {
                     action = 'activeBook/setCurrent'
-                    route = '/book-details'
+                    route = '/book-details/' + suggestion.item.code
                 } else {
                     action = 'activeBorrower/setCurrent'
-                    route = '/borrower-details'
+                    route = '/borrower-details/'
                 }
 
                 this.$store.dispatch(action, suggestion.item)

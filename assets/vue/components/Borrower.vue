@@ -1,6 +1,6 @@
 <template>
     <div @click="$emit('show-borrower', borrower)">
-        <div class="borrower"><span class="borrower-id">{{ this.borrower.id }}</span>{{ fullname }}</div>
+        <div class="borrower">{{ fullname }}</div>
     </div>
 </template>
 

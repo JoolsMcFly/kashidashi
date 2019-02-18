@@ -9,7 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\BorrowerRepository")
  * @ORM\Table(indexes={@Index(name="surname_firstname", columns={"surname", "firstname"})})
  */
 class Borrower
@@ -25,21 +25,15 @@ class Borrower
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $email;
-
-    /**
-     * @var string
      * @ORM\Column(type="string", length=100, nullable=true)
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list", "details"})
      */
     private $firstname;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=100)
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list", "details"})
      */
     private $surname;
 
@@ -70,25 +64,6 @@ class Borrower
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return Borrower
-     */
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
     }
 
     /**

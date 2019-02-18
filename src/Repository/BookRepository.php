@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-
 use App\Entity\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -16,7 +15,6 @@ class BookRepository extends ServiceEntityRepository
 
     /**
      * @return int
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getCount()
     {

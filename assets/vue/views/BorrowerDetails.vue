@@ -44,7 +44,6 @@
 
         data() {
             return {
-                borrower: null,
                 bookCode: '',
             }
         },
@@ -65,6 +64,15 @@
 
             suggestions() {
                 return this.$store.getters['search/results']
+            },
+
+            borrower() {
+                let borrower = this.$store.getters['activeBorrower/current']
+                if (!Boolean(borrower)) {
+                    return this.$router.replace('/home')
+                }
+
+                return borrower
             }
         },
 
@@ -76,8 +84,13 @@
                 })
                 this.$refs.typeahead.inputValue = ''
             },
+
             endLoan(loan) {
                 this.$store.dispatch('activeBorrower/endLoan', loan)
+            },
+
+            fetchLoans() {
+                this.$store.dispatch('activeBorrower/fetchDetails', this.borrower.id)
             }
         },
 
@@ -86,16 +99,17 @@
                 if (this.bookCode !== '') {
                     this.$store.dispatch('search/search', this.bookCode)
                 }
+            },
+
+            borrower() {
+                this.fetchLoans()
             }
         },
 
         mounted() {
-            this.borrower = this.$store.getters['activeBorrower/current']
-            if (!Boolean(this.borrower)) {
-                return this.$router.replace('/home')
+            if (Boolean(this.borrower)) {
+                this.fetchLoans()
             }
-
-            this.details = this.$store.dispatch('activeBorrower/fetchDetails', this.borrower.id)
         }
     }
 </script>

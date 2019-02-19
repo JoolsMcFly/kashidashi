@@ -21,12 +21,6 @@
 <script>
     export default {
 
-        data() {
-            return {
-                // activeLoans: null
-            }
-        },
-
         computed: {
             book() {
                 let book = this.$store.getters['activeBook/current']
@@ -39,6 +33,10 @@
 
             activeLoans() {
                 return this.$store.getters['activeBook/activeLoans']
+            },
+
+            fetchLoans() {
+                this.$store.dispatch('activeBook/activeLoans', this.book.id)
             }
         },
 
@@ -54,13 +52,13 @@
 
         watch: {
             book() {
-                this.$store.dispatch('activeBook/activeLoans', this.book.id)
+                this.fetchLoans()
             }
         },
 
         mounted() {
             if (Boolean(this.book)) {
-                this.$store.dispatch('activeBook/activeLoans', this.book.id)
+                this.fetchLoans()
             }
         }
     }

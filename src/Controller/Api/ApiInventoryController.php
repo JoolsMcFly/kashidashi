@@ -54,6 +54,16 @@ class ApiInventoryController extends AbstractController
     }
 
     /**
+     * @Route("/missing-books", methods={"PUT"})
+     * @param Inventory $inventory
+     * @return JsonResponse
+     */
+    public function getMissingBooks(Inventory $inventory)
+    {
+
+    }
+
+    /**
      * @Route("", methods={"POST"})
      * @return JsonResponse
      * @throws \Exception
@@ -126,8 +136,14 @@ class ApiInventoryController extends AbstractController
     public function stop(Inventory $inventory)
     {
         try {
+            $doctrine = $this->getDoctrine();
             $inventory->setStoppedAt(new \DateTime());
-            $manager = $this->getDoctrine()->getManager();
+            $details = $inventory->getDetails();
+            $missingBookids = $doctrine->getRepository(Book::class)->findNotIn($details['returned']);
+            $details['missing'] = $missingBookids;
+            $inventory->setDetails($details);
+
+            $manager = $doctrine->getManager();
             $manager->persist($inventory);
             $manager->flush();
 

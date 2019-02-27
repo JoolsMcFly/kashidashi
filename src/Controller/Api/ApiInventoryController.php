@@ -40,7 +40,7 @@ class ApiInventoryController extends AbstractController
     public function list()
     {
         $inventories = $this->getDoctrine()->getRepository(Inventory::class)->findBy([],
-            ['startedAt' => 'asc', 'stoppedAt' => 'desc'])
+            ['startedAt' => 'desc', 'stoppedAt' => 'asc'])
         ;
 
         $context = (new SerializationContext())->setGroups(['details']);

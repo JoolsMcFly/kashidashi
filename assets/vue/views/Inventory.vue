@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="Boolean(selectedInventory)" class="col-xs-12">
-            <input type="number" v-model="bookCode"/>
+            <input id="add-book-field" type="number" @keyup.13="addCode()" v-model="bookCode"/>
             <button type="button" @click="addCode()">ADD</button>
             <p>{{ selectedInventory.book_count }} books added so far.</p>
             <button type="button" @click="endInventory()">Close</button>
@@ -13,14 +13,14 @@
         <div v-show="!Boolean(selectedInventory) && activeInventories.length > 0" class="col-xs-12">
             <h3>Open inventories</h3>
             <div v-for="inv in activeInventories">
-                {{inv.id}} created at {{ inv.started_at }} :
+                Created: {{ inv.started_at }} :
                 <button @click="setSelected(inv)" class="btn btn-primary">GO!</button>
             </div>
         </div>
         <div v-show="closedInventories.length > 0" class="col-xs-12">
             <h3>Closed inventories</h3>
             <div v-for="inv in closedInventories" class="mb-3">
-                {{inv.id}} created at {{ inv.started_at }} :
+                <i class="fas fa-calendar-alt mr-2"></i>{{ inv.started_at }} - {{ inv.stopped_at }}
                 <button @click="showDetails(inv)" class="btn btn-secondary">INFO</button>
             </div>
         </div>
@@ -32,6 +32,7 @@
         data() {
             return {
                 bookCode: null,
+                $addBtn: null
             }
         },
 
@@ -41,6 +42,7 @@
             },
             addCode() {
                 this.$store.dispatch('inventory/addCode', {id: this.selectedInventory.id, code: this.bookCode})
+                this.$addBtn.focus()
             },
             endInventory() {
                 this.$store.dispatch('inventory/end', this.selectedInventory.id)
@@ -71,6 +73,7 @@
         watch: {
             selectedInventory() {
                 this.bookCode = ''
+                this.$addBtn = $('#add-book-field')
             }
         },
 

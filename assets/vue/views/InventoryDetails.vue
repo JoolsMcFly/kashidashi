@@ -1,13 +1,24 @@
 <template>
     <div>
         <div v-if="!Boolean(selectedInventory.stopped_at)">
-            <h3><i class="fas fa-calendar-alt mr-2"></i>{{ selectedInventory.started_at }}</h3>
-            <input id="add-book-field" placeholder="book code and enter" type="number" @keyup.13="addCode()"
-                   v-model="bookCode"/>
-            <button type="button" class="btn btn-primary btn-sm" @click="addCode()">Add</button>
-            <p><i class="fas fa-book mr-2"></i>{{ selectedInventory.book_count }} /
-                {{selectedInventory.available_book_count}}</p>
-            <button type="button" class="btn btn-secondary" @click="endInventory()">Close</button>
+            <div class="card">
+                <div class="card-header">Inventory started on {{ selectedInventory.started_at }}</div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input id="add-book-field" placeholder="book code and enter" type="number" @keyup.13="addCode()"
+                               class="form-control"
+                               v-model="bookCode"/>
+                        <div class="input-group-append">
+                            <span class="input-group-text cursor-pointer" @click="addCode()">Add</span>
+                        </div>
+                    </div>
+                    <p><i class="fas fa-book mr-2"></i>{{ selectedInventory.book_count }} /
+                        {{selectedInventory.available_book_count}}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="card-link" @click="endInventory()"><i class="fas fa-flag-checkered mr-2"></i>Close inventory</a>
+                </div>
+            </div>
         </div>
         <div v-else class="card">
             <div class="card-header">Inventory summary</div>
@@ -52,7 +63,9 @@
 
         methods: {
             addCode() {
-                this.$store.dispatch('inventory/addCode', {id: this.selectedInventory.id, code: this.bookCode})
+                if (this.bookCode.length > 0) {
+                    this.$store.dispatch('inventory/addCode', {id: this.selectedInventory.id, code: this.bookCode})
+                }
                 this.$addBtn.focus()
             },
             endInventory() {
@@ -94,9 +107,11 @@
                 return this.$store.getters['inventory/missingBooks']
             }
         },
-
         mounted() {
-            this.loadMissingBooks()
+            this.$addBtn = $('#add-book-field')
+            if (Boolean(this.selectedInventory.stopped_at)) {
+                this.loadMissingBooks()
+            }
         }
     }
 </script>

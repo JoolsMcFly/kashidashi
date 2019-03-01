@@ -47,6 +47,7 @@ class Book
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Loan", mappedBy="book")
+     * @Serializer\Groups("details")
      */
     private $loans;
 

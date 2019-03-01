@@ -5,7 +5,7 @@ export default {
 
     state: {
         current: null,
-        details: null,
+        details: [],
     },
 
     getters: {

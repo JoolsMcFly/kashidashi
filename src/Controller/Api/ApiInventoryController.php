@@ -40,7 +40,7 @@ class ApiInventoryController extends AbstractController
     public function list()
     {
         $inventories = $this->getDoctrine()->getRepository(Inventory::class)->findBy([],
-            ['startedAt' => 'asc', 'stoppedAt' => 'desc'])
+            ['startedAt' => 'desc', 'stoppedAt' => 'asc'])
         ;
 
         $context = (new SerializationContext())->setGroups(['details']);
@@ -48,6 +48,24 @@ class ApiInventoryController extends AbstractController
         return new JsonResponse(
             $this->serializer->serialize($inventories, 'json', $context),
             Response::HTTP_CREATED,
+            [],
+            true
+        );
+    }
+
+    /**
+     * @Route("/{inventory}/missing-books", methods={"GET"}, requirements={"inventory"="\d+"})
+     * @param Inventory $inventory
+     * @return JsonResponse
+     */
+    public function getMissingBooks(Inventory $inventory)
+    {
+        $books = $this->getDoctrine()->getRepository(Book::class)->getMissingBooks($inventory->getDetails()['missing']);
+        $context = (new SerializationContext())->setGroups(['details']);
+
+        return new JsonResponse(
+            $this->serializer->serialize($books, 'json', $context),
+            Response::HTTP_OK,
             [],
             true
         );
@@ -85,7 +103,7 @@ class ApiInventoryController extends AbstractController
     }
 
     /**
-     * @Route("/{inventory}/{bookCode}", methods={"PUT"})
+     * @Route("/{inventory}/{bookCode}", methods={"PUT"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
      * @param Inventory $inventory
      * @param string $bookCode
      * @return JsonResponse
@@ -126,8 +144,14 @@ class ApiInventoryController extends AbstractController
     public function stop(Inventory $inventory)
     {
         try {
+            $doctrine = $this->getDoctrine();
             $inventory->setStoppedAt(new \DateTime());
-            $manager = $this->getDoctrine()->getManager();
+            $details = $inventory->getDetails();
+            $missingBookids = $doctrine->getRepository(Book::class)->findNotIn($details['returned']);
+            $details['missing'] = $missingBookids;
+            $inventory->setDetails($details);
+
+            $manager = $doctrine->getManager();
             $manager->persist($inventory);
             $manager->flush();
 

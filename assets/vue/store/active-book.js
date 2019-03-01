@@ -5,7 +5,7 @@ export default {
 
     state: {
         current: null,
-        activeLoans: null,
+        activeLoans: [],
     },
 
     getters: {

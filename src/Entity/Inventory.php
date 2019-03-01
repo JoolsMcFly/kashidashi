@@ -23,6 +23,7 @@ class Inventory
      * @var \DateTime
      * @ORM\Column(type="datetime")
      * @Serializer\Groups({"details"})
+     * @Serializer\Type("DateTime<'Y-m-d H:i:s'>")
      */
     private $startedAt;
 
@@ -30,6 +31,7 @@ class Inventory
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @Serializer\Groups({"details"})
+     * @Serializer\Type("DateTime<'Y-m-d H:i:s'>")
      */
     private $stoppedAt;
 

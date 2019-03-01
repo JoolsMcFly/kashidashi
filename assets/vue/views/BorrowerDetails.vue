@@ -20,7 +20,7 @@
                     <div class="card-header">
                         Loan info
                     </div>
-                    <ul v-if="loans && loans.length > 0" class="list-group list-group-flush">
+                    <ul v-if="loans.length > 0" class="list-group list-group-flush">
                         <li v-for="loan in loans" class="list-group-item">
                             <loan
                                 :loan="loan"
@@ -28,8 +28,8 @@
                             ></loan>
                         </li>
                     </ul>
+                    <div class="card-body" v-else>No active loans</div>
                 </div>
-                <p v-if="loans && loans.length === 0">No current loans.</p>
             </div>
         </div>
     </div>

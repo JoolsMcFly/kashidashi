@@ -54,13 +54,21 @@ class ApiInventoryController extends AbstractController
     }
 
     /**
-     * @Route("/missing-books", methods={"PUT"})
+     * @Route("/{inventory}/missing-books", methods={"GET"}, requirements={"inventory"="\d+"})
      * @param Inventory $inventory
      * @return JsonResponse
      */
     public function getMissingBooks(Inventory $inventory)
     {
+        $books = $this->getDoctrine()->getRepository(Book::class)->getMissingBooks($inventory->getDetails()['missing']);
+        $context = (new SerializationContext())->setGroups(['details']);
 
+        return new JsonResponse(
+            $this->serializer->serialize($books, 'json', $context),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     /**
@@ -95,7 +103,7 @@ class ApiInventoryController extends AbstractController
     }
 
     /**
-     * @Route("/{inventory}/{bookCode}", methods={"PUT"})
+     * @Route("/{inventory}/{bookCode}", methods={"PUT"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
      * @param Inventory $inventory
      * @param string $bookCode
      * @return JsonResponse

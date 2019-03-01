@@ -7,8 +7,8 @@ export default {
     getAll() {
         return axios.get('/api/inventory')
     },
-    fetchMissingBooks() {
-        return axios.get('/api/inventory/missing-books')
+    fetchMissingBooks(inventoryId) {
+        return axios.get(`/api/inventory/${inventoryId}/missing-books`)
     },
     addCode(data) {
         return axios.put(`/api/inventory/${data.id}/${data.code}`)

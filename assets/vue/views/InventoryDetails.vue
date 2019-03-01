@@ -10,7 +10,7 @@
             <button type="button" class="btn btn-secondary" @click="endInventory()">Close</button>
         </div>
         <div v-else class="card">
-            <div class="card-header">Inventory details</div>
+            <div class="card-header">Inventory summary</div>
             <div class="card-body">
                 <span><i class="fas fa-calendar-alt mr-2"></i>{{ inventoryDates(selectedInventory)}}</span><br/>
                 <span><i class="fas fa-stopwatch mr-2"></i>{{ inventoryDuration(selectedInventory) }} hours</span><br/>

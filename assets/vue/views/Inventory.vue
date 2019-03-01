@@ -1,21 +1,27 @@
 <template>
     <div>
-        <div v-show="activeInventories.length === 0" class="col-xs-12">
-            No open inventory:
-            <button @click="create()" class="btn btn-primary">Start one</button>
-        </div>
-        <div v-show="activeInventories.length > 0" class="col-xs-12">
-            <h3>Open inventories</h3>
-            <div v-for="inv in activeInventories">
-                Created: {{ inv.started_at }} :
-                <button @click="setSelected(inv)" class="btn btn-primary">GO!</button>
+        <div class="card">
+            <div class="card-header">Open inventories</div>
+            <ul v-if="activeInventories.length > 0" class="mb-3 list-group list-group-flush">
+                <li v-for="inv in activeInventories" class="list-group-item">
+                    <i class="fas fa-calendar-alt mr-2"></i>{{ inv.started_at }}
+                    <a href="#" @click="setSelected(inv)" class="card-link float-right"><i class="fas fa-play mr-2"></i>Resume</a>
+                </li>
+            </ul>
+            <div v-else class="card-body">No open inventories.<br/>
+                <i class="fas fa-plus-circle" @click="create()"></i>Start one
             </div>
         </div>
-        <div v-show="closedInventories.length > 0" class="col-xs-12">
-            <h3>Closed inventories</h3>
-            <div v-for="inv in closedInventories" class="mb-3">
-                <i class="fas fa-calendar-alt mr-2"></i>{{ inventoryDates(inv)}}
-                <button @click="setSelected(inv)" class="btn btn-secondary btn-sm">INFO</button>
+        <div v-show="closedInventories.length > 0">
+            <div class="card">
+                <div class="card-header">Closed inventories</div>
+                <ul class="mb-3 list-group list-group-flush">
+                    <li v-for="inv in closedInventories" class="list-group-item">
+                        <i class="fas fa-calendar-alt mr-2"></i>{{ inventoryDates(inv)}}
+                        <a href="#" @click="setSelected(inv)" class="card-link float-right"><i
+                            class="fas fa-info-circle mr-2"></i>Details</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -43,7 +49,7 @@
                 let start = moment(inventory.started_at)
                 let stop = moment(inventory.stopped_at)
                 if (start.format('YYYY-MM-DD') === stop.format('YYYY-MM-DD')) {
-                    return start.format('YYYY-MM-DD') + ' from ' + start.format('HH:mm:ss') + ' to ' + stop.format('HH:mm:ss')
+                    return start.format('YYYY-MM-DD') + ' from ' + start.format('HH:mm') + ' to ' + stop.format('HH:mm')
                 }
 
                 return start.format('YYYY-MM-DD') + ' - ' + stop.format('YYYY-MM-DD')

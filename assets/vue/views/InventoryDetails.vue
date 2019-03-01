@@ -107,6 +107,13 @@
                 return this.$store.getters['inventory/missingBooks']
             }
         },
+
+        watch: {
+            selectedInventory() {
+                this.bookCode = ''
+            }
+        },
+
         mounted() {
             this.$addBtn = $('#add-book-field')
             if (Boolean(this.selectedInventory.stopped_at)) {

@@ -26,4 +26,15 @@ class BorrowerRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+
+    /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return $this->createQueryBuilder('b')
+            ->select('count(b.id)')
+            ->getQuery()->getSingleScalarResult()
+            ;
+    }
 }

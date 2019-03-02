@@ -56,6 +56,7 @@ final class BorrowerService
                     'id' => $borrower->getId(),
                     'firstname' => $borrower->getFirstname(),
                     'surname' => $borrower->getSurname(),
+                    'stats' => $borrower->getStats(),
                 ],
                 'type' => 'borrower',
             ];

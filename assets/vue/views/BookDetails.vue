@@ -11,6 +11,7 @@
                         <p><i class="fas fa-user"></i> {{ loan.borrower.surname }} {{ loan.borrower.firstname }}</p>
                         <p :class="loanClasses(loan)"><i class="far fa-calendar-alt"></i> {{
                             loan.started_at }}</p>
+                        <p>Loans count: {{ book.stats.loansCount }}</p>
                     </li>
                 </ul>
                 <div class="card-body" v-else>No active loans</div>

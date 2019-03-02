@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
@@ -54,6 +55,7 @@ class Book
     /**
      * @var array
      * @ORM\Column(type="text", nullable=true)
+     * @Serializer\Groups("details")
      */
     private $stats;
 
@@ -133,7 +135,10 @@ class Book
      */
     public function getLoans(): Collection
     {
-        return $this->loans;
+        $criteria = new Criteria();
+        $criteria->where(Criteria::expr()->isNull('stopped_at'));
+
+        return $this->loans->matching($criteria);
     }
 
     /**

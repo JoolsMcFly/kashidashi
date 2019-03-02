@@ -54,6 +54,7 @@ class Borrower
     /**
      * @var array
      * @ORM\Column(type="text", nullable=true)
+     * @Serializer\Groups({"details", "list"})
      */
     private $stats;
 

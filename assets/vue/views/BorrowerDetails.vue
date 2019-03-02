@@ -1,6 +1,7 @@
 <template>
     <div>
         <h3 class="mt-4">{{ fullname }}</h3>
+        <p>Loans count: {{ borrower.stats.loansCount }}</p>
         <div class="row mb-4">
             <div class="col">
                 <vue-bootstrap-typeahead

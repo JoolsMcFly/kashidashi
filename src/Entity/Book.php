@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
@@ -51,9 +52,17 @@ class Book
      */
     private $loans;
 
+    /**
+     * @var array
+     * @ORM\Column(type="text", nullable=true)
+     * @Serializer\Groups("details")
+     */
+    private $stats;
+
     public function __construct()
     {
         $this->loans = new ArrayCollection();
+        $this->stats = ['loansCount' => 0, 'loansDuration' => 0];
     }
 
     /**
@@ -126,7 +135,10 @@ class Book
      */
     public function getLoans(): Collection
     {
-        return $this->loans;
+        $criteria = new Criteria();
+        $criteria->where(Criteria::expr()->isNull('stopped_at'));
+
+        return $this->loans->matching($criteria);
     }
 
     /**
@@ -158,5 +170,40 @@ class Book
         }
 
         return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getStats(): ?array
+    {
+        return $this->stats ? json_decode($this->stats, true) : ['loansCount' => 0, 'loansDuration' => 0];
+    }
+
+    /**
+     * @param array $stats
+     */
+    public function setStats(array $stats): void
+    {
+        $this->stats = json_encode($stats);
+    }
+
+    public function incLoansCount(): void
+    {
+        $stats = $this->getStats();
+        $stats['loansCount']++;
+
+        $this->setStats($stats);
+    }
+
+    /**
+     * @param int $days
+     */
+    public function incLoansDuration(int $days): void
+    {
+        $stats = $this->getStats();
+        $stats['loansDuration'] += $days;
+
+        $this->setStats($stats);
     }
 }

@@ -38,24 +38,6 @@ class ApiBorrowerController
     }
 
     /**
-     * @Route("", methods={"GET"})
-     * @return JsonResponse
-     */
-    public function list()
-    {
-        $borrowers = $this->borrowerService->getBorrowers();
-
-        $context = (new SerializationContext())->setGroups(['list']);
-
-        return new JsonResponse(
-            $this->serializer->serialize($borrowers, 'json', $context),
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
-    /**
      * @Route("/search/{borrowerName}", methods={"GET"})
      * @param string $borrowerName
      * @return JsonResponse

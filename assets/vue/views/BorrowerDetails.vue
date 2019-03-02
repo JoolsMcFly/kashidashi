@@ -1,6 +1,7 @@
 <template>
     <div>
         <h3 class="mt-4">{{ fullname }}</h3>
+        <p v-if="Boolean(borrower)">Loans count: {{ borrower.stats.loansCount }}</p>
         <div class="row mb-4">
             <div class="col">
                 <vue-bootstrap-typeahead
@@ -69,7 +70,7 @@
             borrower() {
                 let borrower = this.$store.getters['activeBorrower/current']
                 if (!Boolean(borrower)) {
-                    return this.$router.replace('/home')
+                    this.$router.replace('/home')
                 }
 
                 return borrower

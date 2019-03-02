@@ -15,8 +15,6 @@ final class IndexController extends AbstractController
      */
     public function indexAction(): Response
     {
-        return $this->render('base.html.twig', [
-            'bookCount' => $this->getDoctrine()->getRepository(Book::class)->getCount(),
-        ]);
+        return $this->render('base.html.twig');
     }
 }

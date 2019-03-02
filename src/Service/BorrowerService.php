@@ -32,14 +32,6 @@ final class BorrowerService
     }
 
     /**
-     * @return Borrower[]
-     */
-    public function getBorrowers()
-    {
-        return $this->manager->getRepository(Borrower::class)->findAll();
-    }
-
-    /**
      * @param string $borrowerName
      * @return TypeahedSuggestion[]
      */
@@ -56,6 +48,7 @@ final class BorrowerService
                     'id' => $borrower->getId(),
                     'firstname' => $borrower->getFirstname(),
                     'surname' => $borrower->getSurname(),
+                    'stats' => $borrower->getStats(),
                 ],
                 'type' => 'borrower',
             ];

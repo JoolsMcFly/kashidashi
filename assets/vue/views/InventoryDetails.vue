@@ -16,7 +16,8 @@
                         {{selectedInventory.available_book_count}}</p>
                 </div>
                 <div class="card-footer">
-                    <a href="#" class="card-link" @click="endInventory()"><i class="fas fa-flag-checkered mr-2"></i>Close inventory</a>
+                    <a href="#" class="card-link" @click="endInventory()"><i class="fas fa-flag-checkered mr-2"></i>Close
+                        inventory</a>
                 </div>
             </div>
         </div>
@@ -101,7 +102,11 @@
 
         computed: {
             selectedInventory() {
-                return this.$store.getters['inventory/selectedInventory']
+                let inventory = this.$store.getters['inventory/selectedInventory'];
+                if (inventory.id === undefined) {
+                    this.$router.replace('/home')
+                }
+                return inventory
             },
             missingBooks() {
                 return this.$store.getters['inventory/missingBooks']

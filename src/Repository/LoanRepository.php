@@ -30,4 +30,16 @@ class LoanRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+
+    /**
+     * @return int
+     */
+    public function getActiveLoansCount()
+    {
+        return $this->createQueryBuilder('l')
+            ->select('count(l.id)')
+            ->where('l.stoppedAt IS NULL')
+            ->getQuery()->getSingleScalarResult()
+            ;
+    }
 }

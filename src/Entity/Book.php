@@ -172,7 +172,7 @@ class Book
      */
     public function getStats(): ?array
     {
-        return json_decode($this->stats, true);
+        return $this->stats ? json_decode($this->stats, true) : ['loansCount' => 0, 'loansDuration' => 0];
     }
 
     /**
@@ -186,11 +186,18 @@ class Book
     public function incLoansCount(): void
     {
         $stats = $this->getStats();
-        if (!isset($stats['loansCount'])) {
-            $stats['loansCount'] = 1;
-        } else {
-            $stats['loansCount']++;
-        }
+        $stats['loansCount']++;
+
+        $this->setStats($stats);
+    }
+
+    /**
+     * @param int $days
+     */
+    public function incLoansDuration(int $days): void
+    {
+        $stats = $this->getStats();
+        $stats['loansDuration'] += $days;
 
         $this->setStats($stats);
     }

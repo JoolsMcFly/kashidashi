@@ -106,6 +106,7 @@ class ApiLoansController extends AbstractController
         ;
 
         $borrower->incLoansCount();
+        $book->incLoansCount();
 
         $manager = $doctrine->getManager();
         $manager->persist($loan);
@@ -128,8 +129,18 @@ class ApiLoansController extends AbstractController
     {
         try {
             $loan->setStoppedAt(new \DateTime());
+
+            $book = $loan->getBook();
+            $borrower = $loan->getBorrower();
+
+            $durationInDays = $loan->getStoppedAt()->diff($loan->getStartedAt())->days;
+            $book->incLoansDuration($durationInDays);
+            $borrower->incLoansDuration($durationInDays);
+
             $manager = $this->getDoctrine()->getManager();
             $manager->persist($loan);
+            $manager->persist($book);
+            $manager->persist($borrower);
             $manager->flush();
 
             return $this->json(null);
@@ -137,5 +148,4 @@ class ApiLoansController extends AbstractController
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 }

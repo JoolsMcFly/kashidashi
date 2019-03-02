@@ -188,11 +188,18 @@ class Borrower
     public function incLoansCount(): void
     {
         $stats = $this->getStats();
-        if (!isset($stats['loansCount'])) {
-            $stats['loansCount'] = 1;
-        } else {
-            $stats['loansCount']++;
-        }
+        $stats['loansCount']++;
+
+        $this->setStats($stats);
+    }
+
+    /**
+     * @param int $days
+     */
+    public function incLoansDuration(int $days): void
+    {
+        $stats = $this->getStats();
+        $stats['loansDuration'] += $days;
 
         $this->setStats($stats);
     }

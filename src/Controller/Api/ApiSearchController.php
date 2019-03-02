@@ -4,10 +4,8 @@ namespace App\Controller\Api;
 
 use App\Service\BookService;
 use App\Service\BorrowerService;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -49,24 +47,6 @@ class ApiSearchController
     }
 
     /**
-     * @Route("", methods={"GET"})
-     * @return JsonResponse
-     */
-    public function list()
-    {
-        $borrowers = $this->borrowerService->getBorrowers();
-
-        $context = (new SerializationContext())->setGroups(['list']);
-
-        return new JsonResponse(
-            $this->serializer->serialize($borrowers, 'json', $context),
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
-    /**
      * @Route("/{search}", methods={"GET"})
      * @param string $search
      * @return JsonResponse
@@ -78,8 +58,6 @@ class ApiSearchController
         } else {
             $suggestions = $this->borrowerService->findSuggestions($search);
         }
-
-        $context = (new SerializationContext())->setGroups(['details']);
 
         return new JsonResponse($suggestions);
     }

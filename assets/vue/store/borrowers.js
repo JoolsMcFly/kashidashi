@@ -27,11 +27,6 @@ export default {
     },
 
     actions: {
-        getAll({commit}) {
-            return BorrowersAPI.getAll()
-                .then(res => commit('setBorrowers', res.data))
-                .catch(err => console.log('Error fetching borrowers', err))
-        },
         search({commit}, borrowerName) {
             return BorrowersAPI.search(borrowerName)
                 .then(res => commit('setSearchResults', res.data))

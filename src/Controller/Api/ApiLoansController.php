@@ -105,8 +105,11 @@ class ApiLoansController extends AbstractController
             ->setStartedAt(new \DateTime())
         ;
 
+        $borrower->incLoansCount();
+
         $manager = $doctrine->getManager();
         $manager->persist($loan);
+        $manager->persist($borrower);
         $manager->flush();
 
         $context = (new SerializationContext())->setGroups(['details']);

@@ -51,9 +51,16 @@ class Book
      */
     private $loans;
 
+    /**
+     * @var array
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $stats;
+
     public function __construct()
     {
         $this->loans = new ArrayCollection();
+        $this->stats = ['loansCount' => 0, 'loansDuration' => 0];
     }
 
     /**
@@ -158,5 +165,33 @@ class Book
         }
 
         return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getStats(): ?array
+    {
+        return json_decode($this->stats, true);
+    }
+
+    /**
+     * @param array $stats
+     */
+    public function setStats(array $stats): void
+    {
+        $this->stats = json_encode($stats);
+    }
+
+    public function incLoansCount(): void
+    {
+        $stats = $this->getStats();
+        if (!isset($stats['loansCount'])) {
+            $stats['loansCount'] = 1;
+        } else {
+            $stats['loansCount']++;
+        }
+
+        $this->setStats($stats);
     }
 }

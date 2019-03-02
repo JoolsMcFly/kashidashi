@@ -47,6 +47,7 @@ final class BookService
                     'id' => $book->getId(),
                     'title' => $book->getTitle(),
                     'code' => $book->getCode(),
+                    'stats' => $book->getStats(),
                 ],
                 'type' => 'book',
             ];

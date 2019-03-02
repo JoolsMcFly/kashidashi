@@ -37,10 +37,6 @@
 
         components: {VueBootstrapTypeahead},
 
-        created() {
-            this.$store.dispatch('borrower/getAll')
-        },
-
         methods: {
             handleSuggestion(suggestion) {
                 this.query = ''

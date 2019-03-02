@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\DataStructures\UserStats;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
@@ -49,6 +50,13 @@ class Borrower
      * @ORM\OneToMany(targetEntity="App\Entity\Loan", mappedBy="borrower", orphanRemoval=true)
      */
     private $loans;
+
+    /**
+     * @var array
+     * @ORM\Column(type="text", nullable=true)
+     * @Serializer\Groups({"details", "list"})
+     */
+    private $stats;
 
     /**
      * User constructor.
@@ -160,5 +168,40 @@ class Borrower
         }
 
         return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getStats(): ?array
+    {
+        return $this->stats ? json_decode($this->stats, true) : ['loansCount' => 0, 'loansDuration' => 0];
+    }
+
+    /**
+     * @param array $stats
+     */
+    public function setStats(array $stats): void
+    {
+        $this->stats = json_encode($stats);
+    }
+
+    public function incLoansCount(): void
+    {
+        $stats = $this->getStats();
+        $stats['loansCount']++;
+
+        $this->setStats($stats);
+    }
+
+    /**
+     * @param int $days
+     */
+    public function incLoansDuration(int $days): void
+    {
+        $stats = $this->getStats();
+        $stats['loansDuration'] += $days;
+
+        $this->setStats($stats);
     }
 }

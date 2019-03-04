@@ -52,12 +52,21 @@
 
                 this.$store.dispatch(action, suggestion.item)
                 this.$router.push(route)
+            },
+            showError(error) {
+                iziToast.error({
+                    title: 'Error',
+                    message: error,
+                });
             }
         },
 
         computed: {
             suggestions() {
                 return this.$store.getters['search/results']
+            },
+            errors() {
+                return this.$store.getters['errors/all']
             }
         },
 
@@ -66,6 +75,13 @@
                 if (this.query !== '') {
                     this.$store.dispatch('search/search', this.query)
                 }
+            },
+            errors() {
+                if (this.errors.length <= 0) {
+                    return
+                }
+                this.showError(this.errors[0])
+                this.$store.dispatch('errors/popError')
             }
         }
     }

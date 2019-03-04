@@ -84,39 +84,42 @@ class ApiLoansController extends AbstractController
      */
     public function addLoan(Borrower $borrower, string $bookCode)
     {
-        $doctrine = $this->getDoctrine();
-        $book = $doctrine->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
-        if (empty($book)) {
-            return $this->json(null, Response::HTTP_NOT_FOUND);
+        try {
+            $doctrine = $this->getDoctrine();
+            $book = $doctrine->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
+            if (empty($book)) {
+                return $this->json("Book code $bookCode does not exist.", Response::HTTP_NOT_FOUND);
+            }
+            $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy([
+                'book' => $book,
+                'stoppedAt' => null,
+            ])
+            ;
+            if (!empty($existingLoan)) {
+                return $this->json('Book already in loan.', Response::HTTP_CONFLICT);
+            }
+            $loan = new Loan();
+            $loan->setBorrower($borrower)
+                ->setBook($book)
+                ->setStartedAt(new \DateTime())
+            ;
+            $borrower->incLoansCount();
+            $book->incLoansCount();
+            $manager = $doctrine->getManager();
+            $manager->persist($loan);
+            $manager->persist($borrower);
+            $manager->flush();
+            $context = (new SerializationContext())->setGroups(['details']);
+
+            return new JsonResponse(
+                $this->serializer->serialize($loan, 'json', $context),
+                Response::HTTP_OK,
+                [],
+                true
+            );
+        } catch (\Exception $e) {
+            $this->json('An error occurred when saving your book loan.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy([
-            'book' => $book,
-            'stoppedAt' => null,
-        ])
-        ;
-        if (!empty($existingLoan)) {
-            return $this->json(null, Response::HTTP_CONFLICT);
-        }
-
-        $loan = new Loan();
-        $loan->setBorrower($borrower)
-            ->setBook($book)
-            ->setStartedAt(new \DateTime())
-        ;
-
-        $borrower->incLoansCount();
-        $book->incLoansCount();
-
-        $manager = $doctrine->getManager();
-        $manager->persist($loan);
-        $manager->persist($borrower);
-        $manager->flush();
-
-        $context = (new SerializationContext())->setGroups(['details']);
-
-        return new JsonResponse(
-            $this->serializer->serialize($loan, 'json', $context), Response::HTTP_OK, [], true);
     }
 
     /**

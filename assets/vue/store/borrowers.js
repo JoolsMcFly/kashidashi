@@ -30,7 +30,6 @@ export default {
         search({commit}, borrowerName) {
             return BorrowersAPI.search(borrowerName)
                 .then(res => commit('setSearchResults', res.data))
-                .catch(err => console.log('error searching borrowers', err))
         }
     }
 }

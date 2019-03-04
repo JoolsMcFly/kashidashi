@@ -36,7 +36,6 @@ export default {
         activeLoans({commit}, id) {
             BooksApi.activeLoans(id)
                 .then(res => commit('setActiveLoans', res.data))
-                .catch(err => console.log("erreur fetching activeLoans", err))
         },
     }
 }

@@ -49,19 +49,16 @@ export default {
             return InventoryAPI
                 .getAll()
                 .then(res => commit('setInventories', res.data))
-                .catch(err => console.log('Error fetching inventories', err))
         },
         create({commit}) {
             return InventoryAPI
                 .create()
                 .then(res => commit('addInventory', res.data))
-                .catch(err => console.log('Error creating inventory', err))
         },
         addCode({commit}, data) {
             return InventoryAPI
                 .addCode(data)
                 .then(res => commit('updateInventory', res.data))
-                .catch(err => console.log('Error updating inventory', err))
         },
         setSelected({commit}, inventory) {
             commit('setSelected', inventory)
@@ -73,13 +70,11 @@ export default {
                     commit('closeInventory');
                     dispatch('getAll')
                 })
-                .catch(err => console.log('Error closing inventory', err))
         },
         fetchMissingBooks({commit}, inventoryId) {
             return InventoryAPI
                 .fetchMissingBooks(inventoryId)
                 .then(res => commit('setMissingBooks', res.data))
-                .catch(err => console.log('Error fetching missing books', err))
         }
     }
 }

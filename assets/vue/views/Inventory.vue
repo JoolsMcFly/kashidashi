@@ -9,7 +9,7 @@
                 </li>
             </ul>
             <div v-else class="card-body">No open inventories.<br/>
-                <i class="fas fa-plus-circle" @click="create()"></i>Start one
+                <i class="fas fa-plus-circle mr-2" @click="create()"></i>Start one
             </div>
         </div>
         <div v-show="closedInventories.length > 0">

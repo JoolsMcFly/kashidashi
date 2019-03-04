@@ -23,7 +23,6 @@ export default {
         search({commit}, query) {
             return SearchAPI.search(query)
                 .then(res => commit('setResults', res.data))
-                .catch(err => console.log('error performing search', err))
         }
     }
 }

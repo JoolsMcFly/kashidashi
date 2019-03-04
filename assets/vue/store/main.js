@@ -6,6 +6,7 @@ import ActiveBookModule from './active-book'
 import InventoryModule from './inventory'
 import SearchModule from './search'
 import StatsModule from './stats'
+import ErrorsModule from './errors'
 
 Vue.use(Vuex)
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
         activeBook: ActiveBookModule,
         inventory: InventoryModule,
         search: SearchModule,
-        stats: StatsModule
+        stats: StatsModule,
+        errors: ErrorsModule,
     }
 })

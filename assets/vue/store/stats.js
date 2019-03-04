@@ -24,7 +24,6 @@ export default {
             return StatsAPI
                 .getStats()
                 .then(res => commit('setStats', res.data))
-                .catch(err => console.log('Error fetching stats', err))
         },
     }
 }

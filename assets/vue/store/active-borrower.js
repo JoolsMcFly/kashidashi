@@ -41,19 +41,16 @@ export default {
         fetchDetails({commit}, id) {
             BorrowerLoansApi.getLoans(id)
                 .then(res => commit('setDetails', res.data))
-                .catch(err => console.log("erreur fetching details", err))
         },
 
         borrow({commit, dispatch}, loanInfo) {
             BorrowerLoansApi.saveLoan(loanInfo)
                 .then(res => commit('addLoan', res.data))
-                .catch(err => dispatch('errors/addError', err.response.data, {root: true}))
         },
 
         endLoan({commit}, loan) {
             BorrowerLoansApi.endLoan(loan)
                 .then(commit('endLoan', loan))
-                .catch(err => console.log("erreur ending loan", err))
         }
     }
 }

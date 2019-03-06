@@ -9,7 +9,7 @@
                 </li>
             </ul>
             <div v-else class="card-body">No open inventories.<br/>
-                <i class="fas fa-plus-circle mr-2" @click="create()"></i>Start one
+                <span @click="create()"><i class="fas fa-plus-circle mr-2"></i>Start one</span>
             </div>
         </div>
         <div v-show="closedInventories.length > 0">
@@ -19,7 +19,7 @@
                     <li v-for="inv in closedInventories" class="list-group-item">
                         <i class="fas fa-calendar-alt mr-2"></i>{{ inventoryDates(inv)}}
                         <a href="#" @click="setSelected(inv)" class="card-link float-right"><i
-                            class="fas fa-info-circle mr-2"></i>Details</a>
+                                class="fas fa-info-circle mr-2"></i>Details</a>
                     </li>
                 </ul>
             </div>
@@ -39,11 +39,9 @@
         methods: {
             create() {
                 this.$store.dispatch('inventory/create', this.bookCode)
-                this.$router.push('/inventory-details')
             },
             setSelected(inventory) {
                 this.$store.dispatch('inventory/setSelected', inventory)
-                this.$router.push('/inventory-details')
             },
             inventoryDates(inventory) {
                 let start = moment(inventory.started_at)
@@ -65,6 +63,20 @@
             },
             closedInventories() {
                 return this.inventories.filter(inv => typeof inv.stopped_at !== "undefined")
+            },
+            selectedInventory() {
+                return this.$store.getters['inventory/selectedInventory']
+            }
+        },
+
+        watch: {
+            selectedInventory() {
+                if (this.selectedInventory === null) {
+                    return this.$router.push('inventory')
+                }
+                if (this.selectedInventory.id !== undefined) {
+                    this.$router.push('/inventory-details')
+                }
             }
         },
 

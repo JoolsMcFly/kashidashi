@@ -6,7 +6,8 @@ export default {
     state: {
         inventories: [],
         selectedInventory: {},
-        missingBooks: []
+        missingBooks: [],
+        lastAddedBooks: []
     },
 
     getters: {
@@ -18,6 +19,9 @@ export default {
         },
         missingBooks(state) {
             return state.missingBooks
+        },
+        lastAddedBooks(state) {
+            return state.lastAddedBooks
         }
     },
 
@@ -29,8 +33,10 @@ export default {
             state.inventories.push(inventory)
             state.selectedInventory = inventory
         },
-        updateInventory(state, inventory) {
-            state.selectedInventory = inventory
+        updateInventory(state, inventoryData) {
+            state.selectedInventory = inventoryData.inventory
+            state.lastAddedBooks.unshift(inventoryData.book)
+            state.lastAddedBooks = state.lastAddedBooks.slice(0, 5)
         },
         setSelected(state, inventory) {
             state.selectedInventory = inventory
@@ -41,6 +47,10 @@ export default {
         },
         setMissingBooks(state, books) {
             state.missingBooks = books
+        },
+        removeBook(state, payload) {
+            state.selectedInventory = payload.inventory
+            state.lastAddedBooks = state.lastAddedBooks.filter(book => book.code !== payload.bookCode)
         }
     },
 
@@ -55,10 +65,15 @@ export default {
                 .create()
                 .then(res => commit('addInventory', res.data))
         },
-        addCode({commit}, data) {
+        addCode({commit}, payload) {
             return InventoryAPI
-                .addCode(data)
+                .addCode(payload)
                 .then(res => commit('updateInventory', res.data))
+        },
+        removeBook({commit}, payload) {
+            return InventoryAPI
+                .removeBook(payload)
+                .then(res => commit('removeBook', {inventory: res.data, bookCode: payload.bookCode}))
         },
         setSelected({commit}, inventory) {
             commit('setSelected', inventory)

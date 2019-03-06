@@ -112,6 +112,11 @@ class ApiInventoryController extends AbstractController
     {
         try {
             $doctrine = $this->getDoctrine();
+            $book = $doctrine->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
+            if (!$book) {
+                return $this->json("Book code '$bookCode' doesn't exist.", Response::HTTP_BAD_REQUEST);
+            }
+
             $details = $inventory->getDetails();
             $details['returned'][] = $bookCode;
             $inventory
@@ -124,15 +129,49 @@ class ApiInventoryController extends AbstractController
 
             $context = (new SerializationContext())->setGroups(['details']);
 
-            return new JsonResponse(
-                $this->serializer->serialize($inventory, 'json', $context),
-                Response::HTTP_ACCEPTED,
-                [],
-                true
-            );
+            $responseData = [
+                'inventory' => json_decode($this->serializer->serialize($inventory, 'json', $context)),
+                'book' => json_decode(
+                    $this->serializer->serialize($book, 'json', (new SerializationContext())->setGroups(['basic']))
+                ),
+            ];
+
+            return $this->json($responseData, Response::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * @Route("/{inventory}/{bookCode}", methods={"DELETE"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
+     * @param Inventory $inventory
+     * @param string $bookCode
+     * @return JsonResponse
+     */
+    public function removeBook(Inventory $inventory, string $bookCode)
+    {
+        $details = $inventory->getDetails();
+        $bookPos = array_search($bookCode, $details['returned']);
+        if ($bookPos) {
+            unset($details['returned'][$bookPos]);
+            $inventory
+                ->setDetails($details)
+                ->decreaseBookCount()
+            ;
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($inventory);
+            $manager->flush();
+        }
+
+        $context = (new SerializationContext())->setGroups(['details']);
+
+        return new JsonResponse(
+            $this->serializer->serialize($inventory, 'json', $context),
+            Response::HTTP_ACCEPTED,
+            [],
+            true
+        );
+
     }
 
     /**

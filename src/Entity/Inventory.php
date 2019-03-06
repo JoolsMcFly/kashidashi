@@ -132,6 +132,14 @@ class Inventory
     }
 
     /**
+     * @param int $count
+     */
+    public function decreaseBookCount(int $count = 1)
+    {
+        $this->bookCount -= $count;
+    }
+
+    /**
      * @return array
      */
     public function getDetails(): array
@@ -175,5 +183,4 @@ class Inventory
 
         return $this;
     }
-
 }

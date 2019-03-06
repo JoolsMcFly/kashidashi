@@ -24,19 +24,19 @@ class Book
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details", "basic"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details", "basic"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="smallint")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details", "basic"})
      */
     private $code;
 
@@ -48,14 +48,14 @@ class Book
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Loan", mappedBy="book")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $loans;
 
     /**
      * @var array
      * @ORM\Column(type="text", nullable=true)
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $stats;
 

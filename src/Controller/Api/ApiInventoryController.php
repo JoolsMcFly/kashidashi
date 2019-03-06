@@ -180,13 +180,13 @@ class ApiInventoryController extends AbstractController
      * @return JsonResponse
      * @throws \Exception
      */
-    public function stop(Inventory $inventory)
+    public function close(Inventory $inventory)
     {
         try {
             $doctrine = $this->getDoctrine();
             $inventory->setStoppedAt(new \DateTime());
             $details = $inventory->getDetails();
-            $missingBookids = $doctrine->getRepository(Book::class)->findNotIn($details['returned']);
+            $missingBookids = $doctrine->getRepository(Book::class)->findNotIn($details['returned'] ?? []);
             $details['missing'] = $missingBookids;
             $inventory->setDetails($details);
 

@@ -14,6 +14,15 @@
                     </div>
                     <p><i class="fas fa-book mr-2"></i>{{ selectedInventory.book_count }} /
                         {{selectedInventory.available_book_count}}</p>
+                    <div v-show="lastAddedBooks.length > 0">
+                        <p>Last <span v-text="lastAddedBooks.length"></span> books</p>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="book in lastAddedBooks" :key="book.code" class="list-group-item">
+                                <span @click="removeBook(book)" class="badge badge-primary float-right ml-2 cursor-not-allowed">{{ book.code }}</span>
+                                <span>{{ book.title }}</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <a href="#" class="card-link" @click="endInventory()"><i class="fas fa-flag-checkered mr-2"></i>Close
@@ -69,6 +78,9 @@
                 }
                 this.$addBtn.focus()
             },
+            removeBook(book) {
+                this.$store.dispatch('inventory/removeBook', {inventoryId: this.selectedInventory.id, bookCode: book.code})
+            },
             endInventory() {
                 this.$store.dispatch('inventory/end', this.selectedInventory.id)
                 this.$router.push('inventory')
@@ -110,6 +122,9 @@
             },
             missingBooks() {
                 return this.$store.getters['inventory/missingBooks']
+            },
+            lastAddedBooks() {
+                return this.$store.getters['inventory/lastAddedBooks']
             }
         },
 

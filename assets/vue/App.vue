@@ -19,7 +19,7 @@
 
         <router-view></router-view>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAdmin">
             <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
             <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i></router-link>
         </nav>
@@ -75,6 +75,9 @@
             isAuthenticated() {
                 return this.$store.getters['security/isAuthenticated']
             },
+            isAdmin() {
+                return this.$store.getters['security/hasRole']('ROLE_ADMIN')
+            }
         },
 
         watch: {
@@ -97,7 +100,7 @@
             let isAuthenticated = JSON.parse(this.$parent.$el.attributes['data-is-authenticated'].value),
                 roles = JSON.parse(this.$parent.$el.attributes['data-roles'].value);
 
-            let payload = { isAuthenticated: isAuthenticated, roles: roles };
+            let payload = {isAuthenticated: isAuthenticated, roles: roles};
             this.$store.dispatch('security/onRefresh', payload);
 
             axios.interceptors.response.use(undefined, (err) => {

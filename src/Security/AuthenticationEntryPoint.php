@@ -16,6 +16,6 @@ final class AuthenticationEntryPoint implements AuthenticationEntryPointInterfac
 {
     public function start(Request $request, AuthenticationException $authException = null): JsonResponse
     {
-        return new JsonResponse([], Response::HTTP_FORBIDDEN);
+        return new JsonResponse(null, Response::HTTP_FORBIDDEN);
     }
 }

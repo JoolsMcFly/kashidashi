@@ -2,6 +2,10 @@ body {
   font-size: 14px;
 }
 
+a {
+  color: black;
+}
+
 .borrower {
   height: 40px;
   border-bottom: 1px solid lightblue;
@@ -54,4 +58,12 @@ body {
 
 .cursor-not-allowed {
   cursor: not-allowed;
+}
+
+.fs-22px {
+  font-size: 22px;
+}
+
+a {
+  color: black;
 }

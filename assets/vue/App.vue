@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
             <router-link class="navbar-brand" to="/home"><i class="fas fa-home"></i></router-link>
             <vue-bootstrap-typeahead
                 ref="typeahead"
@@ -12,11 +12,14 @@
                 :minMatchingChars="0"
             />
             <router-link class="ml-1 ml-sm-3 navbar-brand" to="/inventory"><i class="fas fa-book"></i></router-link>
+            <div class="nav-item" v-if="isAuthenticated">
+                <a class="nav-link" href="/api/security/logout"><i class="fas fa-sign-out-alt fs-22px"></i></a>
+            </div>
         </nav>
 
         <router-view></router-view>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
             <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
             <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i></router-link>
         </nav>
@@ -25,6 +28,7 @@
 
 <script>
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
+    import axios from 'axios'
 
     export default {
         name: 'app',
@@ -67,7 +71,10 @@
             },
             errors() {
                 return this.$store.getters['errors/all']
-            }
+            },
+            isAuthenticated() {
+                return this.$store.getters['security/isAuthenticated']
+            },
         },
 
         watch: {
@@ -80,9 +87,27 @@
                 if (this.errors.length <= 0) {
                     return
                 }
+
                 this.showError(this.errors[0])
                 this.$store.dispatch('errors/popError')
             }
-        }
+        },
+
+        created() {
+            let isAuthenticated = JSON.parse(this.$parent.$el.attributes['data-is-authenticated'].value),
+                roles = JSON.parse(this.$parent.$el.attributes['data-roles'].value);
+
+            let payload = { isAuthenticated: isAuthenticated, roles: roles };
+            this.$store.dispatch('security/onRefresh', payload);
+
+            axios.interceptors.response.use(undefined, (err) => {
+                return new Promise(() => {
+                    if (err.response.status === 403) {
+                        this.$router.push({path: '/login'})
+                    }
+                    throw err;
+                });
+            });
+        },
     }
 </script>

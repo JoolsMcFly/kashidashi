@@ -7,6 +7,7 @@ import InventoryModule from './inventory'
 import SearchModule from './search'
 import StatsModule from './stats'
 import ErrorsModule from './errors'
+import SecurityModule from './security'
 
 Vue.use(Vuex)
 
@@ -19,5 +20,6 @@ export default new Vuex.Store({
         search: SearchModule,
         stats: StatsModule,
         errors: ErrorsModule,
+        security: SecurityModule
     }
 })

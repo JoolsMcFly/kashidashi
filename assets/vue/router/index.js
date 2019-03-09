@@ -9,6 +9,7 @@ import BorrowerUpload from "../views/BorrowerUpload";
 import Inventory from "../views/Inventory";
 import InventoryDetails from "../views/InventoryDetails";
 import Login from '../views/Login';
+import Users from '../views/Users';
 import store from '../store/main';
 
 Vue.use(VueRouter);
@@ -23,6 +24,7 @@ let router = new VueRouter({
         {path: '/borrower-details', component: BorrowerDetails, meta: {requiresAuth: true}},
         {path: '/book-details', component: BookDetails, meta: {requiresAuth: true}},
         {path: '/books', component: BookUpload, meta: {requiresAuth: true}},
+        {path: '/users', component: Users, meta: {requiresAuth: true}},
         {path: '/borrowers-upload', component: BorrowerUpload, meta: {requiresAuth: true}},
         {path: '/inventory', component: Inventory, meta: {requiresAuth: true}},
         {path: '/inventory-details', component: InventoryDetails, meta: {requiresAuth: true}},

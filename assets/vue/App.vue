@@ -12,6 +12,7 @@
                 :minMatchingChars="0"
             />
             <router-link class="ml-1 ml-sm-3 navbar-brand" to="/inventory"><i class="fas fa-book"></i></router-link>
+            <router-link class="ml-1 ml-sm-3 navbar-brand" to="/users"><i class="fas fa-user"></i></router-link>
             <div class="nav-item" v-if="isAuthenticated">
                 <a class="nav-link" href="/api/security/logout"><i class="fas fa-sign-out-alt fs-22px"></i></a>
             </div>

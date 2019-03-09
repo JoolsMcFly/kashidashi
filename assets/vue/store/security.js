@@ -21,6 +21,9 @@ export default {
         isAuthenticated(state) {
             return state.isAuthenticated;
         },
+        roles(state) {
+            return state.roles
+        },
         hasRole(state) {
             return role => {
                 return state.roles.indexOf(role) !== -1;

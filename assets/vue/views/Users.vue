@@ -4,21 +4,18 @@
         <div class="card-body" v-if="!loading">
             <p v-if="users.length === 0">No users.</p>
             <ul class="list-group list-group-flush" v-else>
-                <li v-for="user in users" class="list-group-item">
-                    <span class="badge badge-primary float-right ml-2">{{ user.firstname }} {{user.surname }}</span>
-                    <div class="form-group" v-for="role in available_roles">
-                        <label :for="'cb_' + role">
-                            <input type="checkbox"
-                                   :id="'cb_' + role"
-                                   :value="role"
-                                   class="input-form"
-                                   :checked="hasRole(role)"
-                            />
-                            {{ role }}
-                        </label>
+                <li v-for="user in users" class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="">
+                        {{ user.firstname }} {{user.surname }}
+                        <span class="badge badge-primary ml-2">{{ getdisplayableRole(user)}}</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="mr-3"><i class="fas fa-trash"></i></div>
+                        <div><i class="fas fa-pen"></i></div>
                     </div>
                 </li>
             </ul>
+            <p @click="addUser" class="cursor-pointer"><i class="fas fa-plus mr-2 mt-2"></i>Add one</p>
         </div>
         <div class="card-body" v-else><p>loading...</p></div>
     </div>
@@ -29,15 +26,10 @@
         data() {
             return {
                 loading: true,
-                available_roles: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_OTHER'],
             }
         },
 
         computed: {
-            roles() {
-                return this.$store.getters['security/roles']
-            },
-
             users() {
                 return this.$store.getters['users/all']
             }
@@ -50,8 +42,15 @@
         },
 
         methods: {
-            hasRole(role) {
-                return this.roles.indexOf(role) !== -1
+            addUser() {
+                return this.$router.push('/users/add')
+            },
+            getdisplayableRole(user) {
+                if (user.roles.indexOf('ROLE_USER') !== -1) {
+                    return 'Standard'
+                }
+
+                return 'Power'
             }
         },
 

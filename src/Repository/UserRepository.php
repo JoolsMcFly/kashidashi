@@ -22,7 +22,7 @@ class UserRepository extends ServiceEntityRepository
     {
         try {
             return $this->createQueryBuilder('u')
-                ->where("u.roles NOT LIKE '%ROLE_ADMIN%'")
+//                ->where("u.roles NOT LIKE '%ROLE_ADMIN%'")
                 ->getQuery()
                 ->getResult()
                 ;

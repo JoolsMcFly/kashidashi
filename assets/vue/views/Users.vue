@@ -11,7 +11,7 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="mr-3 cursor-pointer" @click="removeUser(user)"><i class="fas fa-trash"></i></div>
-                        <div><i class="fas fa-pen"></i></div>
+                        <div class="mr-3 cursor-pointer" @click="editUser(user)"><i class="fas fa-pen"></i></div>
                     </div>
                 </li>
             </ul>
@@ -44,6 +44,10 @@
         methods: {
             addUser() {
                 return this.$router.push('/users/add')
+            },
+            editUser(user) {
+                this.$store.commit('users/setCurrent', user)
+                this.$router.push('users/add')
             },
             getdisplayableRole(user) {
                 if (user.roles.indexOf('ROLE_USER') !== -1) {

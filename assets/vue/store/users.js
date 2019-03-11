@@ -5,17 +5,24 @@ export default {
 
     state: {
         users: [],
+        currentUser: null
     },
 
     getters: {
         all(state) {
             return state.users
         },
+        current(state) {
+            return state.currentUser
+        }
     },
 
     mutations: {
         setUsers(state, users) {
             state.users = users
+        },
+        setCurrent(state, user) {
+            state.currentUser = user
         },
         addUser(state, user) {
             let userIndex = state.users.findIndex( u => u.id === user.id)
@@ -45,6 +52,6 @@ export default {
             return UsersAPI
                 .delete(userId)
                 .then( res => commit('deleteUser', userId))
-        }
+        },
     }
 }

@@ -62,16 +62,20 @@ class UserRepository extends ServiceEntityRepository
             if (!$user) {
                 throw new EntityNotFoundException();
             }
+        } else {
+            $user = new User();
         }
 
-        $user = new User();
+        $plainPassword = $request->get('password');
         $user
             ->setFirstname($request->get('firstname'))
             ->setSurname($request->get('surname'))
             ->setEmail($request->get('email'))
-            ->setPassword($this->encoder->encodePassword($user, $request->get('password')))
             ->setRoles([$request->get('role')])
         ;
+        if (!empty($plainPassword)) {
+            $user->setPassword($this->encoder->encodePassword($user, $plainPassword));
+        }
         $manager->persist($user);
         $manager->flush();
 

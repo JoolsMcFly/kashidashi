@@ -40,6 +40,7 @@
     export default {
         data() {
             return {
+                id: null,
                 firstname: '',
                 surname: '',
                 email: '',
@@ -53,8 +54,20 @@
                 return this.$store.dispatch('users/add')
             },
             saveUser() {
-                this.$store.dispatch('users/save', this.$data).then( () => this.$router.push('/users'))
+                this.$store.dispatch('users/save', this.$data).then(() => this.$router.push('/users'))
             }
         },
+
+        computed: {
+            currentUser() {
+                return this.$store.getters['users/current']
+            }
+        },
+
+        created() {
+            for (let prop in this.currentUser) {
+                this[prop] = this.currentUser[prop]
+            }
+        }
     }
 </script>

@@ -15,6 +15,7 @@ axios.interceptors.response.use(function (response) {
     iziToast.error({
         title: 'Error',
         message: message,
+        position: 'bottomCenter'
     });
     return Promise.reject(error);
 });

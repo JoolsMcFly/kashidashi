@@ -3,8 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityNotFoundException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -61,22 +60,15 @@ class ApiUserController extends AbstractController
     /**
      * @Route("", methods={"POST"})
      * @param Request $request
-     * @param UserPasswordEncoderInterface $encoder
      * @return JsonResponse
      */
-    public function save(Request $request, UserPasswordEncoderInterface $encoder)
+    public function save(Request $request)
     {
-        $userId = $request->get('id');
         $userRepository = $this->getDoctrine()->getRepository(User::class);
-        if ($userId) {
-            $user = $userRepository->find($userId);
-            if (!$user) {
-                return $this->json('Invalid user ID', Response::HTTP_NOT_FOUND);
-            }
-        }
-
         try {
             $user = $userRepository->createUserFromRequest($request);
+        } catch (EntityNotFoundException $e) {
+            return $this->json('Unknown user.', Response::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
             return $this->json('An error occurred when creating the user.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -86,5 +78,19 @@ class ApiUserController extends AbstractController
         $user = $this->serializer->serialize($user, 'json', $context);
 
         return new JsonResponse($user, Response::HTTP_CREATED, [], true);
+    }
+
+    /**
+     * @Route("/{id}", methods={"DELETE"}, requirements={"id"="\d+"})
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function delete(User $user)
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $manager->remove($user);
+        $manager->flush();
+
+        return $this->json('User successfully deleted.', Response::HTTP_OK);
     }
 }

@@ -10,7 +10,7 @@
                         <span class="badge badge-primary ml-2">{{ getdisplayableRole(user)}}</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <div class="mr-3"><i class="fas fa-trash"></i></div>
+                        <div class="mr-3 cursor-pointer" @click="removeUser(user)"><i class="fas fa-trash"></i></div>
                         <div><i class="fas fa-pen"></i></div>
                     </div>
                 </li>
@@ -51,6 +51,14 @@
                 }
 
                 return 'Power'
+            },
+            removeUser(user) {
+                this.$store.dispatch('users/delete', user.id).then((res) => {
+                    iziToast.success({
+                        title: 'User deleted.',
+                        position: 'bottomCenter'
+                    });
+                })
             }
         },
 

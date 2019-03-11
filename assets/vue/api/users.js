@@ -10,5 +10,8 @@ export default {
             data.append(key, payload[key])
         }
         return axios.post('/api/users', data)
+    },
+    delete(userId) {
+        return axios.delete(`/api/users/${userId}`)
     }
 }

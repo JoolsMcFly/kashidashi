@@ -24,6 +24,9 @@ export default {
             } else {
                 state.users.push(user)
             }
+        },
+        deleteUser(state, userId) {
+            state.users = state.users.filter( u => u.id !== userId)
         }
     },
 
@@ -37,6 +40,11 @@ export default {
             return UsersAPI
                 .save(payload)
                 .then(res => commit('addUser', res.data))
+        },
+        delete({commit}, userId) {
+            return UsersAPI
+                .delete(userId)
+                .then( res => commit('deleteUser', userId))
         }
     }
 }

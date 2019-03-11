@@ -62,6 +62,7 @@
                 iziToast.error({
                     title: 'Error',
                     message: error,
+                    position: 'bottomCenter'
                 });
             }
         },

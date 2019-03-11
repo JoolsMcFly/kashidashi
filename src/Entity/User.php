@@ -4,11 +4,12 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Security\Core\Encoder\EncoderAwareInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="`user`")
  */
 class User implements EncoderAwareInterface, UserInterface
@@ -18,24 +19,28 @@ class User implements EncoderAwareInterface, UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Serializer\Groups("list")
      */
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Serializer\Groups("list")
      */
     private $email;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=100, nullable=true)
+     * @Serializer\Groups("list")
      */
     private $firstname;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=100, nullable=true)
+     * @Serializer\Groups("list")
      */
     private $surname;
 
@@ -55,6 +60,7 @@ class User implements EncoderAwareInterface, UserInterface
     /**
      * @var array
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups("list")
      */
     private $roles;
 

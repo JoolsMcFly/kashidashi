@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * @package App\Controller\Api
  * @Route("/api/stats")
  */
-class StatsController extends AbstractController
+class ApiStatsController extends AbstractController
 {
     /**
      * @Route("", methods={"GET"})

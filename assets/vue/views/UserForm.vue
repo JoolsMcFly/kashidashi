@@ -53,7 +53,7 @@
                 return this.$store.dispatch('users/add')
             },
             saveUser() {
-                this.$store.dispatch('users/save', this.$data)
+                this.$store.dispatch('users/save', this.$data).then( () => this.$router.push('/users'))
             }
         },
     }

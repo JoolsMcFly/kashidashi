@@ -5,24 +5,25 @@ export default {
 
     state: {
         users: [],
-        savedUser: null
     },
 
     getters: {
         all(state) {
             return state.users
         },
-        savedUser(state) {
-            return state.savedUser
-        }
     },
 
     mutations: {
         setUsers(state, users) {
             state.users = users
         },
-        setSavedUser(state, user) {
-            state.savedUser = user
+        addUser(state, user) {
+            let userIndex = state.users.findIndex( u => u.id === user.id)
+            if (userIndex !== -1) {
+                state.users.splice(userIndex, 1, user)
+            } else {
+                state.users.push(user)
+            }
         }
     },
 
@@ -35,8 +36,7 @@ export default {
         save({commit}, payload) {
             return UsersAPI
                 .save(payload)
-                .then(res => commit('setSavedUser', res.data))
-
+                .then(res => commit('addUser', res.data))
         }
     }
 }

@@ -53,7 +53,7 @@
                 return 'Power'
             },
             removeUser(user) {
-                this.$store.dispatch('users/delete', user.id).then((res) => {
+                this.$store.dispatch('users/delete', user.id).then(() => {
                     iziToast.success({
                         title: 'User deleted.',
                         position: 'bottomCenter'

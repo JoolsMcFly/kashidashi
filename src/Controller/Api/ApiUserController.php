@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityNotFoundException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -69,6 +70,8 @@ class ApiUserController extends AbstractController
             $user = $userRepository->createUserFromRequest($request);
         } catch (EntityNotFoundException $e) {
             return $this->json('Unknown user.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (UniqueConstraintViolationException $e) {
+            return $this->json('A user with the same email already exists.', Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             return $this->json('An error occurred when creating the user.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

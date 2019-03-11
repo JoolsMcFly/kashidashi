@@ -44,7 +44,7 @@
                 surname: '',
                 email: '',
                 password: '',
-                role: '',
+                role: 'ROLE_USER',
             }
         },
 
@@ -53,7 +53,7 @@
                 return this.$store.dispatch('users/add')
             },
             saveUser() {
-                this.$store.dispatch('user/save', this.data)
+                this.$store.dispatch('users/save', this.$data)
             }
         },
     }

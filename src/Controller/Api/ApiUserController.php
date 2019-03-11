@@ -3,6 +3,8 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,21 +61,30 @@ class ApiUserController extends AbstractController
     /**
      * @Route("", methods={"POST"})
      * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
      * @return JsonResponse
      */
-    public function save(Request $request)
+    public function save(Request $request, UserPasswordEncoderInterface $encoder)
     {
-        $user = new User();
-        $user
-            ->setFirstname($request->get('firstname'))
-            ->setSurname($request->get('surname'))
-            ->setEmail($request->get('email'))
-            ->setPassword($request->get('password'))
-        ;
-        $manager = $this->getDoctrine()->getManager();
-        $manager->persist($user);
-        $manager->flush();
+        $userId = $request->get('id');
+        $userRepository = $this->getDoctrine()->getRepository(User::class);
+        if ($userId) {
+            $user = $userRepository->find($userId);
+            if (!$user) {
+                return $this->json('Invalid user ID', Response::HTTP_NOT_FOUND);
+            }
+        }
 
-        return new JsonResponse($user);
+        try {
+            $user = $userRepository->createUserFromRequest($request);
+        } catch (\Exception $e) {
+            return $this->json('An error occurred when creating the user.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $context = new SerializationContext();
+        $context->setGroups(['list']);
+        $user = $this->serializer->serialize($user, 'json', $context);
+
+        return new JsonResponse($user, Response::HTTP_CREATED, [], true);
     }
 }

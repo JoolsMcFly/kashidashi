@@ -5,6 +5,10 @@ export default {
         return axios.get('/api/users')
     },
     save(payload) {
-        return axios.post('/api/users', payload)
+        let data = new FormData()
+        for (let key in payload) {
+            data.append(key, payload[key])
+        }
+        return axios.post('/api/users', data)
     }
 }

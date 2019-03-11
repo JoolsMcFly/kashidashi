@@ -45,7 +45,7 @@
                 surname: '',
                 email: '',
                 password: '',
-                role: 'ROLE_USER',
+                role: '',
             }
         },
 
@@ -68,6 +68,7 @@
             for (let prop in this.currentUser) {
                 this[prop] = this.currentUser[prop]
             }
+            this.role = JSON.parse(this.currentUser.roles)[0]
         }
     }
 </script>

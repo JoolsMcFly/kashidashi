@@ -7,7 +7,9 @@ export default {
     save(payload) {
         let data = new FormData()
         for (let key in payload) {
-            data.append(key, payload[key])
+            if (payload[key] !== null) {
+                data.append(key, payload[key])
+            }
         }
         return axios.post('/api/users', data)
     },

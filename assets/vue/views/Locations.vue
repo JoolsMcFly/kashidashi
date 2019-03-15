@@ -4,13 +4,16 @@
         <div class="card-body" v-if="!loading">
             <p v-if="locations.length === 0">No locations.</p>
             <ul class="list-group list-group-flush" v-else>
-                <li v-for="location in locations" class="list-group-item d-flex align-items-center justify-content-between">
+                <li v-for="location in locations"
+                    class="list-group-item d-flex align-items-center justify-content-between">
                     <div class="">
                         {{ location.name }}
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <div class="mr-3 cursor-pointer" @click="removeLocation(location)"><i class="fas fa-trash"></i></div>
-                        <div class="mr-3 cursor-pointer" @click="editLocation(location)"><i class="fas fa-pen"></i></div>
+                        <div class="mr-3 cursor-pointer" @click="removeLocation(location)"><i class="fas fa-trash"></i>
+                        </div>
+                        <div class="mr-3 cursor-pointer" @click="editLocation(location)"><i class="fas fa-pen"></i>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -25,11 +28,15 @@
         data() {
             return {
                 loading: true,
+                locationName: '',
+                locationId: null
             }
         },
 
         computed: {
             locations() {
+                this.locationName = ''
+                this.locationId = null
                 return this.$store.getters['locations/all']
             }
         },
@@ -42,11 +49,40 @@
 
         methods: {
             addLocation() {
-                return this.$router.push('/locations/add')
+                iziToast.info({
+                    timeout: false,
+                    overlay: true,
+                    displayMode: 'once',
+                    id: 'inputs',
+                    color: 'white',
+                    zindex: 999,
+                    title: 'Inputs',
+                    message: 'Add a new location',
+                    position: 'center',
+                    drag: false,
+                    inputs: [
+                        ['<input type="text" value="' + this.locationName + '">', 'change', function (instance, toast, input, e) {
+                            this.locationName = input.value
+                        }.bind(this)],
+                    ],
+                    buttons: [
+                        ['<button class="btn btn-primary"><b>Save</b></button>', function (instance, toast) {
+                            this.saveNewLocation()
+                            instance.hide({transitionOut: 'fadeOut'}, toast, 'button');
+                        }.bind(this), true],
+                        ['<button class="btn btn-secondary">Cancel</button>', function (instance, toast) {
+                            instance.hide({transitionOut: 'fadeOut'}, toast, 'button');
+                        }],
+                    ],
+                });
+            },
+            saveNewLocation() {
+                this.$store.dispatch('locations/save', {id: this.locationId, name: this.locationName})
             },
             editLocation(location) {
-                this.$store.commit('locations/setCurrent', location)
-                this.$router.push('locations/add')
+                this.locationId = location.id
+                this.locationName = location.name
+                this.addLocation()
             },
             removeLocation(location) {
                 this.$store.dispatch('locations/delete', location.id).then(() => {

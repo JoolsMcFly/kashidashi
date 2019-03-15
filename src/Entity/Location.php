@@ -20,13 +20,13 @@ class Location
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"list"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"list"})
      */
     private $name;
 

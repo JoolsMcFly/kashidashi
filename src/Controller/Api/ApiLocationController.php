@@ -82,7 +82,7 @@ class ApiLocationController extends AbstractController
      */
     public function delete(Location $location)
     {
-        if (!$this->getLocation()->isAdmin() && $location->isAdmin()) {
+        if (!$this->getUser()->isAdmin()) {
             return $this->json('Insufficient privileges to delete this location.', Response::HTTP_FORBIDDEN);
         }
 

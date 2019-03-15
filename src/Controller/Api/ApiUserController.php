@@ -90,6 +90,10 @@ class ApiUserController extends AbstractController
      */
     public function delete(User $user)
     {
+        if (!$this->getUser()->isAdmin() && $user->isAdmin()) {
+            return $this->json('Insufficient privileges to delete this user.', Response::HTTP_FORBIDDEN);
+        }
+
         $manager = $this->getDoctrine()->getManager();
         $manager->remove($user);
         $manager->flush();

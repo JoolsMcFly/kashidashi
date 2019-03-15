@@ -234,4 +234,12 @@ class User implements EncoderAwareInterface, UserInterface
     public function eraseCredentials()
     {
     }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return in_array('ROLE_USER', $this->getRoles());
+    }
 }

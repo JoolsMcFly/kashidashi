@@ -23,6 +23,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAdmin">
             <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
             <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i></router-link>
+            <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i></router-link>
         </nav>
     </div>
 </template>

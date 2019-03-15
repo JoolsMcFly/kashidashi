@@ -9,7 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\LocationRepository")
  * @Table(indexes={
  *     @Index(name="location_name", columns={"name"}),
  * })

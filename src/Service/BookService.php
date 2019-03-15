@@ -48,6 +48,7 @@ final class BookService
                     'title' => $book->getTitle(),
                     'code' => $book->getCode(),
                     'stats' => $book->getStats(),
+                    'location' => $book->getLocation() ? $book->getLocation()->getName() : null
                 ],
                 'type' => 'book',
             ];

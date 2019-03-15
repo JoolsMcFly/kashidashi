@@ -240,6 +240,6 @@ class User implements EncoderAwareInterface, UserInterface
      */
     public function isAdmin()
     {
-        return in_array('ROLE_USER', $this->getRoles());
+        return in_array('ROLE_ADMIN', $this->getRoles());
     }
 }

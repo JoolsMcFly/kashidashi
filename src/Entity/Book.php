@@ -41,6 +41,13 @@ class Book
     private $code;
 
     /**
+     * @var Location
+     * @ORM\ManyToOne(targetEntity="Location")
+     * @Serializer\Groups({"details"})
+     */
+    private $location;
+
+    /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      */
@@ -205,5 +212,24 @@ class Book
         $stats['loansDuration'] += $days;
 
         $this->setStats($stats);
+    }
+
+    /**
+     * @return Location
+     */
+    public function getLocation(): ?Location
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param Location $location
+     * @return Book
+     */
+    public function setLocation(Location $location): Book
+    {
+        $this->location = $location;
+
+        return $this;
     }
 }

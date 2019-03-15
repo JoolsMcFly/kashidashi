@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Query\QueryException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserRepository extends ServiceEntityRepository

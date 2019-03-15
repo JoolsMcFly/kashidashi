@@ -12,6 +12,7 @@ import Login from '../views/Login';
 import Users from '../views/Users';
 import UserForm from '../views/UserForm';
 import store from '../store/main';
+import Locations from "../views/Locations";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,7 @@ let router = new VueRouter({
         {path: '/borrowers-upload', component: BorrowerUpload, meta: {requiresAuth: true}},
         {path: '/inventory', component: Inventory, meta: {requiresAuth: true}},
         {path: '/inventory-details', component: InventoryDetails, meta: {requiresAuth: true}},
+        {path: '/locations', component: Locations, meta: {requiresAuth: true}},
         {path: '*', redirect: '/home'}
     ],
 });

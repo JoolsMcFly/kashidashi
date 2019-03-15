@@ -6,6 +6,9 @@
                     <span class="float-right ml-2 badge badge-primary">{{ book.code }}</span>
                     <span>{{ book.title }}</span>
                 </div>
+                <div class="card-body">
+                    <span><i class="fas fa-store mr-2"></i>{{ book.location !== null ? book.location : 'Unknown' }}</span>
+                </div>
                 <ul v-if="activeLoans.length > 0" class="list-group list-group-flush">
                     <li v-for="loan in activeLoans" class="list-group-item">
                         <p><i class="fas fa-user"></i> {{ loan.borrower.surname }} {{ loan.borrower.firstname }}</p>

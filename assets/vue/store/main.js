@@ -9,6 +9,7 @@ import StatsModule from './stats'
 import ErrorsModule from './errors'
 import SecurityModule from './security'
 import UsersModule from './users'
+import LocationsModule from './locations'
 
 Vue.use(Vuex)
 
@@ -23,5 +24,6 @@ export default new Vuex.Store({
         errors: ErrorsModule,
         security: SecurityModule,
         users: UsersModule,
+        locations: LocationsModule,
     }
 })

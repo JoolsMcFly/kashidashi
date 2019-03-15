@@ -48,7 +48,7 @@
                 surname: '',
                 email: '',
                 password: '',
-                role: '',
+                role: this.isAdmin ? '' : 'ROLE_USER',
             }
         },
 
@@ -74,7 +74,9 @@
             for (let prop in this.currentUser) {
                 this[prop] = this.currentUser[prop]
             }
-            this.role = JSON.parse(this.currentUser.roles)[0]
+            if (this.currentUser !== null) {
+                this.role = JSON.parse(this.currentUser.roles)[0]
+            }
         }
     }
 </script>

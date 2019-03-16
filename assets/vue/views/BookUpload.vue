@@ -14,6 +14,12 @@
                     Uploading file...
                 </p>
             </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="truncate-books" v-model="truncate">
+                <label class="form-check-label" for="truncate-books">
+                    Remove existing books not in file?
+                </label>
+            </div>
             <div v-show="Boolean(book)">
                 Click to upload <span v-text="fileName"></span>
                 <button type="button" @click="upload()" class="btn btn-primary" :disabled="!Boolean(book)">
@@ -37,6 +43,7 @@
                 isInitial: true,
                 isSaving: false,
                 book: null,
+                truncate: false
             }
         },
 
@@ -61,6 +68,7 @@
             upload() {
                 let data = new FormData()
                 data.append('books', this.book)
+                data.append('truncate', this.truncate)
                 this.isSaving = true
                 axios
                     .post(

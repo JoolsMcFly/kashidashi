@@ -6,8 +6,10 @@ use App\Entity\Book;
 use App\Entity\Location;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\ORMException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,12 +30,19 @@ class ApiLocationController extends AbstractController
     private $serializer;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * ApiBorrowerController constructor.
      * @param SerializerInterface $serializer
+     * @param LoggerInterface $logger
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, LoggerInterface $logger)
     {
         $this->serializer = $serializer;
+        $this->logger = $logger;
     }
 
     /**
@@ -66,6 +75,8 @@ class ApiLocationController extends AbstractController
         } catch (UniqueConstraintViolationException $e) {
             return $this->json('A location with the same name already exists.', Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
+            $this->logger->error("Error saving a location\n$e\n\n");
+
             return $this->json('An error occurred when creating the location.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -87,11 +98,18 @@ class ApiLocationController extends AbstractController
             return $this->json('Insufficient privileges to delete this location.', Response::HTTP_FORBIDDEN);
         }
 
-        $manager = $this->getDoctrine()->getManager();
-        $this->getDoctrine()->getRepository(Book::class)->removeLocation($location);
-        $manager->remove($location);
-        $manager->flush();
+        try {
+            $this->getDoctrine()->getRepository(Book::class)->removeLocation($location);
 
-        return $this->json('Location successfully deleted.', Response::HTTP_OK);
+            return $this->json('Location successfully deleted.', Response::HTTP_OK);
+        } catch (ORMException $e) {
+            $this->logger->error("Error deleting {$location->getName()}\n$e\n\n");
+
+            return $this->json(
+                "An error occurred when deleting location {$location->getName()}.",
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
     }
 }

@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -77,18 +78,21 @@ class BookRepository extends ServiceEntityRepository
 
     /**
      * @param Location $location
-     * @return mixed
+     * @throws ORMException
      */
     public function removeLocation(Location $location)
     {
-        return $this->createQueryBuilder('b')
+        $this->createQueryBuilder('b')
             ->update(Book::class, 'book')
             ->set('book.location', 'null')
             ->where('book.location = :location')
             ->setParameter('location', $location)
             ->getQuery()
             ->getResult()
-            ;
+        ;
 
+        $manager = $this->getEntityManager();
+        $manager->remove($location);
+        $manager->flush();
     }
 }

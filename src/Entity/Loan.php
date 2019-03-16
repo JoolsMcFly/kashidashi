@@ -21,7 +21,7 @@ class Loan
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="loans", fetch="EAGER")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="cascade")
      * @Serializer\Groups("details")
      */
     private $book;

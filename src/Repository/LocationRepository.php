@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Book;
 use App\Entity\Location;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -44,5 +46,25 @@ class LocationRepository extends ServiceEntityRepository
         $manager->flush();
 
         return $location;
+    }
+
+    /**
+     * @param Location $location
+     * @throws ORMException
+     */
+    public function removeLocation(Location $location)
+    {
+        $this->createQueryBuilder('b')
+            ->update(Book::class, 'book')
+            ->set('book.location', 'null')
+            ->where('book.location = :location')
+            ->setParameter('location', $location)
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $manager = $this->getEntityManager();
+        $manager->remove($location);
+        $manager->flush();
     }
 }

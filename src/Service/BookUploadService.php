@@ -4,7 +4,11 @@ namespace App\Service;
 
 use App\DataStructures\UploadStats;
 use App\Entity\Book;
+use App\Entity\Location;
+use App\Repository\BookRepository;
+use App\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -16,7 +20,7 @@ final class BookUploadService
     private $manager;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var BookRepository
      */
     private $bookRepo;
 
@@ -26,74 +30,157 @@ final class BookUploadService
     private $stats;
 
     /**
+     * @var Location[]
+     */
+    private $locations = [];
+
+    /**
+     * @var LocationRepository
+     */
+    private $locationRepo;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var Book[]
+     */
+    private $books;
+
+    /**
      * UserService constructor.
      * @param EntityManagerInterface $manager
+     * @param LoggerInterface $logger
      */
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger)
     {
         $this->manager = $manager;
         $this->bookRepo = $this->manager->getRepository(Book::class);
+        $this->locationRepo = $this->manager->getRepository(Location::class);
         $this->stats = new UploadStats();
+        $this->logger = $logger;
     }
 
     /**
      * @param UploadedFile $file
+     * @param bool $removeNotInList
      * @return UploadStats
-     * @throws FileException
-     * @throws \Exception
      */
-    public function processFile(UploadedFile $file)
+    public function processFile(UploadedFile $file, bool $removeNotInList = false)
     {
-        $handle = fopen($file->getPathname(), "r");
-        if (!$handle) {
-            throw new FileException("Cannot open CSV file.");
-        }
+        $this->loadAllBooks();
+        $uploadedBookCodes = [];
+        try {
+            $handle = fopen($file->getPathname(), "r");
+            if (!$handle) {
+                throw new FileException("Cannot open CSV file.");
+            }
+            $delimiter = ',';
+            $length = 1024;
+            while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
+                if ((int)($bookDetails[0]) === 0 || empty($bookDetails[2])) {
+                    continue;
+                }
 
-        $delimiter = ';';
-        $length = 1024;
-        while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
-            if (count($bookDetails) !== 2 || (int)($bookDetails[0]) === 0) {
-                continue;
+                $uploadedBookCodes[] = $bookDetails[0];
+                $book = $this->findOrCreateBook($bookDetails[0]);
+                $this->updateBookDetails($bookDetails, $book);
+                $this->manager->persist($book);
             }
 
-            if ($this->bookExists($bookDetails[0])) {
-                $this->stats->addExisting();
-                continue;
+            if ($removeNotInList) {
+                $this->bookRepo->removeNotInCodeList($uploadedBookCodes);
             }
-
-            $this->addBook($bookDetails);
+            $this->manager->flush();
+        } catch (\Exception $e) {
+            $this->logger->error("Error uploading book file\n$e\n\n");
         }
-        $this->manager->flush();
-        fclose($handle);
+        if ($handle) {
+            fclose($handle);
+        }
 
         return $this->stats;
     }
 
     /**
      * @param int $bookCode
-     * @return bool
+     * @return Book
+     * @throws \Exception
      */
-    private function bookExists(int $bookCode)
+    private function findOrCreateBook(int $bookCode): Book
     {
-        $book = $this->bookRepo->findOneBy(['code' => $bookCode]);
+        if (isset($this->books[$bookCode])) {
+            return $this->books[$bookCode];
+        }
 
-        return !empty($book);
+        $book = new Book();
+        $book->setCreatedAt(new \DateTime());
+
+        return $book;
     }
 
     /**
      * @param array $bookDetails
+     * @param Book $book
      * @throws \Exception
      */
-    private function addBook(array $bookDetails): void
+    private function updateBookDetails(array $bookDetails, Book $book): void
     {
-        $book = new Book();
+        $location = $this->getLocation($bookDetails[1]);
         $book
             ->setCode($bookDetails[0])
-            ->setTitle($bookDetails[1])
-            ->setCreatedAt(new \DateTime())
+            ->setLocation($location)
+            ->setTitle($bookDetails[2])
         ;
         $this->manager->persist($book);
 
         $this->stats->addUploaded();
+    }
+
+    /**
+     * @param string $location
+     * @return Location
+     * @throws \Exception
+     */
+    private function getLocation(string $location)
+    {
+        $location = trim($location);
+        if (empty($location)) {
+            return null;
+        }
+        if (!isset($this->locations[$location])) {
+            $this->locations[$location] = $this->findOrCreateLocationByName($location);
+        }
+
+        return $this->locations[$location];
+    }
+
+    /**
+     * @param string $locationName
+     * @return Location
+     * @throws \Exception
+     */
+    private function findOrCreateLocationByName(string $locationName)
+    {
+        if ($location = $this->locationRepo->findOneByName($locationName)) {
+            return $location;
+        }
+
+        $location = new Location();
+        $location
+            ->setName($locationName)
+            ->setCreatedAt(new \DateTime())
+        ;
+
+        $this->manager->persist($location);
+
+        return $location;
+    }
+
+    private function loadAllBooks()
+    {
+        $this->books = $this->bookRepo->groupByCode();
     }
 }

@@ -3,10 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Loan;
+use App\Entity\Location;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -60,6 +63,31 @@ class BookRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
             ->getQuery()
             ->getResult()
-        ;
+            ;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function groupByCode()
+    {
+        return $this->createQueryBuilder('b', 'b.code')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @param array $codes
+     */
+    public function removeNotInCodeList(array $codes)
+    {
+        $this->createQueryBuilder('books')
+            ->delete(Book::class, 'b')
+            ->where('b.code NOT IN (:codes)')
+            ->setParameter('codes', $codes, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getResult()
+            ;
     }
 }

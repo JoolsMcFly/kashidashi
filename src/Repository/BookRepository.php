@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Location;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
@@ -72,5 +73,22 @@ class BookRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }
+
+    /**
+     * @param Location $location
+     * @return mixed
+     */
+    public function removeLocation(Location $location)
+    {
+        return $this->createQueryBuilder('b')
+            ->update(Book::class, 'book')
+            ->set('book.location', 'null')
+            ->where('book.location = :location')
+            ->setParameter('location', $location)
+            ->getQuery()
+            ->getResult()
+            ;
+
     }
 }

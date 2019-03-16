@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Book;
 use App\Entity\Location;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityNotFoundException;
@@ -87,6 +88,7 @@ class ApiLocationController extends AbstractController
         }
 
         $manager = $this->getDoctrine()->getManager();
+        $this->getDoctrine()->getRepository(Book::class)->removeLocation($location);
         $manager->remove($location);
         $manager->flush();
 

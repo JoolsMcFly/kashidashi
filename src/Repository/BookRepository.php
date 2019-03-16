@@ -60,6 +60,17 @@ class BookRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
             ->getQuery()
             ->getResult()
-        ;
+            ;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function groupByCode()
+    {
+        return $this->createQueryBuilder('b', 'b.code')
+            ->getQuery()
+            ->getResult()
+            ;
     }
 }

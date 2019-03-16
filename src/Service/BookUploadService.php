@@ -5,6 +5,7 @@ namespace App\Service;
 use App\DataStructures\UploadStats;
 use App\Entity\Book;
 use App\Entity\Location;
+use App\Repository\BookRepository;
 use App\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,7 +20,7 @@ final class BookUploadService
     private $manager;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var BookRepository
      */
     private $bookRepo;
 
@@ -44,6 +45,11 @@ final class BookUploadService
     private $logger;
 
     /**
+     * @var Book[]
+     */
+    private $books;
+
+    /**
      * UserService constructor.
      * @param EntityManagerInterface $manager
      * @param LoggerInterface $logger
@@ -65,6 +71,7 @@ final class BookUploadService
      */
     public function processFile(UploadedFile $file)
     {
+        $this->loadAllBooks();
         try {
             $handle = fopen($file->getPathname(), "r");
             if (!$handle) {
@@ -95,16 +102,18 @@ final class BookUploadService
     /**
      * @param int $bookCode
      * @return Book
+     * @throws \Exception
      */
     private function findOrCreateBook(int $bookCode): Book
     {
-        $book = $this->bookRepo->findOneBy(['code' => $bookCode]);
-
-        if ($book) {
-            return $book;
+        if (isset($this->books[$bookCode])) {
+            return $this->books[$bookCode];
         }
 
-        return new Book();
+        $book = new Book();
+        $book->setCreatedAt(new \DateTime());
+
+        return $book;
     }
 
     /**
@@ -119,7 +128,6 @@ final class BookUploadService
             ->setCode($bookDetails[0])
             ->setLocation($location)
             ->setTitle($bookDetails[2])
-            ->setCreatedAt(new \DateTime())
         ;
         $this->manager->persist($book);
 
@@ -164,5 +172,10 @@ final class BookUploadService
         $this->manager->persist($location);
 
         return $location;
+    }
+
+    private function loadAllBooks()
+    {
+        $this->books = $this->bookRepo->groupByCode();
     }
 }

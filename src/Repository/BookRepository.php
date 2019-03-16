@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Loan;
 use App\Entity\Location;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -77,22 +78,16 @@ class BookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Location $location
-     * @throws ORMException
+     * @param array $codes
      */
-    public function removeLocation(Location $location)
+    public function removeNotInCodeList(array $codes)
     {
-        $this->createQueryBuilder('b')
-            ->update(Book::class, 'book')
-            ->set('book.location', 'null')
-            ->where('book.location = :location')
-            ->setParameter('location', $location)
+        $this->createQueryBuilder('books')
+            ->delete(Book::class, 'b')
+            ->where('b.code NOT IN (:codes)')
+            ->setParameter('codes', $codes, Connection::PARAM_INT_ARRAY)
             ->getQuery()
             ->getResult()
-        ;
-
-        $manager = $this->getEntityManager();
-        $manager->remove($location);
-        $manager->flush();
+            ;
     }
 }

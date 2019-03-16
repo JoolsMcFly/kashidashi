@@ -27,7 +27,7 @@ class ApiBookUploadController extends AbstractController
     {
         foreach ($request->files as $file) {
             try {
-                $bookUploadService->processFile($file);
+                $bookUploadService->processFile($file, true);
 
                 return $this->json(null);
             } catch (FileException $e) {

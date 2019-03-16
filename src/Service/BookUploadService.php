@@ -65,13 +65,13 @@ final class BookUploadService
 
     /**
      * @param UploadedFile $file
+     * @param bool $removeNotInList
      * @return UploadStats
-     * @throws FileException
-     * @throws \Exception
      */
-    public function processFile(UploadedFile $file)
+    public function processFile(UploadedFile $file, bool $removeNotInList = false)
     {
         $this->loadAllBooks();
+        $uploadedBookCodes = [];
         try {
             $handle = fopen($file->getPathname(), "r");
             if (!$handle) {
@@ -84,9 +84,14 @@ final class BookUploadService
                     continue;
                 }
 
+                $uploadedBookCodes[] = $bookDetails[0];
                 $book = $this->findOrCreateBook($bookDetails[0]);
                 $this->updateBookDetails($bookDetails, $book);
                 $this->manager->persist($book);
+            }
+
+            if ($removeNotInList) {
+                $this->bookRepo->removeNotInCodeList($uploadedBookCodes);
             }
             $this->manager->flush();
         } catch (\Exception $e) {

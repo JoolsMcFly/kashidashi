@@ -4,7 +4,10 @@ namespace App\Service;
 
 use App\DataStructures\UploadStats;
 use App\Entity\Book;
+use App\Entity\Location;
+use App\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -26,14 +29,32 @@ final class BookUploadService
     private $stats;
 
     /**
+     * @var Location[]
+     */
+    private $locations = [];
+
+    /**
+     * @var LocationRepository
+     */
+    private $locationRepo;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * UserService constructor.
      * @param EntityManagerInterface $manager
+     * @param LoggerInterface $logger
      */
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger)
     {
         $this->manager = $manager;
         $this->bookRepo = $this->manager->getRepository(Book::class);
+        $this->locationRepo = $this->manager->getRepository(Location::class);
         $this->stats = new UploadStats();
+        $this->logger = $logger;
     }
 
     /**
@@ -44,56 +65,104 @@ final class BookUploadService
      */
     public function processFile(UploadedFile $file)
     {
-        $handle = fopen($file->getPathname(), "r");
-        if (!$handle) {
-            throw new FileException("Cannot open CSV file.");
-        }
-
-        $delimiter = ';';
-        $length = 1024;
-        while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
-            if (count($bookDetails) !== 2 || (int)($bookDetails[0]) === 0) {
-                continue;
+        try {
+            $handle = fopen($file->getPathname(), "r");
+            if (!$handle) {
+                throw new FileException("Cannot open CSV file.");
             }
+            $delimiter = ',';
+            $length = 1024;
+            while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
+                if ((int)($bookDetails[0]) === 0 || empty($bookDetails[2])) {
+                    continue;
+                }
 
-            if ($this->bookExists($bookDetails[0])) {
-                $this->stats->addExisting();
-                continue;
+                $book = $this->findOrCreateBook($bookDetails[0]);
+                $this->updateBookDetails($bookDetails, $book);
+                $this->manager->persist($book);
             }
-
-            $this->addBook($bookDetails);
+            $this->manager->flush();
+        } catch (\Exception $e) {
+            $this->logger->error("Error uploading book file\n$e\n\n");
         }
-        $this->manager->flush();
-        fclose($handle);
+        if ($handle) {
+            fclose($handle);
+        }
 
         return $this->stats;
     }
 
     /**
      * @param int $bookCode
-     * @return bool
+     * @return Book
      */
-    private function bookExists(int $bookCode)
+    private function findOrCreateBook(int $bookCode): Book
     {
         $book = $this->bookRepo->findOneBy(['code' => $bookCode]);
 
-        return !empty($book);
+        if ($book) {
+            return $book;
+        }
+
+        return new Book();
     }
 
     /**
      * @param array $bookDetails
+     * @param Book $book
      * @throws \Exception
      */
-    private function addBook(array $bookDetails): void
+    private function updateBookDetails(array $bookDetails, Book $book): void
     {
-        $book = new Book();
+        $location = $this->getLocation($bookDetails[1]);
         $book
             ->setCode($bookDetails[0])
-            ->setTitle($bookDetails[1])
+            ->setLocation($location)
+            ->setTitle($bookDetails[2])
             ->setCreatedAt(new \DateTime())
         ;
         $this->manager->persist($book);
 
         $this->stats->addUploaded();
+    }
+
+    /**
+     * @param string $location
+     * @return Location
+     * @throws \Exception
+     */
+    private function getLocation(string $location)
+    {
+        $location = trim($location);
+        if (empty($location)) {
+            return null;
+        }
+        if (!isset($this->locations[$location])) {
+            $this->locations[$location] = $this->findOrCreateLocationByName($location);
+        }
+
+        return $this->locations[$location];
+    }
+
+    /**
+     * @param string $locationName
+     * @return Location
+     * @throws \Exception
+     */
+    private function findOrCreateLocationByName(string $locationName)
+    {
+        if ($location = $this->locationRepo->findOneByName($locationName)) {
+            return $location;
+        }
+
+        $location = new Location();
+        $location
+            ->setName($locationName)
+            ->setCreatedAt(new \DateTime())
+        ;
+
+        $this->manager->persist($location);
+
+        return $location;
     }
 }

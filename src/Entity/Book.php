@@ -69,7 +69,7 @@ class Book
     public function __construct()
     {
         $this->loans = new ArrayCollection();
-        $this->stats = ['loansCount' => 0, 'loansDuration' => 0];
+        $this->stats = json_encode(['loansCount' => 0, 'loansDuration' => 0]);
     }
 
     /**
@@ -226,7 +226,7 @@ class Book
      * @param Location $location
      * @return Book
      */
-    public function setLocation(Location $location): Book
+    public function setLocation(?Location $location): Book
     {
         $this->location = $location;
 

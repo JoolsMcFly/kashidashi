@@ -3,21 +3,46 @@
         <div class="row">
             <div class="col">
                 <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
-                    <router-link class="navbar-brand" to="/home"><i class="fas fa-home"></i></router-link>
-                    <vue-bootstrap-typeahead
-                        ref="typeahead"
-                        v-model="query"
-                        :data="suggestions"
-                        :serializer="s => s.text"
-                        placeholder="book code or person name"
-                        @hit="handleSuggestion($event)"
-                        :minMatchingChars="0"
-                    />
-                    <router-link class="ml-1 ml-sm-3 navbar-brand" to="/inventory"><i class="fas fa-book"></i>
-                    </router-link>
-                    <router-link class="ml-1 ml-sm-3 navbar-brand" to="/users"><i class="fas fa-user"></i></router-link>
-                    <div class="nav-item" v-if="isAuthenticated">
-                        <a class="nav-link" href="/api/security/logout"><i class="fas fa-sign-out-alt fs-22px"></i></a>
+                    <div class="navbar-brand">
+                        <vue-bootstrap-typeahead
+                            ref="typeahead"
+                            v-model="query"
+                            :data="suggestions"
+                            :serializer="s => s.text"
+                            placeholder="book code or person name"
+                            @hit="handleSuggestion($event)"
+                            :minMatchingChars="0"
+                        />
+                    </div>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                            <li class="nav-item">
+                                <router-link class="navbar-brand" to="/home">
+                                    <i class="fas fa-home d-xs-block d-lg-none mr-2"></i><span>Home</span>
+                                </router-link>
+                            </li>
+                            <li class="nav-item active">
+                                <router-link class="ml-1 ml-lg-3 navbar-brand" to="/inventory">
+                                    <i class="fas fa-book d-xs-block d-lg-none mr-2"></i><span>Inventories</span>
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link class="ml-1 ml-lg-3 navbar-brand" to="/users">
+                                    <i class="fas fa-user d-xs-block d-lg-none mr-2"></i><span>Users</span>
+                                </router-link>
+                            </li>
+                            <li class="nav-item" v-if="isAuthenticated">
+                                <a class="navbar-brand" href="/api/security/logout">
+                                    <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i><span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
             </div>

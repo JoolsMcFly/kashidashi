@@ -69,7 +69,7 @@ class BookRepository extends ServiceEntityRepository
     /**
      * @return mixed
      */
-    public function groupByCode()
+    public function indexByCode()
     {
         return $this->createQueryBuilder('b', 'b.code')
             ->getQuery()

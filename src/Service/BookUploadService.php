@@ -181,6 +181,6 @@ final class BookUploadService
 
     private function loadAllBooks()
     {
-        $this->books = $this->bookRepo->groupByCode();
+        $this->books = $this->bookRepo->indexByCode();
     }
 }

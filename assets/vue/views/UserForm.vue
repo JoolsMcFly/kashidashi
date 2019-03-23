@@ -34,6 +34,7 @@
             <input v-else type="hidden" value="ROLE_USER" v-model="role"/>
             <div class="form-group mt-3">
                 <button @click="saveUser" type="submit" class="btn btn-primary">Save</button>
+                <button @click="cancel" type="submit" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
@@ -58,6 +59,10 @@
             },
             saveUser() {
                 this.$store.dispatch('users/save', this.$data).then(() => this.$router.push('/users'))
+            },
+            cancel() {
+                this.$store.commit('users/setCurrent', null)
+                this.$router.push('/users')
             }
         },
 

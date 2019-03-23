@@ -25,7 +25,7 @@
                         <li v-for="loan in loans" class="list-group-item">
                             <loan
                                 :loan="loan"
-                                @clicked="endLoan(loan)"
+                                @end-loan="endLoan(loan)"
                             ></loan>
                         </li>
                     </ul>

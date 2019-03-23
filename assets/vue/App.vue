@@ -1,30 +1,37 @@
 <template>
-    <div class="container-fluid">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
-            <router-link class="navbar-brand" to="/home"><i class="fas fa-home"></i></router-link>
-            <vue-bootstrap-typeahead
-                ref="typeahead"
-                v-model="query"
-                :data="suggestions"
-                :serializer="s => s.text"
-                placeholder="book code or person name"
-                @hit="handleSuggestion($event)"
-                :minMatchingChars="0"
-            />
-            <router-link class="ml-1 ml-sm-3 navbar-brand" to="/inventory"><i class="fas fa-book"></i></router-link>
-            <router-link class="ml-1 ml-sm-3 navbar-brand" to="/users"><i class="fas fa-user"></i></router-link>
-            <div class="nav-item" v-if="isAuthenticated">
-                <a class="nav-link" href="/api/security/logout"><i class="fas fa-sign-out-alt fs-22px"></i></a>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
+                    <router-link class="navbar-brand" to="/home"><i class="fas fa-home"></i></router-link>
+                    <vue-bootstrap-typeahead
+                        ref="typeahead"
+                        v-model="query"
+                        :data="suggestions"
+                        :serializer="s => s.text"
+                        placeholder="book code or person name"
+                        @hit="handleSuggestion($event)"
+                        :minMatchingChars="0"
+                    />
+                    <router-link class="ml-1 ml-sm-3 navbar-brand" to="/inventory"><i class="fas fa-book"></i>
+                    </router-link>
+                    <router-link class="ml-1 ml-sm-3 navbar-brand" to="/users"><i class="fas fa-user"></i></router-link>
+                    <div class="nav-item" v-if="isAuthenticated">
+                        <a class="nav-link" href="/api/security/logout"><i class="fas fa-sign-out-alt fs-22px"></i></a>
+                    </div>
+                </nav>
             </div>
-        </nav>
+        </div>
 
         <router-view></router-view>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAdmin">
-            <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
-            <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i></router-link>
-            <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i></router-link>
-        </nav>
+        <div class="row">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAdmin">
+                <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
+                <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i></router-link>
+                <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i></router-link>
+            </nav>
+        </div>
     </div>
 </template>
 

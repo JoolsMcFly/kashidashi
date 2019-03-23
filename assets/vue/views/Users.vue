@@ -1,11 +1,12 @@
 <template>
+    <div class="col">
     <div class="card mt-2">
         <div class="card-header">Users</div>
         <div class="card-body" v-if="!loading">
             <p v-if="users.length === 0">No users.</p>
             <ul class="list-group list-group-flush" v-else>
                 <li v-for="user in users" class="list-group-item d-flex align-items-center justify-content-between">
-                    <div class="">
+                    <div @click="editUser(user)" class="cursor-pointer">
                         {{ user.firstname }} {{user.surname }}
                         <span class="badge badge-primary ml-2">{{ getdisplayableRole(user)}}</span>
                     </div>
@@ -18,6 +19,7 @@
             <p @click="addUser" class="cursor-pointer"><i class="fas fa-plus mr-2 mt-2"></i>Add one</p>
         </div>
         <div class="card-body" v-else><p>loading...</p></div>
+    </div>
     </div>
 </template>
 

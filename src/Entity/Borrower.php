@@ -204,4 +204,12 @@ class Borrower
 
         $this->setStats($stats);
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->surname . ' ' . $this->firstname;
+    }
 }

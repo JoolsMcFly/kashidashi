@@ -48,6 +48,12 @@ class Loan
     private $stoppedAt;
 
     /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     */
+    private $creator;
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -138,5 +144,24 @@ class Loan
     public function duration()
     {
         return (new \DateTime())->diff($this->startedAt, true)->format('%a');
+    }
+
+    /**
+     * @return User
+     */
+    public function getCreator(): User
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param User $creator
+     * @return Loan
+     */
+    public function setCreator(User $creator): Loan
+    {
+        $this->creator = $creator;
+
+        return $this;
     }
 }

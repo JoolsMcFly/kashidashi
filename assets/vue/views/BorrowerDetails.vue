@@ -79,6 +79,7 @@
 
         methods: {
             saveLoan(loan) {
+                this.bookCode = ''
                 this.$store.dispatch('activeBorrower/borrow', {
                     code: loan.item.code,
                     borrower: this.$store.getters['activeBorrower/current']

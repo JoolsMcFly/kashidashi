@@ -15,9 +15,8 @@ class BorrowersFixtures extends Fixture
         for ($i = 0; $i < 300; $i++) {
             $borrower = new Borrower();
             $borrower
-                ->setEmail($faker->email)
-                ->setFirstname($faker->firstName)
-                ->setSurname($faker->lastName)
+                ->setFirstname($faker->firstKanaName)
+                ->setSurname($faker->lastKanaName)
             ;
             $manager->persist($borrower);
         }

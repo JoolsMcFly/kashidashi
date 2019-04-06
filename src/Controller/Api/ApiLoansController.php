@@ -7,7 +7,6 @@ use App\Entity\Borrower;
 use App\Entity\Loan;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,22 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
  * @package App\Controller\Api
  * @Route("/api/loans")
  */
-class ApiLoansController extends AbstractController
+class ApiLoansController extends ApiBaseController
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * ApiBorrowerController constructor.
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
     /**
      * @Route("/by-user/{borrower}", methods={"GET"})
      * @param Borrower $borrower
@@ -49,7 +34,7 @@ class ApiLoansController extends AbstractController
         $context = (new SerializationContext())->setGroups(['details']);
 
         return new JsonResponse(
-            $this->serializer->serialize($loans, 'json', $context),
+            $this->serialize($loans, $context),
             Response::HTTP_OK,
             [],
             true
@@ -68,7 +53,7 @@ class ApiLoansController extends AbstractController
         $context = (new SerializationContext())->setGroups(['details']);
 
         return new JsonResponse(
-            $this->serializer->serialize($loans, 'json', $context),
+            $this->serialize($loans, $context),
             Response::HTTP_OK,
             [],
             true
@@ -96,12 +81,13 @@ class ApiLoansController extends AbstractController
             ])
             ;
             if (!empty($existingLoan)) {
-                return $this->json('Book already in loan.', Response::HTTP_CONFLICT);
+                return $this->json("Book already borrowed by {$existingLoan->getBorrower()}.", Response::HTTP_CONFLICT);
             }
             $loan = new Loan();
             $loan->setBorrower($borrower)
                 ->setBook($book)
                 ->setStartedAt(new \DateTime())
+                ->setCreator($this->getUser())
             ;
             $borrower->incLoansCount();
             $book->incLoansCount();
@@ -112,7 +98,7 @@ class ApiLoansController extends AbstractController
             $context = (new SerializationContext())->setGroups(['details']);
 
             return new JsonResponse(
-                $this->serializer->serialize($loan, 'json', $context),
+                $this->serialize($loan, $context),
                 Response::HTTP_OK,
                 [],
                 true

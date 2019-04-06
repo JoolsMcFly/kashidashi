@@ -16,22 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
  * @package App\Controller\Api
  * @Route("/api/inventory")
  */
-class ApiInventoryController extends AbstractController
+class ApiInventoryController extends ApiBaseController
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * ApiBorrowerController constructor.
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
     /**
      * @Route("", methods={"GET"})
      * @return JsonResponse
@@ -45,12 +31,7 @@ class ApiInventoryController extends AbstractController
 
         $context = (new SerializationContext())->setGroups(['details']);
 
-        return new JsonResponse(
-            $this->serializer->serialize($inventories, 'json', $context),
-            Response::HTTP_CREATED,
-            [],
-            true
-        );
+        return new JsonResponse($this->serialize($inventories, $context), Response::HTTP_CREATED, [], true);
     }
 
     /**
@@ -63,12 +44,7 @@ class ApiInventoryController extends AbstractController
         $books = $this->getDoctrine()->getRepository(Book::class)->getMissingBooks($inventory->getDetails()['missing']);
         $context = (new SerializationContext())->setGroups(['details']);
 
-        return new JsonResponse(
-            $this->serializer->serialize($books, 'json', $context),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        return new JsonResponse($this->serialize($books, $context), Response::HTTP_OK, [], true);
     }
 
     /**
@@ -91,12 +67,7 @@ class ApiInventoryController extends AbstractController
             $manager->flush();
             $context = (new SerializationContext())->setGroups(['details']);
 
-            return new JsonResponse(
-                $this->serializer->serialize($inventory, 'json', $context),
-                Response::HTTP_CREATED,
-                [],
-                true
-            );
+            return new JsonResponse($this->serialize($inventory, $context), Response::HTTP_CREATED, [], true);
         } catch (\Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -118,6 +89,10 @@ class ApiInventoryController extends AbstractController
             }
 
             $details = $inventory->getDetails();
+            if (in_array($bookCode, $details['returned'])) {
+                return $this->json("Book code '$bookCode' already added..", Response::HTTP_BAD_REQUEST);
+            }
+
             $details['returned'][] = $bookCode;
             $inventory
                 ->setDetails($details)
@@ -130,9 +105,9 @@ class ApiInventoryController extends AbstractController
             $context = (new SerializationContext())->setGroups(['details']);
 
             $responseData = [
-                'inventory' => json_decode($this->serializer->serialize($inventory, 'json', $context)),
+                'inventory' => json_decode($this->serialize($inventory, $context)),
                 'book' => json_decode(
-                    $this->serializer->serialize($book, 'json', (new SerializationContext())->setGroups(['basic']))
+                    $this->serialize($book, (new SerializationContext())->setGroups(['basic']))
                 ),
             ];
 
@@ -165,13 +140,7 @@ class ApiInventoryController extends AbstractController
 
         $context = (new SerializationContext())->setGroups(['details']);
 
-        return new JsonResponse(
-            $this->serializer->serialize($inventory, 'json', $context),
-            Response::HTTP_ACCEPTED,
-            [],
-            true
-        );
-
+        return new JsonResponse($this->serialize($inventory, $context), Response::HTTP_ACCEPTED, [], true);
     }
 
     /**

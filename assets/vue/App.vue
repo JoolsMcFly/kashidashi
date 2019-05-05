@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col">
                 <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
-                    <div class="navbar-brand">
+                    <div class="mr-2">
                         <vue-bootstrap-typeahead
                             ref="typeahead"
                             v-model="query"

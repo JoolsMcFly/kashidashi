@@ -37,7 +37,7 @@ class OverdueLoans
             $data[] = [
                 $book->getCode(),
                 $borrower,
-                $book->getLocation(),
+                $book->getLocation() ? $book->getLocation()->getName() : '',
                 $loan->getStartedAt()->format('Y-m-d'),
                 $loan->duration(),
                 $book->getTitle(),

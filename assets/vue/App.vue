@@ -39,7 +39,7 @@
                             </li>
                             <li class="nav-item">
                                 <router-link class="ml-1 ml-lg-3 navbar-brand" to="/loans/overdue">
-                                    <i class="fas fa-book d-xs-block d-lg-none mr-2"></i><span>Overdue</span>
+                                    <i class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i><span>Overdue</span>
                                 </router-link>
                             </li>
                             <li class="nav-item" v-if="isAuthenticated">

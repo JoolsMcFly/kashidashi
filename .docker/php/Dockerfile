@@ -4,6 +4,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends vim curl debconf subversion git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip zlib1g-dev \
     libpq-dev gnupg gnupg1 gnupg2 \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd \
+        --enable-gd-native-ttf \
+        --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-configure pdo_pgsql --with-pdo-pgsql \
     && docker-php-ext-install -j$(nproc) pdo_pgsql \
     && docker-php-ext-install -j$(nproc) zip

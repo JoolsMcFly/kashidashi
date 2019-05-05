@@ -54,6 +54,7 @@ class LoanRepository extends ServiceEntityRepository
             ->where('l.stoppedAt IS NULL')
             ->andWhere('l.startedAt < :date')
             ->setParameter('date', new \DateTime('3 weeks ago'))
+            ->orderBy('l.startedAt', 'ASC')
             ->getQuery()
             ->getResult()
             ;

@@ -143,6 +143,12 @@
             "ref": "384cec52df45f3bfd46a09930d6960a58872b268"
         }
     },
+    "markbaker/complex": {
+        "version": "1.4.7"
+    },
+    "markbaker/matrix": {
+        "version": "1.1.4"
+    },
     "monolog/monolog": {
         "version": "1.24.0"
     },
@@ -151,6 +157,9 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.2"
+    },
+    "phpoffice/phpspreadsheet": {
+        "version": "1.6.0"
     },
     "psr/cache": {
         "version": "1.0.1"

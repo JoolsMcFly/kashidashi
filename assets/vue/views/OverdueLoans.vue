@@ -3,7 +3,10 @@
         <div class="row">
             <div class="col-sm-12 col-md-6">
                 <div class="card">
-                    <div class="card-header">Overdue Loans</div>
+                    <div class="card-header">Overdue Loans
+                        <span v-if="loans && loans.length" v-text="': ' + loans.length"></span>
+                        <span class="float-right" @click="downloadOverdue">Export <i class="far fa-file-excel"></i></span>
+                    </div>
                     <ul v-if="loans && loans.length > 0" class="list-group list-group-flush">
                         <li v-for="loan in loans" class="list-group-item">
                             <loan
@@ -12,6 +15,7 @@
                             ></loan>
                         </li>
                     </ul>
+                    <p v-else>loading...</p>
                     <div class="card-body" v-else>No overdue loans</div>
                 </div>
             </div>
@@ -32,6 +36,9 @@
         },
 
         methods: {
+            downloadOverdue() {
+                document.location = '/download/overdue-loans'
+            },
             fetchOverdueLoans() {
                 this.$store.dispatch('loans/overdue')
             }

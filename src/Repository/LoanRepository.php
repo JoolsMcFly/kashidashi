@@ -14,11 +14,7 @@ class LoanRepository extends ServiceEntityRepository
         parent::__construct($registry, Loan::class);
     }
 
-    /**
-     * @param Book $book
-     * @return int
-     */
-    public function getByBook(Book $book)
+    public function getByBook(Book $book): int
     {
         return $this->createQueryBuilder('l')
             ->addSelect('b')
@@ -31,15 +27,36 @@ class LoanRepository extends ServiceEntityRepository
             ;
     }
 
-    /**
-     * @return int
-     */
     public function getActiveLoansCount()
     {
         return $this->createQueryBuilder('l')
             ->select('count(l.id)')
             ->where('l.stoppedAt IS NULL')
             ->getQuery()->getSingleScalarResult()
+            ;
+    }
+
+    public function getOverdueCount()
+    {
+        return $this->createQueryBuilder('l')
+            ->select('count(l.id)')
+            ->where('l.stoppedAt IS NULL')
+            ->andWhere('l.startedAt < :date')
+            ->setParameter('date', new \DateTime('3 weeks ago'))
+            ->getQuery()
+            ->getSingleScalarResult()
+            ;
+    }
+
+    public function getOverdue()
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.stoppedAt IS NULL')
+            ->andWhere('l.startedAt < :date')
+            ->setParameter('date', new \DateTime('3 weeks ago'))
+            ->orderBy('l.startedAt', 'ASC')
+            ->getQuery()
+            ->getResult()
             ;
     }
 }

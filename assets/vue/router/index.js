@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home';
 import Borrowers from '../views/Borrowers'
+import OverdueLoans from '../views/OverdueLoans'
 import BorrowerDetails from "../views/BorrowerDetails";
 import BookDetails from "../views/BookDetails";
 import BookUpload from "../views/BookUpload";
@@ -22,6 +23,7 @@ let router = new VueRouter({
     routes: [
         {path: '/home', component: Home, meta: {requiresAuth: true}},
         {path: '/login', component: Login},
+        {path: '/loans/overdue', component: OverdueLoans, meta: {requiresAuth: true}},
         {path: '/borrowers', component: Borrowers, meta: {requiresAuth: true}},
         {path: '/borrower-details', component: BorrowerDetails, meta: {requiresAuth: true}},
         {path: '/book-details', component: BookDetails, meta: {requiresAuth: true}},

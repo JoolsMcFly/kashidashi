@@ -27,7 +27,7 @@ class Loan
     private $book;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Borrower", inversedBy="loans")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Borrower", inversedBy="loans", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      * @Serializer\Groups("details")
      */

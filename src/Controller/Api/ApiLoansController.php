@@ -31,14 +31,7 @@ class ApiLoansController extends ApiBaseController
         ])
         ;
 
-        $context = (new SerializationContext())->setGroups(['details']);
-
-        return new JsonResponse(
-            $this->serialize($loans, $context),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        return $this->serializeLoans($loans);
     }
 
     /**
@@ -50,14 +43,7 @@ class ApiLoansController extends ApiBaseController
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->getByBook($book);
 
-        $context = (new SerializationContext())->setGroups(['details']);
-
-        return new JsonResponse(
-            $this->serialize($loans, $context),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        return $this->serializeLoans($loans);
     }
 
     /**
@@ -136,5 +122,28 @@ class ApiLoansController extends ApiBaseController
         } catch (\Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * @Route("/overdue", name="api_overdue_loans_list", methods={"GET"})
+     * @return JsonResponse
+     */
+    public function overdueLoans()
+    {
+        $loans = $this->getDoctrine()->getRepository(Loan::class)->getOverdue();
+
+        return $this->serializeLoans($loans);
+    }
+
+    private function serializeLoans(array $loans): JsonResponse
+    {
+        $context = (new SerializationContext())->setGroups(['details']);
+
+        return new JsonResponse(
+            $this->serialize($loans, $context),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 }

@@ -23,14 +23,19 @@ class ApiStatsController extends AbstractController
     public function getStats()
     {
         $doctrine = $this->getDoctrine();
-        $loans = $doctrine->getRepository(Loan::class)->getActiveLoansCount();
+        $loanRepository = $doctrine->getRepository(Loan::class);
+        $loans = $loanRepository->getActiveLoansCount();
+        $overdue = $loanRepository->getOverdueCount();
         $books = $doctrine->getRepository(Book::class)->getCount();
         $borrowers = $doctrine->getRepository(Borrower::class)->getCount();
 
         return $this->json([
-            'loans' => $loans,
             'books' => $books,
             'borrowers' => $borrowers,
+            'loans' => [
+                'count' => $loans,
+                'overdue' => $overdue,
+            ],
         ]);
     }
 }

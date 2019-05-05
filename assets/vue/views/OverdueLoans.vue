@@ -4,10 +4,11 @@
             <div class="col-sm-12 col-md-6">
                 <div class="card">
                     <div class="card-header">Overdue Loans
-                        <span v-if="loans && loans.length" v-text="': ' + loans.length"></span>
-                        <span class="float-right" @click="downloadOverdue">Export <i class="far fa-file-excel"></i></span>
+                        <span v-if="loansCount > 0" v-text="': ' + loans.length"></span>
+                        <span v-if="loansCount > 0" class="float-right" @click="downloadOverdue">Export <i
+                            class="far fa-file-excel"></i></span>
                     </div>
-                    <ul v-if="loans && loans.length > 0" class="list-group list-group-flush">
+                    <ul v-if="loansCount > 0" class="list-group list-group-flush">
                         <li v-for="loan in loans" class="list-group-item">
                             <loan
                                 :loan="loan"
@@ -15,8 +16,8 @@
                             ></loan>
                         </li>
                     </ul>
-                    <p v-else>loading...</p>
-                    <div class="card-body" v-else>No overdue loans</div>
+                    <p v-show="loading">loading...</p>
+                    <div class="card-body" v-show="!loading && loansCount <= 0">No overdue loans</div>
                 </div>
             </div>
         </div>
@@ -29,10 +30,29 @@
     export default {
         components: {Loan},
 
+        data() {
+            return {
+                loading: true,
+            }
+        },
+
         computed: {
             loans() {
                 return this.$store.getters['loans/overdue']
             },
+            loansCount() {
+                if (!Boolean(this.loans)) {
+                    return 0
+                }
+
+                return this.loans.length
+            }
+        },
+
+        watch: {
+            loans() {
+                this.loading = false
+            }
         },
 
         methods: {

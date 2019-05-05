@@ -53,8 +53,8 @@
                     <p>{{ book.title }}</p>
                     <p v-if="book.loans.length > 0" :class="loanClasses(book.loans[0])">
                         <i class="far fa-calendar-alt"></i> {{ book.loans[0].started_at }}<br/>
-                        <i class="fas fa-user"></i> {{ book.loans[0].borrower.firstname}} {{
-                        book.loans[0].borrower.surname }}
+                        <i class="fas fa-user"></i> {{ book.loans[0].borrower.surname}} {{
+                        book.loans[0].borrower.firstname }}
                     </p>
                 </li>
             </ul>

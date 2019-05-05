@@ -55,7 +55,7 @@
                     return '';
                 }
 
-                return this.borrower.firstname + ' ' + this.borrower.surname
+                return this.borrower.surname + ' ' + this.borrower.firstname
             },
 
             loans() {

@@ -10,6 +10,7 @@ import ErrorsModule from './errors'
 import SecurityModule from './security'
 import UsersModule from './users'
 import LocationsModule from './locations'
+import Loans from './loans'
 
 Vue.use(Vuex)
 
@@ -25,5 +26,6 @@ export default new Vuex.Store({
         security: SecurityModule,
         users: UsersModule,
         locations: LocationsModule,
+        loans: Loans
     }
 })

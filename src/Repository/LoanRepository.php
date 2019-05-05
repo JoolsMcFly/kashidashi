@@ -14,7 +14,7 @@ class LoanRepository extends ServiceEntityRepository
         parent::__construct($registry, Loan::class);
     }
 
-    public function getByBook(Book $book): int
+    public function getByBook(Book $book): array
     {
         return $this->createQueryBuilder('l')
             ->addSelect('b')
@@ -27,7 +27,7 @@ class LoanRepository extends ServiceEntityRepository
             ;
     }
 
-    public function getActiveLoansCount()
+    public function getActiveLoansCount(): int
     {
         return $this->createQueryBuilder('l')
             ->select('count(l.id)')
@@ -36,7 +36,7 @@ class LoanRepository extends ServiceEntityRepository
             ;
     }
 
-    public function getOverdueCount()
+    public function getOverdueCount(): int
     {
         return $this->createQueryBuilder('l')
             ->select('count(l.id)')
@@ -48,7 +48,7 @@ class LoanRepository extends ServiceEntityRepository
             ;
     }
 
-    public function getOverdue()
+    public function getOverdue(): array
     {
         return $this->createQueryBuilder('l')
             ->where('l.stoppedAt IS NULL')

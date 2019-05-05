@@ -43,7 +43,7 @@
         methods: {
             loanClasses(loan) {
                 if (loan.duration > 21) {
-                    return 'text-white bg-danger'
+                    return 'text-danger'
                 }
 
                 return ''

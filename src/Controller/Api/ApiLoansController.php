@@ -131,7 +131,7 @@ class ApiLoansController extends ApiBaseController
     public function overdueLoans()
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->getOverdue();
-sleep(2);
+
         return $this->serializeLoans($loans);
     }
 

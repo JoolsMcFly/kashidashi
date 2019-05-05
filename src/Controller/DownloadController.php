@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Book;
 use App\Service\Export\OverdueLoans;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,6 +17,16 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 final class DownloadController extends AbstractController
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @Route("/overdue-loans", name="overdue_loans_download")
      * @param OverdueLoans $loansExport
@@ -31,6 +42,8 @@ final class DownloadController extends AbstractController
 
             return $fileResponse;
         } catch (\Exception $exception) {
+            $this->logger->error("Error downloading overdue loans:\n\n$exception\n\n\n");
+
             return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
         }
     }

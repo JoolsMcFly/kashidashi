@@ -77,7 +77,7 @@ final class BookUploadService
             if (!$handle) {
                 throw new FileException("Cannot open CSV file.");
             }
-            $delimiter = ',';
+            $delimiter = ';';
             $length = 1024;
             while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
                 if ((int)($bookDetails[0]) === 0 || empty($bookDetails[2])) {

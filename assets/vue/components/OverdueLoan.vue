@@ -5,7 +5,8 @@
         <p class="text-danger">
             <i class="far fa-calendar-alt"></i> {{ loan.started_at }} ({{loan.duration}} days)
         </p>
-        <p>Borrowed by {{loan.borrower.surname}} {{loan.borrower.firstname}}</p>
+        <p>Borrowed by {{ loan.borrower.surname + ` (${loan.borrower.katakana})`}} {{
+            loan.borrower.surname !== loan.borrower.french_surname ? loan.borrower.french_surname : '' }}</p>
     </div>
 </template>
 

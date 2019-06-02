@@ -41,13 +41,18 @@ final class BorrowerService
 
         $suggestions = [];
         foreach ($borrowers as $borrower) {
+            $text = $borrower->getKatakana() . " (" . $borrower->getSurname() . ")";
+            if ($borrower->getSurname() !== $borrower->getFrenchSurname()) {
+                $text .= " / " . $borrower->getFrenchSurname();
+            }
             $suggestions[] = [
                 'id' => $borrower->getId(),
-                'text' => $borrower->getSurname() . ' ' . $borrower->getFirstname(),
+                'text' => $text,
                 'item' => [
                     'id' => $borrower->getId(),
-                    'firstname' => $borrower->getFirstname(),
                     'surname' => $borrower->getSurname(),
+                    'french_surname' => $borrower->getFrenchSurname(),
+                    'katakana' => $borrower->getKatakana(),
                     'stats' => $borrower->getStats(),
                 ],
                 'type' => 'borrower',

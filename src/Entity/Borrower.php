@@ -39,6 +39,20 @@ class Borrower
     private $surname;
 
     /**
+     * @var string
+     * @ORM\Column(type="string", length=100)
+     * @Serializer\Groups({"list", "details"})
+     */
+    private $katakana;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=100)
+     * @Serializer\Groups({"list", "details"})
+     */
+    private $frenchSurname;
+
+    /**
      * @var \DateTime
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
@@ -211,5 +225,43 @@ class Borrower
     public function __toString()
     {
         return $this->surname . ' ' . $this->firstname;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKatakana(): string
+    {
+        return $this->katakana;
+    }
+
+    /**
+     * @param string $katakana
+     * @return Borrower
+     */
+    public function setKatakana(string $katakana): Borrower
+    {
+        $this->katakana = $katakana;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFrenchSurname(): string
+    {
+        return $this->frenchSurname;
+    }
+
+    /**
+     * @param string $frenchSurname
+     * @return Borrower
+     */
+    public function setFrenchSurname(string $frenchSurname): Borrower
+    {
+        $this->frenchSurname = $frenchSurname;
+
+        return $this;
     }
 }

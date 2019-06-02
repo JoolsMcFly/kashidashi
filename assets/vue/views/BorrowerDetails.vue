@@ -55,7 +55,11 @@
                     return '';
                 }
 
-                return this.borrower.surname + ' ' + this.borrower.firstname
+                let name = this.borrower.katakana+ " (" + this.borrower.surname + ")";
+                if (this.borrower.surname !== this.borrower.french_surname) {
+                    name += " / " + this.borrower.french_surname
+                }
+                return name
             },
 
             loans() {

@@ -32,7 +32,7 @@
                                     <i class="fas fa-book d-xs-block d-lg-none mr-2"></i><span>Inventories</span>
                                 </router-link>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="isAdmin">
                                 <router-link class="ml-1 ml-lg-3 navbar-brand" to="/users">
                                     <i class="fas fa-user d-xs-block d-lg-none mr-2"></i><span>Users</span>
                                 </router-link>

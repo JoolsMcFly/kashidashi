@@ -12,7 +12,8 @@
 
         computed: {
             fullname() {
-                return this.borrower.firstname + ' ' + this.borrower.surname
+                return this.borrower.surname + ` (${this.borrower.katakana})`
+                + this.borrower.surname !== this.borrower.french_surname ? this.borrower.french_surname : ''
             }
         }
     }

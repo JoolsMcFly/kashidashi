@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\DataStructures\UploadStats;
 use App\Entity\Borrower;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -26,6 +27,11 @@ final class BorrowerUploadService
     private $stats;
 
     /**
+     * @var ArrayCollection|Borrower[]
+     */
+    private $borrowers;
+
+    /**
      * UserService constructor.
      * @param EntityManagerInterface $manager
      */
@@ -34,6 +40,7 @@ final class BorrowerUploadService
         $this->manager = $manager;
         $this->borrowerRepo = $this->manager->getRepository(Borrower::class);
         $this->stats = new UploadStats();
+        $this->fetchBorrowers();
     }
 
     /**
@@ -53,7 +60,7 @@ final class BorrowerUploadService
         $length = 1024;
         $headers = fgetcsv($handle, $length, $delimiter);
         while ($borrowerDetails = fgetcsv($handle, $length, $delimiter)) {
-            if (count($borrowerDetails) !== 2) {
+            if (count($borrowerDetails) !== 3) {
                 continue;
             }
 
@@ -70,18 +77,21 @@ final class BorrowerUploadService
         return $this->stats;
     }
 
-    /**
-     * @param array $borrower
-     * @return bool
-     */
-    private function borrowerExists(array $borrower)
+    private function borrowerExists(array $borrower): bool
     {
-        $borrower = $this->borrowerRepo->findOneBy([
-            'surname' => $borrower[0],
-            'firstname' => $borrower[1],
-        ]);
+        if (empty($this->borrowers)) {
+            return false;
+        }
 
-        return !empty($borrower);
+        foreach ($this->borrowers as $b) {
+            if ($b->getSurname() === $borrower[0]
+                && $b->getFrenchSurname() === $borrower[1]
+                && $b->getKatakana() === $borrower[2]) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -92,12 +102,18 @@ final class BorrowerUploadService
     {
         $borrower = new Borrower();
         $borrower
-            ->setFirstname($borrowerDetails[0])
-            ->setSurname($borrowerDetails[1])
+            ->setSurname(mb_strtolower($borrowerDetails[0]))
+            ->setFrenchSurname(mb_strtolower($borrowerDetails[1]))
+            ->setKatakana($borrowerDetails[2])
             ->setCreatedAt(new \DateTime())
         ;
         $this->manager->persist($borrower);
 
         $this->stats->addUploaded();
+    }
+
+    private function fetchBorrowers()
+    {
+        $this->borrowers = $this->borrowerRepo->findBy([], ['katakana' => 'asc']);
     }
 }

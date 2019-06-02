@@ -11,7 +11,8 @@
                 </div>
                 <ul v-if="activeLoans.length > 0" class="list-group list-group-flush">
                     <li v-for="loan in activeLoans" class="list-group-item">
-                        <p><i class="fas fa-user"></i> {{ loan.borrower.surname }} {{ loan.borrower.firstname }}</p>
+                        <p><i class="fas fa-user"></i> {{ loan.borrower.surname + ` (${loan.borrower.katakana})`}} {{
+                            loan.borrower.surname !== loan.borrower.french_surname ? loan.borrower.french_surname : '' }}</p>
                         <p :class="loanClasses(loan)"><i class="far fa-calendar-alt"></i> {{
                             loan.started_at }}</p>
                         <p>Loans count: {{ book.stats.loansCount }}</p>

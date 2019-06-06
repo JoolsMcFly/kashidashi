@@ -103,19 +103,23 @@ class ApiLoansController extends ApiBaseController
     public function endLoan(Loan $loan)
     {
         try {
+            $manager = $this->getDoctrine()->getManager();
             $loan->setStoppedAt(new \DateTime());
 
             $book = $loan->getBook();
             $borrower = $loan->getBorrower();
 
             $durationInDays = $loan->getStoppedAt()->diff($loan->getStartedAt())->days;
-            $book->incLoansDuration($durationInDays);
-            $borrower->incLoansDuration($durationInDays);
+            if ($durationInDays <= 0) {
+                $manager->remove($loan);
+            } else {
+                $book->incLoansDuration($durationInDays);
+                $borrower->incLoansDuration($durationInDays);
 
-            $manager = $this->getDoctrine()->getManager();
-            $manager->persist($loan);
-            $manager->persist($book);
-            $manager->persist($borrower);
+                $manager->persist($loan);
+                $manager->persist($book);
+                $manager->persist($borrower);
+            }
             $manager->flush();
 
             return $this->json(null);

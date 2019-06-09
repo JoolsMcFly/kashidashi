@@ -1,11 +1,13 @@
 <template>
-    <div class="col-xs-12 col-sm-6">
-        <h3>Hello</h3>
-        <div v-if="stats !== null">
-            <p>Book count: {{stats.books}}</p>
-            <p>Active loan count: {{stats.loans.count}}</p>
-            <p v-if="stats.loans.overdue > 0"><a href="/loans/overdue">Overdue loans: {{stats.loans.overdue}}</a></p>
-            <p>Family count: {{stats.borrowers}}</p>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <h3>Hello</h3>
+            <div v-if="stats !== null">
+                <p>Book count: {{stats.books}}</p>
+                <p>Active loan count: {{stats.loans.count}}</p>
+                <p v-if="stats.loans.overdue > 0"><a href="/loans/overdue">Overdue loans: {{stats.loans.overdue}}</a></p>
+                <p>Family count: {{stats.borrowers}}</p>
+            </div>
         </div>
     </div>
 </template>

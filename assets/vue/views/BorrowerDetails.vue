@@ -1,8 +1,7 @@
 <template>
     <div>
-        <h3 class="mt-4">{{ fullname }}</h3>
-        <p v-if="Boolean(borrower)">Loans count: {{ borrower.stats.loansCount }}</p>
-        <div class="row mb-4">
+        <h3 class="mt-2">{{ fullname }}</h3>
+        <div class="row mb-2">
             <div class="col" id="book-search">
                 <vue-bootstrap-typeahead
                     ref="typeahead"
@@ -55,7 +54,7 @@
                     return '';
                 }
 
-                let name = this.borrower.katakana+ " (" + this.borrower.surname + ")";
+                let name = this.borrower.katakana;
                 if (this.borrower.surname !== this.borrower.french_surname) {
                     name += " / " + this.borrower.french_surname
                 }

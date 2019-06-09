@@ -37,18 +37,24 @@ final class BookService
      */
     public function findSuggestions(string $bookCode): array
     {
-        $books = $this->manager->getRepository(Book::class)->findByCode($bookCode);
+        $books = $this->manager->getRepository(Book::class)->findByCode((int)$bookCode);
 
+        preg_match('|^([0]*)[1-9]|', $bookCode, $matches);
+        if (isset($matches[1])) {
+            $leadingZeros = $matches[1];
+        } else {
+            $leadingZeros = '';
+        }
         $suggestions = [];
         foreach ($books as $book) {
             $suggestions[] = [
-                'text' => $book->getCode() . ' - ' . $book->getTitle(),
+                'text' => $leadingZeros . $book->getCode() . ' - ' . $book->getTitle(),
                 'item' => [
                     'id' => $book->getId(),
                     'title' => $book->getTitle(),
                     'code' => $book->getCode(),
                     'stats' => $book->getStats(),
-                    'location' => $book->getLocation() ? $book->getLocation()->getName() : null
+                    'location' => $book->getLocation() ? $book->getLocation()->getName() : null,
                 ],
                 'type' => 'book',
             ];

@@ -51,7 +51,7 @@ class ApiSearchController
      * @param string $search
      * @return JsonResponse
      */
-    public function search($search)
+    public function search(string $search = '')
     {
         if (is_numeric($search)) {
             $suggestions = $this->bookService->findSuggestions($search);

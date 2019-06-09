@@ -1,9 +1,8 @@
 <template>
     <div>
-        <h3 class="mt-4">{{ fullname }}</h3>
-        <p v-if="Boolean(borrower)">Loans count: {{ borrower.stats.loansCount }}</p>
-        <div class="row mb-4">
-            <div class="col">
+        <h3 class="mt-2">{{ fullname }}</h3>
+        <div class="row mb-2">
+            <div class="col" id="book-search">
                 <vue-bootstrap-typeahead
                     ref="typeahead"
                     v-model="bookCode"
@@ -55,7 +54,7 @@
                     return '';
                 }
 
-                let name = this.borrower.katakana+ " (" + this.borrower.surname + ")";
+                let name = this.borrower.katakana;
                 if (this.borrower.surname !== this.borrower.french_surname) {
                     name += " / " + this.borrower.french_surname
                 }
@@ -102,7 +101,7 @@
 
         watch: {
             bookCode() {
-                if (this.bookCode !== '') {
+                if (this.bookCode.replace(/\s/g, '') !== '') {
                     this.$store.dispatch('search/search', this.bookCode)
                 }
             },
@@ -116,6 +115,8 @@
             if (Boolean(this.borrower)) {
                 this.fetchLoans()
             }
+
+            $('#book-search').find('input[type="search"]').attr("type", "tel")
         }
     }
 </script>

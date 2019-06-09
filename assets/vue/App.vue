@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col">
                 <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAuthenticated">
-                    <div class="mr-2">
+                    <div class="mr-1">
                         <vue-bootstrap-typeahead
                             ref="typeahead"
                             v-model="query"
@@ -127,7 +127,7 @@
 
         watch: {
             query() {
-                if (this.query !== '') {
+                if (this.query.replace(/\s/g, '') !== '') {
                     this.$store.dispatch('search/search', this.query)
                 }
             },

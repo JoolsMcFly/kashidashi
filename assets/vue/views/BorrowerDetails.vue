@@ -3,7 +3,7 @@
         <h3 class="mt-4">{{ fullname }}</h3>
         <p v-if="Boolean(borrower)">Loans count: {{ borrower.stats.loansCount }}</p>
         <div class="row mb-4">
-            <div class="col">
+            <div class="col" id="book-search">
                 <vue-bootstrap-typeahead
                     ref="typeahead"
                     v-model="bookCode"
@@ -102,7 +102,7 @@
 
         watch: {
             bookCode() {
-                if (this.bookCode !== '') {
+                if (this.bookCode.replace(/\s/g, '') !== '') {
                     this.$store.dispatch('search/search', this.bookCode)
                 }
             },
@@ -116,6 +116,8 @@
             if (Boolean(this.borrower)) {
                 this.fetchLoans()
             }
+
+            $('#book-search').find('input[type="search"]').attr("type", "tel")
         }
     }
 </script>

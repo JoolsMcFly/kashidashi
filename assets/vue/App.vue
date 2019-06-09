@@ -127,7 +127,7 @@
 
         watch: {
             query() {
-                if (this.query !== '') {
+                if (this.query.replace(/\s/g, '') !== '') {
                     this.$store.dispatch('search/search', this.query)
                 }
             },

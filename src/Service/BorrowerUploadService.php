@@ -84,9 +84,9 @@ final class BorrowerUploadService
         }
 
         foreach ($this->borrowers as $b) {
-            if ($b->getSurname() === $borrower[0]
-                && $b->getFrenchSurname() === $borrower[1]
-                && $b->getKatakana() === $borrower[2]) {
+            if ($b->getSurname() === mb_strtolower($borrower[0])
+                && $b->getFrenchSurname() === mb_strtolower($borrower[1])
+            ) {
                 return true;
             }
         }

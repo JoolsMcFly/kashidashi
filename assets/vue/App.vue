@@ -13,9 +13,6 @@
                             @hit="handleSuggestion($event)"
                             :minMatchingChars="0"
                         />
-                        <a class="navbar-brand" href="/api/security/logout">
-                            <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
-                        </a>
                     </nav>
                 </div>
             </div>
@@ -23,30 +20,43 @@
         <div class="container" style="padding-top: 70px;">
             <router-view></router-view>
 
-            <div class="row" v-if="isAuthenticated">
-                <div class="col">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <template v-if="isAdmin">
+            <template v-if="isAuthenticated">
+                <div class="row" v-if="isAdmin">
+                    <div class="col">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
                             <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
                             <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i>
                             </router-link>
-                            <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i></router-link>
-                        </template>
-                        <template>
+                            <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i>
+                            </router-link>
+                            <a class="navbar-brand" href="/api/security/logout">
+                                <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+                <div class="row" v-if="!isAdmin">
+                    <div class="col">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/inventory">
-                                <span @click="closeMenu"><i class="fas fa-book d-xs-block d-lg-none mr-2"></i></span>
+                                    <span @click="closeMenu"><i
+                                        class="fas fa-book d-xs-block d-lg-none mr-2"></i></span>
                             </router-link>
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/users">
-                                <span @click="closeMenu"><i class="fas fa-user d-xs-block d-lg-none mr-2"></i></span>
+                                    <span @click="closeMenu"><i
+                                        class="fas fa-user d-xs-block d-lg-none mr-2"></i></span>
                             </router-link>
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/loans/overdue">
-                            <span @click="closeMenu"><i
-                                class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i></span>
+                                    <span @click="closeMenu"><i
+                                        class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i></span>
                             </router-link>
-                        </template>
-                    </nav>
+                            <a class="navbar-brand" href="/api/security/logout">
+                                <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
+                            </a>
+                        </nav>
+                    </div>
                 </div>
-            </div>
+            </template>
         </div>
     </div>
 </template>

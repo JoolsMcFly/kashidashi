@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div style="width: 100%;position: fixed; z-index: 99999999; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto;" v-if="isAuthenticated">
+        <div id="searchbox" v-if="isAuthenticated">
             <div class="row">
                 <div class="col">
                     <nav class="navbar navbar-expand-lg navbar-light bg-light">

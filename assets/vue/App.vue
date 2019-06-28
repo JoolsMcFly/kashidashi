@@ -23,52 +23,28 @@
         <div class="container" style="padding-top: 70px;">
             <router-view></router-view>
 
-            <div class="row">
+            <div class="row" v-if="isAuthenticated">
                 <div class="col">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isAdmin">
-                        <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
-                        <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i>
-                        </router-link>
-                        <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i></router-link>
-                    </nav>
-                </div>
-            </div>
-            <div class="">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" id="navbarToggler"
-                        data-target="#tosyoNavbar" aria-controls="tosyoNavbar" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="tosyoNavbar">
-                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <router-link class="navbar-brand" to="/home">
-                                <span @click="closeMenu"><i
-                                    class="fas fa-home d-xs-block d-lg-none mr-2"></i><span>Home</span></span>
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <template v-if="isAdmin">
+                            <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
+                            <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i>
                             </router-link>
-                        </li>
-                        <li class="nav-item active">
+                            <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i></router-link>
+                        </template>
+                        <template>
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/inventory">
-                                <span @click="closeMenu"><i class="fas fa-book d-xs-block d-lg-none mr-2"></i><span>Inventories</span></span>
+                                <span @click="closeMenu"><i class="fas fa-book d-xs-block d-lg-none mr-2"></i></span>
                             </router-link>
-                        </li>
-                        <li class="nav-item" v-if="isAdmin">
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/users">
-                                <span @click="closeMenu"><i class="fas fa-user d-xs-block d-lg-none mr-2"></i><span>Users</span></span>
+                                <span @click="closeMenu"><i class="fas fa-user d-xs-block d-lg-none mr-2"></i></span>
                             </router-link>
-                        </li>
-                        <li class="nav-item">
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/loans/overdue">
-                                <span @click="closeMenu"><i
-                                    class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i><span>Overdue</span></span>
+                            <span @click="closeMenu"><i
+                                class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i></span>
                             </router-link>
-                        </li>
-                        <li class="nav-item" v-if="isAuthenticated">
-                            <a class="navbar-brand" href="/api/security/logout">
-                                <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i><span>Logout</span>
-                            </a>
-                        </li>
-                    </ul>
+                        </template>
+                    </nav>
                 </div>
             </div>
         </div>

@@ -7,13 +7,17 @@
         <div class="row col">
             <form>
                 <div class="form-row">
-                    <div class="col-4">
-                        <input v-model="username" type="text" class="form-control">
+                    <div class="col">
+                        <input v-model="username" type="text" class="form-control" placeholder="email">
                     </div>
-                    <div class="col-4">
-                        <input v-model="password" type="password" class="form-control">
+                </div>
+                <div class="row">
+                    <div class="col mt-4">
+                        <input v-model="password" type="password" class="form-control mb-2" placeholder="password">
                     </div>
-                    <div class="col-4">
+                </div>
+                <div class="row">
+                    <div class="col">
                         <button @click="performLogin()"
                                 :disabled="username.length === 0 || password.length === 0 || isLoading" type="button"
                                 class="btn btn-primary">Login

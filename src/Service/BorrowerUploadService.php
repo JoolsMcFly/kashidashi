@@ -58,7 +58,7 @@ final class BorrowerUploadService
 
         $delimiter = ';';
         $length = 1024;
-        $headers = fgetcsv($handle, $length, $delimiter);
+        fgetcsv($handle, $length, $delimiter);
         while ($borrowerDetails = fgetcsv($handle, $length, $delimiter)) {
             if (count($borrowerDetails) !== 3) {
                 continue;

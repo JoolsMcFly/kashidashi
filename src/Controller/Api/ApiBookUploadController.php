@@ -28,21 +28,27 @@ class ApiBookUploadController extends AbstractController
         $truncate = $request->get('truncate') === 'true';
         foreach ($request->files as $file) {
             try {
-                $bookUploadService->processFile($file, $truncate);
+                $stats = $bookUploadService->processFile($file, $truncate);
 
-                return $this->json(null);
+                return $this->json(['message' => $stats->getChangesReport()]);
             } catch (FileException $e) {
+                $error = 'Error reading uploaded file.';
+                if ($this->getUser()->isAdmin()) {
+                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
+                }
+
                 return $this->json(
-                    'Error reading uploaded file.',
+                    $error,
                     Response::HTTP_INTERNAL_SERVER_ERROR
                 );
             } catch (\Exception $e) {
-                return $this->json(
-                    'An error has occurred when processing your file.',
-                    Response::HTTP_INTERNAL_SERVER_ERROR
-                );
+                $error = 'An error has occurred when processing your file.';
+                if ($this->getUser()->isAdmin()) {
+                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
+                }
+
+                return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
-
     }
 }

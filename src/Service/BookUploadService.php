@@ -67,6 +67,7 @@ final class BookUploadService
      * @param UploadedFile $file
      * @param bool $removeNotInList
      * @return UploadStats
+     * @throws \Exception
      */
     public function processFile(UploadedFile $file, bool $removeNotInList = false)
     {
@@ -96,9 +97,10 @@ final class BookUploadService
             $this->manager->flush();
         } catch (\Exception $e) {
             $this->logger->error("Error uploading book file\n$e\n\n");
-        }
-        if ($handle) {
-            fclose($handle);
+        } finally {
+            if (!empty($handle)) {
+                fclose($handle);
+            }
         }
 
         return $this->stats;
@@ -112,11 +114,15 @@ final class BookUploadService
     private function findOrCreateBook(int $bookCode): Book
     {
         if (isset($this->books[$bookCode])) {
+            $this->stats->addExisting();
+
             return $this->books[$bookCode];
         }
 
         $book = new Book();
         $book->setCreatedAt(new \DateTime());
+
+        $this->stats->addUploaded();
 
         return $book;
     }
@@ -135,8 +141,6 @@ final class BookUploadService
             ->setTitle($bookDetails[2])
         ;
         $this->manager->persist($book);
-
-        $this->stats->addUploaded();
     }
 
     /**

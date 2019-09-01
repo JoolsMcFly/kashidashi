@@ -29,21 +29,18 @@ class ApiBorrowerUploadController extends AbstractController
             try {
                 $stats = $userUploadService->processFile($file);
 
-                return $this->json(['message' => $stats->getExisting() . ' existing and ' . $stats->getUploaded() . ' new']);
+                return $this->json(['message' => $stats->getChangesReport()]);
             } catch (FileException $e) {
                 $error = 'Error reading uploaded file.';
                 if ($user->isAdmin()) {
-                    $error .= ' [' . $e->getFile() . ':' . $e->getLine() . ']: ' . $e->getMessage();
+                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
                 }
 
-                return $this->json(
-                    $error,
-                    Response::HTTP_INTERNAL_SERVER_ERROR
-                );
+                return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);
             } catch (\Exception $e) {
                 $error = 'An error has occurred when processing your file.';
                 if ($user->isAdmin()) {
-                    $error .= ' [' . $e->getFile() . ':' . $e->getLine() . ']: ' . $e->getMessage();
+                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
                 }
 
                 return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);

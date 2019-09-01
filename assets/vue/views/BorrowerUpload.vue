@@ -80,9 +80,6 @@
                             position: 'bottomCenter'
                         });
                     })
-                    .catch((err) => {
-                        // TODO show error message
-                    })
                     .finally(() => {
                         this.isSaving = false
                     })

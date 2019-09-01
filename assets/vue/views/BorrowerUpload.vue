@@ -74,10 +74,11 @@
                     )
                     .then((res) => {
                         this.reset()
-                        // TODO show success message
-                    })
-                    .catch((err) => {
-                        // TODO show error message
+                        iziToast.success({
+                            title: 'Success',
+                            message: res.data.message,
+                            position: 'bottomCenter'
+                        });
                     })
                     .finally(() => {
                         this.isSaving = false

@@ -45,4 +45,9 @@ class UploadStats
     {
         $this->existing += $existing;
     }
+
+    public function getChangesReport(): string
+    {
+        return $this->getExisting() . ' existing and ' . $this->getUploaded() . ' new';
+    }
 }

@@ -81,7 +81,7 @@ final class BookUploadService
             $delimiter = ';';
             $length = 1024;
             while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
-                if ((int)($bookDetails[0]) === 0 || empty($bookDetails[2])) {
+                if ((int)($bookDetails[0]) === 0) {
                     continue;
                 }
 

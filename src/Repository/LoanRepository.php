@@ -59,4 +59,11 @@ class LoanRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+
+    public function groupByLocation()
+    {
+//        return $this->createQueryBuilder('loan')
+//            ->join('loan.book', 'book')
+//            ->join('')
+    }
 }

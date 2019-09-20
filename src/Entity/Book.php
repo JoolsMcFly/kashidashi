@@ -232,4 +232,16 @@ class Book
 
         return $this;
     }
+
+    public function getLoc(): ?Location
+    {
+        return $this->loc;
+    }
+
+    public function setLoc(?Location $loc): self
+    {
+        $this->loc = $loc;
+
+        return $this;
+    }
 }

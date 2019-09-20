@@ -47,11 +47,12 @@ final class BookService
         }
         $suggestions = [];
         foreach ($books as $book) {
+            $bookTitle = $book->getTitle()?: 'no title';
             $suggestions[] = [
-                'text' => $leadingZeros . $book->getCode() . ' - ' . $book->getTitle(),
+                'text' => $leadingZeros . $book->getCode() . ' - ' . $bookTitle,
                 'item' => [
                     'id' => $book->getId(),
-                    'title' => $book->getTitle(),
+                    'title' => $bookTitle,
                     'code' => $book->getCode(),
                     'stats' => $book->getStats(),
                     'location' => $book->getLocation() ? $book->getLocation()->getName() : null,

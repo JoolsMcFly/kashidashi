@@ -7,7 +7,7 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
+/.cache
 .docker/data
 /.idea
 ###> symfony/webpack-encore-bundle ###

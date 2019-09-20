@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
@@ -35,6 +36,16 @@ class Location
      * @Gedmo\Timestampable(on="create")
      */
     private $createdAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="location")
+     */
+    private $books;
+
+    public function __construct()
+    {
+        $this->books = new ArrayCollection();
+    }
 
     /**
      * @return int|null
@@ -80,5 +91,14 @@ class Location
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\Groups({"list"})
+     */
+    public function bookCount()
+    {
+        return $this->books->count();
     }
 }

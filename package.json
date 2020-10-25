@@ -1,9 +1,9 @@
 {
-    "name": "my-little-library",
+    "name": "kashi-dashi",
     "description": "App to help you know who's borrowing what book, for how long etc",
     "version": "1.0.0",
     "engines": {
-        "yarn": "1.9.x"
+        "yarn": "1.22"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^0.22.0",

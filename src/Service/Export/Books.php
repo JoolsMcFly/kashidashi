@@ -3,22 +3,12 @@
 namespace App\Service\Export;
 
 use App\Entity\Book;
-use App\Entity\Borrower;
-use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Books
+class Books extends Exporter
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    protected $title = 'Books';
 
-    public function __construct(EntityManagerInterface $manager)
-    {
-        $this->manager = $manager;
-    }
+    protected $headers = ['Code', 'Title', 'Location'];
 
     /**
      * @return string
@@ -27,12 +17,8 @@ class Books
      */
     public function export(): string
     {
-        $spreadsheet = new Spreadsheet();
-        $worksheet = $spreadsheet->getActiveSheet();
-        $worksheet->setTitle('Books');
         $books = $this->manager->getRepository(Book::class)->findBy([], ['code' => 'asc']);
-        $headers = ['Code', 'Title', 'Location'];
-        $data = [$headers];
+        $data = [];
         foreach ($books as $book) {
             $data[] = [
                 $book->getCode(),
@@ -40,18 +26,7 @@ class Books
                 $book->getLocation(),
             ];
         }
-        $worksheet->fromArray($data);
 
-        $headersCount = count($headers);
-        $letter = 'A';
-        for ($col = 0; $col < $headersCount; $col++) {
-            $worksheet->getColumnDimension($letter)->setAutoSize(true);
-            $letter++;
-        }
-
-        $filename = '/tmp/books-' . date('Y-m-d-H-i-s') . '.xlsx';
-        (new Xlsx($spreadsheet))->save($filename);
-
-        return $filename;
+        return parent::exportData($data);
     }
 }

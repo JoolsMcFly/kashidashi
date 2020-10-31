@@ -3,21 +3,12 @@
 namespace App\Service\Export;
 
 use App\Entity\Borrower;
-use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Borrowers
+class Borrowers extends Exporter
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    protected $title = 'Borrowers';
 
-    public function __construct(EntityManagerInterface $manager)
-    {
-        $this->manager = $manager;
-    }
+    protected $headers = ['Surname', 'French surname', 'Katakana'];
 
     /**
      * @return string
@@ -26,12 +17,8 @@ class Borrowers
      */
     public function export(): string
     {
-        $spreadsheet = new Spreadsheet();
-        $worksheet = $spreadsheet->getActiveSheet();
-        $worksheet->setTitle('Borrowers');
         $borrowers = $this->manager->getRepository(Borrower::class)->findBy([], ['surname' => 'asc']);
-        $headers = ['Surname', 'French surname', 'Katakana'];
-        $data = [$headers];
+        $data = [];
         foreach ($borrowers as $borrower) {
             $data[] = [
                 $borrower->getSurname(),
@@ -39,18 +26,7 @@ class Borrowers
                 $borrower->getKatakana(),
             ];
         }
-        $worksheet->fromArray($data);
 
-        $headersCount = count($headers);
-        $letter = 'A';
-        for ($col = 0; $col < $headersCount; $col++) {
-            $worksheet->getColumnDimension($letter)->setAutoSize(true);
-            $letter++;
-        }
-
-        $filename = '/tmp/borrowers-' . date('Y-m-d-H-i-s') . '.xlsx';
-        (new Xlsx($spreadsheet))->save($filename);
-
-        return $filename;
+        return parent::exportData($data);
     }
 }

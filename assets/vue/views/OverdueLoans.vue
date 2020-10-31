@@ -5,7 +5,7 @@
                 <div class="card">
                     <div class="card-header">Overdue Loans
                         <span v-if="loansCount > 0" v-text="': ' + loans.length"></span>
-                        <span v-if="loansCount > 0" class="float-right" @click="downloadOverdue">Export <i
+                        <span v-if="loansCount > 0" class="pointer float-right" @click="downloadOverdue">Export <i
                             class="far fa-file-excel"></i></span>
                     </div>
                     <ul v-if="loansCount > 0" class="list-group list-group-flush">

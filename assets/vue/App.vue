@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="searchbox" v-if="isAuthenticated">
+        <div id="searchbox" v-if="isAuthenticated && !isAdmin">
             <div class="row">
                 <div class="col">
                     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -17,7 +17,16 @@
                 </div>
             </div>
         </div>
-        <div class="container" style="padding-top: 70px;">
+        <div v-else>
+            <div class="row">
+                <div class="col">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <router-link class="navbar-brand" to="/users"><i class="fas fa-users"></i></router-link>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="container" v-bind:style="{ paddingTop: (isAdmin ? '0'  : 70) + 'px'}">
             <router-view></router-view>
 
             <template v-if="isAuthenticated">
@@ -25,7 +34,7 @@
                     <div class="col">
                         <nav class="navbar navbar-expand-lg navbar-light bg-light">
                             <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
-                            <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-user"></i>
+                            <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-address-card"></i>
                             </router-link>
                             <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i>
                             </router-link>

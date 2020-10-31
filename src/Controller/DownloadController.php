@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use App\Service\Export\Books;
+use App\Service\Export\Borrowers;
 use App\Service\Export\OverdueLoans;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +45,44 @@ final class DownloadController extends AbstractController
             return $fileResponse;
         } catch (\Exception $exception) {
             $this->logger->error("Error downloading overdue loans:\n\n$exception\n\n\n");
+
+            return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
+        }
+    }
+
+    /**
+     * @Route("/borrowers", name="borrowers_download")
+     */
+    public function downloadBorrowers(Borrowers $borrowers): Response
+    {
+        try {
+            $filename = $borrowers->export();
+
+            $fileResponse = new BinaryFileResponse($filename);
+            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+
+            return $fileResponse;
+        } catch (\Exception $exception) {
+            $this->logger->error("Error downloading borrowers:\n\n$exception\n\n\n");
+
+            return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
+        }
+    }
+
+    /**
+     * @Route("/books", name="books")
+     */
+    public function downloadBooks(Books $books): Response
+    {
+        try {
+            $filename = $books->export();
+
+            $fileResponse = new BinaryFileResponse($filename);
+            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+
+            return $fileResponse;
+        } catch (\Exception $exception) {
+            $this->logger->error("Error downloading books:\n\n$exception\n\n\n");
 
             return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
         }

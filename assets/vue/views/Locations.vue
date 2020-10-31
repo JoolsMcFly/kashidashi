@@ -1,5 +1,5 @@
 <template>
-    <div class="card mt-2">
+    <div class="card">
         <div class="card-header">Locations and book count</div>
         <div class="card-body" v-if="!loading">
             <p v-if="locations.length === 0">No locations.</p>

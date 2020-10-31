@@ -3,32 +3,28 @@
         <div class="card-header">New User</div>
         <div class="card-body">
             <div class="form-group">
-                <label for="firstname">First name</label>
-                <input class="form-control" type="text" id="firstname" v-model="firstname">
+                <input class="form-control" type="text" id="firstname" v-model="firstname" placeholder="First name">
             </div>
             <div class="form-group">
-                <label for="surname">Surname</label>
-                <input class="form-control" type="text" id="surname" v-model="surname">
+                <input class="form-control" type="text" id="surname" v-model="surname" placeholder="Surname">
             </div>
             <div class="form-group">
-                <label for="email">Email</label>
-                <input class="form-control" type="email" id="email" v-model="email">
+                <input class="form-control" type="email" id="email" v-model="email" placeholder="Email">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input class="form-control" type="password" id="password" v-model="password">
+                <input class="form-control" type="password" id="password" v-model="password" placeholder="Password">
             </div>
             <div v-if="isAdmin">
-                <p>Role</p>
+                <span>Role</span><br />
                 <div class="form-check-inline form-check">
                     <input type="radio" name="role" class="form-check-input" id="role_admin" value="ROLE_USER"
                            v-model="role">
                     <label class="form-check-label" for="role_admin">Standard</label>
                 </div>
                 <div class="form-check-inline form-check">
-                    <input type="radio" name="role" class="form-check-input" id="role_sup" value="ROLE_SUPER"
+                    <input type="radio" name="role" class="form-check-input" id="role_inventory" value="ROLE_INVENTORY"
                            v-model="role">
-                    <label class="form-check-label" for="role_sup">Power</label>
+                    <label class="form-check-label" for="role_inventory">Inventory</label>
                 </div>
             </div>
             <input v-else type="hidden" value="ROLE_USER" v-model="role"/>

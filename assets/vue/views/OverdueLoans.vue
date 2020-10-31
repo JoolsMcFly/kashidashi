@@ -16,7 +16,7 @@
                             ></loan>
                         </li>
                     </ul>
-                    <p v-show="loading">loading...</p>
+                    <p v-show="loading" class="p-2">loading...</p>
                     <div class="card-body" v-show="!loading && loansCount <= 0">No overdue loans</div>
                 </div>
             </div>

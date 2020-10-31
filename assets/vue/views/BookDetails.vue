@@ -1,5 +1,5 @@
 <template>
-    <div class="row mt-4 mb-4" v-if="Boolean(book)">
+    <div class="row mb-4" v-if="Boolean(book)">
         <div class="col-sm-12 col-md-6">
             <div class="card">
                 <div class="card-header">
@@ -15,7 +15,8 @@
                             loan.borrower.surname !== loan.borrower.french_surname ? loan.borrower.french_surname : '' }}</p>
                         <p :class="loanClasses(loan)"><i class="far fa-calendar-alt"></i> {{
                             loan.started_at }}</p>
-                        <p>Loans count: {{ book.stats.loansCount }}</p>
+                        <p v-if="book.stats.loansCount > 0">Borrowed {{ book.stats.loansCount }} {{ book.stats.loansCount === 1 ?  'once' : 'times'}}</p>
+                        <p v-else>Never borrowed</p>
                     </li>
                 </ul>
                 <div class="card-body" v-else>No active loans</div>

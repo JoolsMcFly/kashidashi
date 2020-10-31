@@ -42,7 +42,7 @@ class Book
 
     /**
      * @var Location
-     * @ORM\ManyToOne(targetEntity="Location")
+     * @ORM\ManyToOne(targetEntity="Location", fetch="EAGER")
      * @Serializer\Groups({"details"})
      */
     private $location;

@@ -101,4 +101,9 @@ class Location
     {
         return $this->books->count();
     }
+
+    public function __toString(): string
+    {
+        return $this->name;
+    }
 }

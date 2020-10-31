@@ -2,12 +2,12 @@
 
 namespace App\Service\Export;
 
-use App\Entity\Loan;
+use App\Entity\Borrower;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class OverdueLoans
+class Borrowers
 {
     /**
      * @var EntityManagerInterface
@@ -28,20 +28,15 @@ class OverdueLoans
     {
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-        $worksheet->setTitle('Overdue loans');
-        $overdueLoans = $this->manager->getRepository(Loan::class)->getOverdue();
-        $headers = ['Book code', 'Borrower', 'Book location', 'Loan start date', 'Duration in days', 'Book title'];
+        $worksheet->setTitle('Borrowers');
+        $borrowers = $this->manager->getRepository(Borrower::class)->findBy([], ['surname' => 'asc']);
+        $headers = ['Surname', 'French surname', 'Katakana'];
         $data = [$headers];
-        foreach ($overdueLoans as $loan) {
-            $borrower = $loan->getBorrower()->getSurname() . ' ' . $loan->getBorrower()->getFirstname();
-            $book = $loan->getBook();
+        foreach ($borrowers as $borrower) {
             $data[] = [
-                $book->getCode(),
-                $borrower,
-                $book->getLocation() ? $book->getLocation()->getName() : '',
-                $loan->getStartedAt()->format('Y-m-d'),
-                $loan->duration(),
-                $book->getTitle(),
+                $borrower->getSurname(),
+                $borrower->getFrenchSurname(),
+                $borrower->getKatakana(),
             ];
         }
         $worksheet->fromArray($data);
@@ -53,7 +48,7 @@ class OverdueLoans
             $letter++;
         }
 
-        $filename = '/tmp/overdue-' . date('Y-m-d-H-i-s') . '.xlsx';
+        $filename = '/tmp/borrowers-' . date('Y-m-d-H-i-s') . '.xlsx';
         (new Xlsx($spreadsheet))->save($filename);
 
         return $filename;

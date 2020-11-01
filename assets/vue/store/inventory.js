@@ -60,9 +60,9 @@ export default {
                 .getAll()
                 .then(res => commit('setInventories', res.data))
         },
-        create({commit}) {
+        create({commit}, payload) {
             return InventoryAPI
-                .create()
+                .create(payload)
                 .then(res => commit('addInventory', res.data))
         },
         addCode({commit}, payload) {

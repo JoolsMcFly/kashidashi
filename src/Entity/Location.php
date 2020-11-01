@@ -27,7 +27,7 @@ class Location
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list", "details"})
      */
     private $name;
 
@@ -41,6 +41,13 @@ class Location
      * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="location")
      */
     private $books;
+
+    /**
+     * @var Inventory[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Inventory", mappedBy="location")
+     * @Serializer\Groups({"details"})
+     */
+    private $inventories;
 
     public function __construct()
     {
@@ -105,5 +112,21 @@ class Location
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Inventory[]
+     */
+    public function getInventories(): array
+    {
+        return $this->inventories;
+    }
+
+    /**
+     * @param Inventory[] $inventories
+     */
+    public function setInventories(array $inventories): void
+    {
+        $this->inventories = $inventories;
     }
 }

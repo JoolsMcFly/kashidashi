@@ -4,9 +4,8 @@ namespace App\Controller\Api;
 
 use App\Entity\Book;
 use App\Entity\Inventory;
+use App\Entity\Location;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,9 +24,7 @@ class ApiInventoryController extends ApiBaseController
      */
     public function list()
     {
-        $inventories = $this->getDoctrine()->getRepository(Inventory::class)->findBy([],
-            ['startedAt' => 'desc', 'stoppedAt' => 'asc'])
-        ;
+        $inventories = $this->getDoctrine()->getRepository(Location::class)->getWithActiveInventories();
 
         $context = (new SerializationContext())->setGroups(['details']);
 
@@ -62,6 +59,7 @@ class ApiInventoryController extends ApiBaseController
             $inventory
                 ->setStartedAt(new \DateTime())
                 ->setAvailableBookCount($bookCount)
+                ->setCreatedBy($this->getUser())
             ;
             $manager->persist($inventory);
             $manager->flush();

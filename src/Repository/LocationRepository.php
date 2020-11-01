@@ -22,4 +22,21 @@ class LocationRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+
+    /**
+     * @return Location[]
+     */
+    public function getWithActiveInventories()
+    {
+        return $this->createQueryBuilder('l')
+            ->select('l')
+            ->addSelect('inventories')
+            ->join('l.inventories', 'inventories')
+            ->where('inventories.stoppedAt IS NULL')
+            ->orderBy('l.name')
+            ->addOrderBy('inventories.startedAt')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

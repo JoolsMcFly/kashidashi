@@ -57,8 +57,12 @@
                 this.$router.push('users/add')
             },
             getdisplayableRole(user) {
-                if (user.roles.indexOf('ROLE_USER') !== -1) {
+                if (user.roles.indexOf('ROLE_STANDARD') !== -1) {
                     return 'Standard'
+                }
+
+                if (user.roles.indexOf('ROLE_INVENTORY') !== -1) {
+                    return 'Inventory'
                 }
 
                 return 'Power'

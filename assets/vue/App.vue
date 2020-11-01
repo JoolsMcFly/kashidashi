@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div id="searchbox" v-if="isAuthenticated && !isAdmin">
+        <div id="searchbox" v-if="showSearchBox">
             <div class="row">
                 <div class="col">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <nav class="navbar navbar-expand-xs navbar-light bg-light">
                         <vue-bootstrap-typeahead
                             ref="typeahead"
                             v-model="query"
@@ -17,50 +17,56 @@
                 </div>
             </div>
         </div>
-        <div v-else>
+        <div v-if="isAdmin">
             <div class="row">
                 <div class="col">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <router-link class="navbar-brand" to="/users"><i class="fas fa-users"></i></router-link>
+                    <nav class="navbar navbar-expand-xs navbar-light bg-light">
+                        <router-link class="navbar-brand" to="/users">
+                            <i class="fas fa-users"></i>
+                            <span class="router-link-subtitle">Users</span>
+                        </router-link>
+                        <router-link class="navbar-brand mr-0 text-right" to="/locations">
+                            <i class="fas fa-store"></i>
+                            <span class="router-link-subtitle">Locations</span>
+                        </router-link>
                     </nav>
                 </div>
             </div>
         </div>
-        <div class="container" v-bind:style="{ paddingTop: (isAdmin ? '0'  : 70) + 'px'}">
+        <div class="container" v-bind:style="{ paddingTop: (!isStandard ? '0'  : 70) + 'px'}">
             <router-view></router-view>
 
             <template v-if="isAuthenticated">
-                <div class="row" v-if="isAdmin">
+                <div class="row">
                     <div class="col">
-                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                            <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
-                            <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-address-card"></i>
-                            </router-link>
-                            <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i>
-                            </router-link>
-                            <a class="navbar-brand" href="/api/security/logout">
-                                <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
-                <div class="row" v-if="!isAdmin">
-                    <div class="col">
-                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                            <router-link class="ml-1 ml-lg-3 navbar-brand" to="/inventory">
-                                    <span @click="closeMenu"><i
-                                        class="fas fa-book d-xs-block d-lg-none mr-2"></i></span>
-                            </router-link>
-                            <router-link class="ml-1 ml-lg-3 navbar-brand" to="/users">
-                                    <span @click="closeMenu"><i
-                                        class="fas fa-user d-xs-block d-lg-none mr-2"></i></span>
-                            </router-link>
-                            <router-link class="ml-1 ml-lg-3 navbar-brand" to="/loans/overdue">
-                                    <span @click="closeMenu"><i
-                                        class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i></span>
-                            </router-link>
-                            <a class="navbar-brand" href="/api/security/logout">
-                                <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
+                        <nav class="navbar navbar-expand-xs navbar-light bg-light">
+                            <template v-if="isAdmin">
+                                <router-link class="navbar-brand text-center" to="/books"><i class="fas fa-book"></i>
+                                    <span class="router-link-subtitle">Books</span>
+                                </router-link>
+                                <router-link class="navbar-brand text-center" to="/borrowers-upload">
+                                    <i class="fas fa-address-card"></i>
+                                    <span class="router-link-subtitle">Borrowers</span>
+                                </router-link>
+                            </template>
+                            <template v-if="isStandard">
+                                <router-link class="ml-1 ml-lg-3 navbar-brand text-center" to="/loans/overdue">
+                                    <span @click="closeMenu">
+                                        <i class="fas fa-cash-register"></i>
+                                    </span>
+                                    <span class="router-link-subtitle">Overdue</span>
+                                </router-link>
+                            </template>
+                            <template v-if="isInventory || isAdmin">
+                                <router-link class="ml-1 ml-lg-3 navbar-brand text-center" to="/inventory">
+                                    <span @click="closeMenu">
+                                        <i class="fas fa-warehouse"></i></span>
+                                    <span class="router-link-subtitle">Inventories</span>
+                                </router-link>
+                            </template>
+                            <a class="navbar-brand text-right mr-0" href="/api/security/logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="router-link-subtitle">Logout</span>
                             </a>
                         </nav>
                     </div>
@@ -125,6 +131,15 @@
             },
             isAdmin() {
                 return this.$store.getters['security/hasRole']('ROLE_ADMIN')
+            },
+            isStandard() {
+                return this.$store.getters['security/hasRole']('ROLE_STANDARD')
+            },
+            isInventory() {
+                return this.$store.getters['security/hasRole']('ROLE_INVENTORY')
+            },
+            showSearchBox() {
+                return this.isAuthenticated && this.isStandard
             }
         },
 

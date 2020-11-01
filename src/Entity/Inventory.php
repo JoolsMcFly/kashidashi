@@ -56,6 +56,18 @@ class Inventory
     private $details = '';
 
     /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $createdBy;
+
+    /**
+     * @var Location
+     * @ORM\ManyToOne(targetEntity="App\Entity\Location")
+     */
+    private $location;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -182,5 +194,25 @@ class Inventory
         $this->availableBookCount = $availableBookCount;
 
         return $this;
+    }
+
+    public function getCreatedBy(): User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(User $createdBy): void
+    {
+        $this->createdBy = $createdBy;
+    }
+
+    public function getLocation(): Location
+    {
+        return $this->location;
+    }
+
+    public function setLocation(Location $location): void
+    {
+        $this->location = $location;
     }
 }

@@ -16,7 +16,7 @@
                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                class="input-file"/>
                         <p v-if="isInitial">
-                            Drag your file here to begin<br> or click to browse
+                            Drag your file here<br> or click to browse
                         </p>
                         <p v-if="isSaving">
                             Uploading file...

@@ -17,7 +17,7 @@
             <div v-if="isAdmin">
                 <span>Role</span><br />
                 <div class="form-check-inline form-check">
-                    <input type="radio" name="role" class="form-check-input" id="role_admin" value="ROLE_USER"
+                    <input type="radio" name="role" class="form-check-input" id="role_admin" value="ROLE_STANDARD"
                            v-model="role">
                     <label class="form-check-label" for="role_admin">Standard</label>
                 </div>
@@ -27,7 +27,7 @@
                     <label class="form-check-label" for="role_inventory">Inventory</label>
                 </div>
             </div>
-            <input v-else type="hidden" value="ROLE_USER" v-model="role"/>
+            <input v-else type="hidden" value="ROLE_STANDARD" v-model="role"/>
             <div class="form-group mt-3">
                 <button @click="saveUser" type="submit" class="btn btn-primary">Save</button>
                 <button @click="cancel" type="submit" class="btn btn-secondary">Cancel</button>

@@ -5,11 +5,23 @@
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <div class="row">
                         <div class="col">
+                            <router-link class="ml-1 ml-lg-3 navbar-brand" to="/home">
+                            <span @click="closeMenu"><i
+                                class="fas fa-home d-xs-block d-lg-none mr-2"></i>
+                            </span>
+                            </router-link>
                             <router-link class="ml-1 ml-lg-3 navbar-brand" to="/loans/overdue">
                             <span @click="closeMenu"><i
                                 class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i>
                             </span>
                             </router-link>
+                            <template v-if="isInventory || isAdmin">
+                                <router-link class="ml-1 ml-lg-3 navbar-brand text-center" to="/inventory">
+                                    <span @click="closeMenu">
+                                        <i class="fas fa-warehouse"></i></span>
+                                    <span class="router-link-subtitle"></span>
+                                </router-link>
+                            </template>
                             <a class="navbar-brand" href="/api/security/logout">
                                 <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
                             </a>
@@ -114,7 +126,10 @@
             },
             isAdmin() {
                 return this.$store.getters['security/hasRole']('ROLE_ADMIN')
-            }
+            },
+            isInventory() {
+                return this.$store.getters['security/hasRole']('ROLE_INVENTORY')
+            },
         },
 
         watch: {

@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 export default {
-    create() {
-        return axios.post('/api/inventory')
+    create(payload) {
+        return axios.post(`/api/inventory/${payload.locationId}`)
     },
     getAll() {
         return axios.get('/api/inventory')

@@ -1,14 +1,20 @@
 <template>
     <div>
         <div class="card">
-            <div class="card-header">Open inventories</div>
-            <ul v-if="activeInventories.length > 0" class="mb-3 list-group list-group-flush">
-                <li v-for="inv in activeInventories" class="list-group-item">
-                    <i class="fas fa-calendar-alt mr-2"></i>{{ inv.started_at }}
-                    <a href="#" @click="setSelected(inv)" class="card-link float-right"><i class="fas fa-play mr-2"></i>Resume</a>
+            <div class="card-header">Inventories by location</div>
+            <ul class="mb-3 list-group list-group-flush">
+                <li v-for="inv in inventories" class="list-group-item">
+                    <span>{{ inv.name }}</span>
                 </li>
             </ul>
-            <div v-else class="card-body">No open inventories.<br/>
+<!--            <div class="card-header">Open inventories</div>-->
+<!--            <ul v-if="activeInventories.length > 0" class="mb-3 list-group list-group-flush">-->
+<!--                <li v-for="inv in activeInventories" class="list-group-item">-->
+<!--                    <i class="fas fa-calendar-alt mr-2"></i>{{ inv.started_at }}-->
+<!--                    <a href="#" @click="setSelected(inv)" class="card-link float-right"><i class="fas fa-play mr-2"></i>Resume</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+            <div class="card-body">No open inventories.<br/>
                 <span @click="create()" class="cursor-pointer"><i class="fas fa-plus-circle mr-2"></i>Start one</span>
             </div>
         </div>
@@ -57,6 +63,9 @@
         computed: {
             inventories() {
                 return this.$store.getters['inventory/inventories']
+            },
+            locations() {
+                return this.$store.getters['locations/all']
             },
             activeInventories() {
                 return this.inventories.filter(inv => typeof inv.stopped_at === "undefined")

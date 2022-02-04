@@ -3,7 +3,8 @@
     "description": "App to help you know who's borrowing what book, for how long etc",
     "version": "1.0.0",
     "engines": {
-        "yarn": "1.22"
+        "yarn": "1.22",
+        "node": "10.24"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^0.31.0",

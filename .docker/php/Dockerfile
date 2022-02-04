@@ -14,7 +14,7 @@ RUN apt-get update \
     && docker-php-ext-install -j$(nproc) pdo_pgsql \
     && docker-php-ext-install -j$(nproc) zip
 
-RUN pecl install xdebug \
+RUN pecl install xdebug-2.8.1 \
     && docker-php-ext-enable xdebug
 
 ADD xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

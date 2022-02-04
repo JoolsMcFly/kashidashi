@@ -134,11 +134,11 @@ final class BookUploadService
      */
     private function updateBookDetails(array $bookDetails, Book $book): void
     {
-        $location = $this->getLocation($bookDetails[1]);
+        $location = $this->getLocation($bookDetails[2]);
         $book
             ->setCode($bookDetails[0])
             ->setLocation($location)
-            ->setTitle($bookDetails[2])
+            ->setTitle($bookDetails[1])
         ;
         $this->manager->persist($book);
     }

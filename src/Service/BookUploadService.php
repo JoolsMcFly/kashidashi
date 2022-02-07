@@ -8,6 +8,7 @@ use App\Entity\Location;
 use App\Repository\BookRepository;
 use App\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -73,33 +74,29 @@ final class BookUploadService
     {
         $this->loadAllBooks();
         $uploadedBookCodes = [];
+        $spreadSheet = (new Xlsx())->load($file->getPathname());
+        $books = $spreadSheet->getSheet(0)->toArray();
+        array_shift($books); // headers
+        foreach ($books as $bookDetails) {
+            if (count($bookDetails) !== 3) {
+                continue;
+            }
+            $uploadedBookCodes[] = $bookDetails[0];
+            $book = $this->findOrCreateBook((int) $bookDetails[0]);
+            $this->updateBookDetails($bookDetails, $book);
+            $this->manager->persist($book);
+        }
+
         try {
-            $handle = fopen($file->getPathname(), "r");
-            if (!$handle) {
-                throw new FileException("Cannot open CSV file.");
-            }
-            $delimiter = ';';
-            $length = 1024;
-            while ($bookDetails = fgetcsv($handle, $length, $delimiter)) {
-                if ((int)($bookDetails[0]) === 0) {
-                    continue;
-                }
-
-                $uploadedBookCodes[] = $bookDetails[0];
-                $book = $this->findOrCreateBook($bookDetails[0]);
-                $this->updateBookDetails($bookDetails, $book);
-                $this->manager->persist($book);
-            }
-
-            if ($removeNotInList) {
-                $this->bookRepo->removeNotInCodeList($uploadedBookCodes);
-            }
             $this->manager->flush();
         } catch (\Exception $e) {
             $this->logger->error("Error uploading book file\n$e\n\n");
-        } finally {
-            if (!empty($handle)) {
-                fclose($handle);
+        }
+        if ($removeNotInList) {
+            try {
+                $this->bookRepo->removeNotInCodeList($uploadedBookCodes);
+            } catch (\Exception $e) {
+                $this->logger->error("Error removing books\n$e\n\n");
             }
         }
 
@@ -107,8 +104,6 @@ final class BookUploadService
     }
 
     /**
-     * @param int $bookCode
-     * @return Book
      * @throws \Exception
      */
     private function findOrCreateBook(int $bookCode): Book
@@ -128,27 +123,22 @@ final class BookUploadService
     }
 
     /**
-     * @param array $bookDetails
-     * @param Book $book
      * @throws \Exception
      */
     private function updateBookDetails(array $bookDetails, Book $book): void
     {
-        $location = $this->getLocation($bookDetails[2]);
         $book
             ->setCode($bookDetails[0])
-            ->setLocation($location)
+            ->setLocation($this->getLocation($bookDetails[2]))
             ->setTitle($bookDetails[1])
         ;
         $this->manager->persist($book);
     }
 
     /**
-     * @param string $location
-     * @return Location
      * @throws \Exception
      */
-    private function getLocation(string $location)
+    private function getLocation(?string $location): ?Location
     {
         $location = trim($location);
         if (empty($location)) {
@@ -162,11 +152,9 @@ final class BookUploadService
     }
 
     /**
-     * @param string $locationName
-     * @return Location
      * @throws \Exception
      */
-    private function findOrCreateLocationByName(string $locationName)
+    private function findOrCreateLocationByName(string $locationName): Location
     {
         if ($location = $this->locationRepo->findOneByName($locationName)) {
             return $location;

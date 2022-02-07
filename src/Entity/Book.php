@@ -72,26 +72,16 @@ class Book
         $this->stats = json_encode(['loansCount' => 0, 'loansDuration' => 0]);
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string|null $title
-     * @return Book
-     */
     public function setTitle(?string $title): self
     {
         $this->title = $title;
@@ -99,18 +89,11 @@ class Book
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getCode(): ?int
     {
         return $this->code;
     }
 
-    /**
-     * @param int $code
-     * @return Book
-     */
     public function setCode(int $code): self
     {
         $this->code = $code;
@@ -118,18 +101,11 @@ class Book
         return $this;
     }
 
-    /**
-     * @return \DateTimeInterface|null
-     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param \DateTimeInterface $createdAt
-     * @return Book
-     */
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
@@ -148,10 +124,6 @@ class Book
         return $this->loans->matching($criteria);
     }
 
-    /**
-     * @param Loan $loan
-     * @return Book
-     */
     public function addLoan(Loan $loan): self
     {
         if (!$this->loans->contains($loan)) {
@@ -162,10 +134,6 @@ class Book
         return $this;
     }
 
-    /**
-     * @param Loan $loan
-     * @return Book
-     */
     public function removeLoan(Loan $loan): self
     {
         if ($this->loans->contains($loan)) {
@@ -179,17 +147,11 @@ class Book
         return $this;
     }
 
-    /**
-     * @return array|null
-     */
     public function getStats(): ?array
     {
         return $this->stats ? json_decode($this->stats, true) : ['loansCount' => 0, 'loansDuration' => 0];
     }
 
-    /**
-     * @param array $stats
-     */
     public function setStats(array $stats): void
     {
         $this->stats = json_encode($stats);
@@ -203,9 +165,6 @@ class Book
         $this->setStats($stats);
     }
 
-    /**
-     * @param int $days
-     */
     public function incLoansDuration(int $days): void
     {
         $stats = $this->getStats();
@@ -214,18 +173,11 @@ class Book
         $this->setStats($stats);
     }
 
-    /**
-     * @return Location
-     */
     public function getLocation(): ?Location
     {
         return $this->location;
     }
 
-    /**
-     * @param Location $location
-     * @return Book
-     */
     public function setLocation(?Location $location): Book
     {
         $this->location = $location;

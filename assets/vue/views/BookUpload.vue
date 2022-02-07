@@ -13,7 +13,7 @@
                     <div class="dropbox">
                         <input type="file" ref="book" :disabled="isSaving"
                                @change="filesChange();"
-                               accept="text/csv"
+                               accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                class="input-file"/>
                         <p v-if="isInitial">
                             Drag your file here to begin<br> or click to browse

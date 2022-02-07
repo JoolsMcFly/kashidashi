@@ -4,9 +4,10 @@ namespace App\Service;
 
 use App\DataStructures\UploadStats;
 use App\Entity\Borrower;
+use App\Repository\BorrowerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class BorrowerUploadService
@@ -17,7 +18,7 @@ final class BorrowerUploadService
     private $manager;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var BorrowerRepository
      */
     private $borrowerRepo;
 
@@ -32,7 +33,6 @@ final class BorrowerUploadService
     private $borrowers;
 
     /**
-     * UserService constructor.
      * @param EntityManagerInterface $manager
      */
     public function __construct(EntityManagerInterface $manager)
@@ -44,35 +44,25 @@ final class BorrowerUploadService
     }
 
     /**
-     * @param UploadedFile $file
-     * @return UploadStats
-     * @throws FileException
      * @throws \Exception
      */
-    public function processFile(UploadedFile $file)
+    public function processFile(UploadedFile $file): UploadStats
     {
-        $handle = fopen($file->getPathname(), "r");
-        if (!$handle) {
-            throw new FileException("Cannot open CSV file.");
-        }
-
-        $delimiter = ';';
-        $length = 1024;
-        fgetcsv($handle, $length, $delimiter);
-        while ($borrowerDetails = fgetcsv($handle, $length, $delimiter)) {
-            if (count($borrowerDetails) !== 3) {
+        $spreadSheet = (new Xlsx())->load($file->getPathname());
+        $borrowers = $spreadSheet->getSheet(0)->toArray();
+        array_shift($borrowers); // headers
+        foreach ($borrowers as $borrower) {
+            if (count($borrower) !== 3) {
                 continue;
             }
-
-            if ($this->borrowerExists($borrowerDetails)) {
+            if ($this->borrowerExists($borrower)) {
                 $this->stats->addExisting();
                 continue;
             }
 
-            $this->addBorrower($borrowerDetails);
+            $this->addBorrower($borrower);
         }
         $this->manager->flush();
-        fclose($handle);
 
         return $this->stats;
     }
@@ -95,7 +85,6 @@ final class BorrowerUploadService
     }
 
     /**
-     * @param array $borrowerDetails
      * @throws \Exception
      */
     private function addBorrower(array $borrowerDetails): void

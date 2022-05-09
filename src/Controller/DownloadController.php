@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use App\Entity\Location;
 use App\Service\Export\Books;
 use App\Service\Export\Borrowers;
 use App\Service\Export\OverdueLoans;
@@ -76,6 +77,25 @@ final class DownloadController extends AbstractController
     {
         try {
             $filename = $books->export();
+
+            $fileResponse = new BinaryFileResponse($filename);
+            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+
+            return $fileResponse;
+        } catch (\Exception $exception) {
+            $this->logger->error("Error downloading books:\n\n$exception\n\n\n");
+
+            return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
+        }
+    }
+
+    /**
+     * @Route("/books-by-location/{location}", name="books-by-location")
+     */
+    public function downloadBooksByLocation(Books $books, Location $location = null): Response
+    {
+        try {
+            $filename = $books->export($location);
 
             $fileResponse = new BinaryFileResponse($filename);
             $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));

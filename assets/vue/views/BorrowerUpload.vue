@@ -6,7 +6,7 @@
                 <p
                     class="pointer"
                     @click="downloadBorrowers">Download existing borrowers <i
-                    class="far fa-file-excel"></i></p>
+                    class="fa fa-download"></i></p>
                 <hr />
                 <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
                     <p>Upload a borrower file</p>

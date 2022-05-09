@@ -25,10 +25,9 @@ class ApiBookUploadController extends AbstractController
      */
     public function list(Request $request, BookUploadService $bookUploadService)
     {
-        $truncate = $request->get('truncate') === 'true';
         foreach ($request->files as $file) {
             try {
-                $stats = $bookUploadService->processFile($file, $truncate);
+                $stats = $bookUploadService->processFile($file);
 
                 return $this->json(['message' => $stats->getChangesReport()]);
             } catch (FileException $e) {

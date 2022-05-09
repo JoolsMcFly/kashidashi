@@ -65,23 +65,18 @@ final class BookUploadService
     }
 
     /**
-     * @param UploadedFile $file
-     * @param bool $removeNotInList
-     * @return UploadStats
      * @throws \Exception
      */
-    public function processFile(UploadedFile $file, bool $removeNotInList = false)
+    public function processFile(UploadedFile $file): UploadStats
     {
         $this->loadAllBooks();
-        $uploadedBookCodes = [];
         $spreadSheet = (new Xlsx())->load($file->getPathname());
         $books = $spreadSheet->getSheet(0)->toArray();
         array_shift($books); // headers
         foreach ($books as $bookDetails) {
-            if (count($bookDetails) !== 3) {
+            if (empty($bookDetails[0])) {
                 continue;
             }
-            $uploadedBookCodes[] = $bookDetails[0];
             $book = $this->findOrCreateBook((int) $bookDetails[0]);
             $this->updateBookDetails($bookDetails, $book);
             $this->manager->persist($book);
@@ -91,13 +86,6 @@ final class BookUploadService
             $this->manager->flush();
         } catch (\Exception $e) {
             $this->logger->error("Error uploading book file\n$e\n\n");
-        }
-        if ($removeNotInList) {
-            try {
-                $this->bookRepo->removeNotInCodeList($uploadedBookCodes);
-            } catch (\Exception $e) {
-                $this->logger->error("Error removing books\n$e\n\n");
-            }
         }
 
         return $this->stats;

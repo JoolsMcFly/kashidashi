@@ -12,6 +12,9 @@
                     <div class="">
                         {{ location.book_count }}
                     </div>
+                    <div @click="download(location.id)" class="pointer">
+                        <i class="fa fa-download"></i>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -40,6 +43,12 @@
         watch: {
             locations() {
                 this.loading = false
+            }
+        },
+
+        methods: {
+            download(locationId) {
+                document.location = `/download/books-by-location/${locationId}`;
             }
         },
 

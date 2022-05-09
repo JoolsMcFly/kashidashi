@@ -6,7 +6,7 @@
                 <p
                     class="pointer"
                     @click="downloadBooks">Download all books <i
-                    class="far fa-file-excel"></i></p>
+                    class="fa fa-download"></i></p>
                 <hr/>
                 <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
                     <p>Upload a book file</p>
@@ -21,12 +21,6 @@
                         <p v-if="isSaving">
                             Uploading file...
                         </p>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="truncate-books" v-model="truncate">
-                        <label class="form-check-label" for="truncate-books">
-                            Remove existing books not in file?
-                        </label>
                     </div>
                     <div v-show="Boolean(book)">
                         Click to upload <span v-text="fileName"></span>
@@ -52,8 +46,7 @@ export default {
         return {
             isInitial: true,
             isSaving: false,
-            book: null,
-            truncate: false
+            book: null
         }
     },
 
@@ -81,7 +74,6 @@ export default {
         upload() {
             let data = new FormData()
             data.append('books', this.book)
-            data.append('truncate', this.truncate)
             this.isSaving = true
             axios
                 .post(

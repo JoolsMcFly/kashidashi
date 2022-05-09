@@ -3,6 +3,7 @@
 namespace App\Service\Export;
 
 use App\Entity\Book;
+use App\Entity\Location;
 
 class Books extends Exporter
 {
@@ -15,17 +16,25 @@ class Books extends Exporter
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function export(): string
+    public function export(Location $location = null): string
     {
-        $books = $this->manager->getRepository(Book::class)->findBy([], ['code' => 'asc']);
-        $data = [];
-        foreach ($books as $book) {
-            $data[] = [
+        if ($location) {
+            $this->title .= '-'.$location->getName();
+            $params = ['location' => $location];
+        } else {
+            $params = [];
+        }
+        $data = array_map(function (Book $book) {
+            return [
                 $book->getCode(),
                 $book->getTitle(),
                 $book->getLocation(),
             ];
-        }
+        },
+            $this->manager
+                ->getRepository(Book::class)
+                ->findBy($params, ['code' => 'asc'])
+        );
 
         return parent::exportData($data);
     }

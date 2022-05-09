@@ -11,11 +11,11 @@
                 </div>
                 <ul v-if="activeLoans.length > 0" class="list-group list-group-flush">
                     <li v-for="loan in activeLoans" class="list-group-item">
-                        <p><i class="fas fa-user"></i> {{ loan.borrower.surname + ` (${loan.borrower.katakana})`}} {{
-                            loan.borrower.surname !== loan.borrower.french_surname ? loan.borrower.french_surname : '' }}</p>
-                        <p :class="loanClasses(loan)"><i class="far fa-calendar-alt"></i> {{
-                            loan.started_at }}</p>
-                        <p v-if="book.stats.loansCount > 0">Borrowed {{ book.stats.loansCount }} {{ book.stats.loansCount === 1 ?  'once' : 'times'}}</p>
+                        <p><i class="fas fa-user"></i> {{ loan.borrower.surname + ` (${loan.borrower.katakana})`}}
+                            {{ loan.borrower.surname !== loan.borrower.french_surname ? loan.borrower.french_surname : '' }}</p>
+                        <p :class="loanClasses(loan)"><i class="far fa-calendar-alt"></i>
+                            {{loan.started_at }}</p>
+                        <p v-if="book.stats.loansCount > 0">Borrowed {{ book.stats.loansCount === 1 ?  'once' : `${book.stats.loansCount} times`}}</p>
                         <p v-else>Never borrowed</p>
                     </li>
                 </ul>
@@ -27,7 +27,6 @@
 
 <script>
     export default {
-
         computed: {
             book() {
                 let book = this.$store.getters['activeBook/current']

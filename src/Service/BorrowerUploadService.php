@@ -51,54 +51,50 @@ final class BorrowerUploadService
         $spreadSheet = (new Xlsx())->load($file->getPathname());
         $borrowers = $spreadSheet->getSheet(0)->toArray();
         array_shift($borrowers); // headers
-        foreach ($borrowers as $borrower) {
-            if (count($borrower) !== 3) {
+        foreach ($borrowers as $borrowerDetails) {
+            if (count($borrowerDetails) !== 4) {
                 continue;
             }
-            if ($this->borrowerExists($borrower)) {
+            if ($localBorrower = $this->getLocalBorrower($borrowerDetails)) {
                 $this->stats->addExisting();
-                continue;
+            } else {
+                $localBorrower = new Borrower();
+                $this->stats->addUploaded();
             }
-
-            $this->addBorrower($borrower);
+            $this->updateBorrowerDetails($localBorrower, $borrowerDetails);
         }
         $this->manager->flush();
 
         return $this->stats;
     }
 
-    private function borrowerExists(array $borrower): bool
+    private function getLocalBorrower(array $borrower): ?Borrower
     {
         if (empty($this->borrowers)) {
-            return false;
+            return null;
         }
 
         foreach ($this->borrowers as $b) {
-            if ($b->getSurname() === mb_strtolower($borrower[0])
-                && $b->getFrenchSurname() === mb_strtolower($borrower[1])
-            ) {
-                return true;
+            if ($b->getId() === $borrower[0]) {
+                return $b;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
      * @throws \Exception
      */
-    private function addBorrower(array $borrowerDetails): void
+    private function updateBorrowerDetails(Borrower $borrower, array $borrowerDetails): void
     {
-        $borrower = new Borrower();
         $borrower
-            ->setSurname(mb_strtolower($borrowerDetails[0]))
-            ->setFrenchSurname(mb_strtolower($borrowerDetails[1]))
-            ->setKatakana($borrowerDetails[2])
+            ->setSurname(mb_strtolower($borrowerDetails[1]))
+            ->setFrenchSurname(mb_strtolower($borrowerDetails[2]))
+            ->setKatakana($borrowerDetails[3])
             ->setCreatedAt(new \DateTime())
         ;
         $this->manager->persist($borrower);
-
-        $this->stats->addUploaded();
     }
 
     private function fetchBorrowers()

@@ -1,54 +1,60 @@
 version: '3'
 services:
-  apache:
-    build: .docker/apache
-    container_name: tosyo_apache
-    ports:
-    - 80:80
-    expose:
-    - 80
-    - 9000 # x-debug
-    volumes:
-    - .docker/config/vhosts:/etc/apache2/sites-enabled
-    - .:/var/www/
-    depends_on:
-    - php
+    apache:
+        build: .docker/apache
+        container_name: tosyo_apache
+        ports:
+            - 80:80
+        expose:
+            - 80
+            - 9000 # x-debug
+        volumes:
+            - .docker/config/vhosts:/etc/apache2/sites-enabled
+            - .:/var/www/
+        depends_on:
+            - php
 
-  pg:
-    image: postgres:10.6-alpine
-    container_name: tosyo_pg
-    volumes:
-    - .docker/data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tosyo
+    db:
+        image: mariadb:10.3.36
+        container_name: tosyo_mysql
+        volumes:
+            - .docker/data:/var/lib/postgresql/data
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: tosyo
 
-  php:
-    build: .docker/php
-    container_name: tosyo_php
-    volumes:
-    - .:/var/www/
-    environment:
-    - PHP_IDE_CONFIG=serverName=tosyo.local
-    - PHP_MEMORY_LIMIT=1G
-    depends_on:
-    - pg
-    expose:
-        - 9000 # x-debug
+    php:
+        build: .docker/php
+        container_name: tosyo_php
+        volumes:
+            - .:/var/www/
+        environment:
+            - PHP_IDE_CONFIG=serverName=tosyo.local
+            - PHP_MEMORY_LIMIT=1G
+        depends_on:
+            - db
+        expose:
+            - 9000 # x-debug
 
-  adminer:
-    image: adminer
-    container_name: tosyo_adminer
-    ports:
-      - 8080:8080
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: tosyo_phpmyadmin
+        depends_on:
+            - db
+        ports:
+            - 8080:80
+        links:
+            - db
+        environment:
+            PMA_HOSTS: db
 
-  node:
-    build:
-      context: ./.docker/node
-    container_name: tosyo_node
-    hostname: tosyo-node
-    domainname: local
-    tty: true
-    #    command: bash -c "npm update; npm run start;"
-    volumes:
-    - .:/home/nodeuser/app
+    node:
+        build:
+            context: ./.docker/node
+        container_name: tosyo_node
+        hostname: tosyo-node
+        domainname: local
+        tty: true
+        #    command: bash -c "npm update; npm run start;"
+        volumes:
+            - .:/home/nodeuser/app

@@ -4,12 +4,12 @@
     "version": "1.0.0",
     "engines": {
         "yarn": "1.22",
-        "node": "10.24"
+        "node": "16.17.0"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^0.31.0",
         "axios": "^0.19.0",
-        "node-sass": "^4.13.1",
+        "sass": "^1.54.9",
         "sass-loader": "^9.0.1",
         "vue": "^2.5.18",
         "vue-loader": "^15.4.2",

@@ -74,7 +74,7 @@ final class BookUploadService
         $books = $spreadSheet->getSheet(0)->toArray();
         array_shift($books); // headers
         foreach ($books as $bookDetails) {
-            if (empty($bookDetails[0])) {
+            if (empty($bookDetails[1])) {
                 continue;
             }
             $book = $this->findOrCreateBook((int) $bookDetails[0]);
@@ -94,12 +94,12 @@ final class BookUploadService
     /**
      * @throws \Exception
      */
-    private function findOrCreateBook(int $bookCode): Book
+    private function findOrCreateBook(int $bookId): Book
     {
-        if (isset($this->books[$bookCode])) {
+        if (isset($this->books[$bookId])) {
             $this->stats->addExisting();
 
-            return $this->books[$bookCode];
+            return $this->books[$bookId];
         }
 
         $book = new Book();
@@ -116,9 +116,9 @@ final class BookUploadService
     private function updateBookDetails(array $bookDetails, Book $book): void
     {
         $book
-            ->setCode($bookDetails[0])
-            ->setLocation($this->getLocation($bookDetails[2]))
-            ->setTitle($bookDetails[1])
+            ->setCode($bookDetails[1])
+            ->setTitle($bookDetails[2])
+            ->setLocation($this->getLocation($bookDetails[3]))
         ;
         $this->manager->persist($book);
     }

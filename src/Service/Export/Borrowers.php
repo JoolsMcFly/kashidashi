@@ -8,7 +8,7 @@ class Borrowers extends Exporter
 {
     protected $title = 'Borrowers';
 
-    protected $headers = ['Surname', 'French surname', 'Katakana'];
+    protected $headers = ['ID', 'Surname', 'French surname', 'Katakana'];
 
     /**
      * @return string
@@ -21,6 +21,7 @@ class Borrowers extends Exporter
         $data = [];
         foreach ($borrowers as $borrower) {
             $data[] = [
+                $borrower->getId(),
                 $borrower->getSurname(),
                 $borrower->getFrenchSurname(),
                 $borrower->getKatakana(),

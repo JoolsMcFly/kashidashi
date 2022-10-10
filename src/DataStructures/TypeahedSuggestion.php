@@ -8,19 +8,19 @@ class TypeahedSuggestion
 {
     /**
      * @var string
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $text;
 
     /**
      * @var mixed
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $item;
 
     /**
      * @var string
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $type;
 

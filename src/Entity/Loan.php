@@ -15,34 +15,34 @@ class Loan
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="loans", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $book;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Borrower", inversedBy="loans", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     private $borrower;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      * @Type("DateTime<'Y-m-d'>")
      */
     private $startedAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      * @Type("DateTime<'Y-m-d'>")
      */
     private $stoppedAt;
@@ -139,7 +139,7 @@ class Loan
 
     /**
      * @Serializer\VirtualProperty(name="duration")
-     * @Serializer\Groups("details")
+     * @Serializer\Groups({"details"})
      */
     public function duration()
     {

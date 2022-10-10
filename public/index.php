@@ -4,6 +4,13 @@ use App\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
+$envVars = file_get_contents(__DIR__.'/../.env');
+preg_match('|NEW_SERVER_URL=(.*)|', $envVars, $matches);
+if (!empty($matches[1])) {
+    header("location: {$matches[1]}");
+    exit;
+}
+
 require dirname(__DIR__).'/config/bootstrap.php';
 
 if ($_SERVER['APP_DEBUG']) {

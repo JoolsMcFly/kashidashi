@@ -13,28 +13,34 @@ class BorrowerRepository extends ServiceEntityRepository
         parent::__construct($registry, Borrower::class);
     }
 
+    public function getAll()
+    {
+        return $this->createQueryBuilder('b', 'b.id')
+            ->orderBy('b.katakana', 'asc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     /**
-     * @param string $surname
      * @return Borrower[]
      */
-    public function searchBySurname(string $surname)
+    public function searchBySurname(string $surname): array
     {
         return $this->createQueryBuilder('b')
             ->where('b.surname like :name OR b.katakana LIKE :name OR b.frenchSurname LIKE :name')
             ->setParameter('name', mb_strtolower("$surname%"))
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function getCount(): int
     {
         return $this->createQueryBuilder('b')
             ->select('count(b.id)')
-            ->getQuery()->getSingleScalarResult()
-            ;
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
     }
 }

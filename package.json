@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "engines": {
         "yarn": "1.22",
-        "node": "16.17.0"
+        "node": "^16.17"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^0.31.0",

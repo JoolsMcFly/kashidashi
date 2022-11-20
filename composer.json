@@ -4,9 +4,12 @@
     "require": {
         "php": "^7.4.30",
         "ext-ctype": "*",
+        "ext-ftp": "*",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-zip": "*",
         "composer/package-versions-deprecated": "1.11.99.5",
         "doctrine/common": "^2",
         "doctrine/doctrine-bundle": "^2",

@@ -21,9 +21,8 @@ class ApiInventoryController extends ApiBaseController
     /**
      * @Route("", methods={"GET"})
      * @return JsonResponse
-     * @throws \Exception
      */
-    public function list()
+    public function list(): JsonResponse
     {
         $inventories = $this->getDoctrine()->getRepository(Inventory::class)->findBy([],
             ['startedAt' => 'desc', 'stoppedAt' => 'asc'])
@@ -36,10 +35,8 @@ class ApiInventoryController extends ApiBaseController
 
     /**
      * @Route("/{inventory}/missing-books", methods={"GET"}, requirements={"inventory"="\d+"})
-     * @param Inventory $inventory
-     * @return JsonResponse
      */
-    public function getMissingBooks(Inventory $inventory)
+    public function getMissingBooks(Inventory $inventory): JsonResponse
     {
         $books = $this->getDoctrine()->getRepository(Book::class)->getMissingBooks($inventory->getDetails()['missing']);
         $context = (new SerializationContext())->setGroups(['details']);
@@ -50,9 +47,8 @@ class ApiInventoryController extends ApiBaseController
     /**
      * @Route("", methods={"POST"})
      * @return JsonResponse
-     * @throws \Exception
      */
-    public function create()
+    public function create(): JsonResponse
     {
         try {
             $doctrine = $this->getDoctrine();
@@ -75,11 +71,8 @@ class ApiInventoryController extends ApiBaseController
 
     /**
      * @Route("/{inventory}/{bookCode}", methods={"PUT"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
-     * @param Inventory $inventory
-     * @param string $bookCode
-     * @return JsonResponse
      */
-    public function addBookCode(Inventory $inventory, string $bookCode)
+    public function addBookCode(Inventory $inventory, string $bookCode): JsonResponse
     {
         try {
             $doctrine = $this->getDoctrine();
@@ -119,11 +112,8 @@ class ApiInventoryController extends ApiBaseController
 
     /**
      * @Route("/{inventory}/{bookCode}", methods={"DELETE"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
-     * @param Inventory $inventory
-     * @param string $bookCode
-     * @return JsonResponse
      */
-    public function removeBook(Inventory $inventory, string $bookCode)
+    public function removeBook(Inventory $inventory, string $bookCode): JsonResponse
     {
         $details = $inventory->getDetails();
         $bookPos = array_search($bookCode, $details['returned']);
@@ -145,11 +135,8 @@ class ApiInventoryController extends ApiBaseController
 
     /**
      * @Route("/{inventory}", methods={"POST"})
-     * @param Inventory $inventory
-     * @return JsonResponse
-     * @throws \Exception
      */
-    public function close(Inventory $inventory)
+    public function close(Inventory $inventory): JsonResponse
     {
         try {
             $doctrine = $this->getDoctrine();
@@ -165,8 +152,6 @@ class ApiInventoryController extends ApiBaseController
 
             return $this->json(null, Response::HTTP_OK);
         } catch (\Exception $e) {
-            file_put_contents('/tmp/debug', "\n\n$e\n", FILE_APPEND);
-
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

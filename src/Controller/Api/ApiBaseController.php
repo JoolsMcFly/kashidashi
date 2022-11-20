@@ -9,15 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ApiBaseController extends AbstractController
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
+    private SerializerInterface $serializer;
 
-    /**
-     * ApiBorrowerController constructor.
-     * @param SerializerInterface $serializer
-     */
     public function __construct(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
@@ -25,8 +18,6 @@ class ApiBaseController extends AbstractController
 
     /**
      * @param mixed $objects
-     * @param SerializationContext $context
-     * @return string
      */
     public function serialize($objects, SerializationContext $context)
     {

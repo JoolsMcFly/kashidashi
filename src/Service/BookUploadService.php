@@ -10,8 +10,6 @@ use App\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class BookUploadService
 {
@@ -67,17 +65,17 @@ final class BookUploadService
     /**
      * @throws \Exception
      */
-    public function processFile(UploadedFile $file): UploadStats
+    public function processFile(string $pathName): UploadStats
     {
         $this->loadAllBooks();
-        $spreadSheet = (new Xlsx())->load($file->getPathname());
+        $spreadSheet = (new Xlsx())->load($pathName);
         $books = $spreadSheet->getSheet(0)->toArray();
         array_shift($books); // headers
         foreach ($books as $bookDetails) {
-            if (empty($bookDetails[1])) {
+            if (empty($bookDetails[0])) {
                 continue;
             }
-            $book = $this->findOrCreateBook((int) $bookDetails[0]);
+            $book = $this->findOrCreateBook((int)$bookDetails[0]);
             $this->updateBookDetails($bookDetails, $book);
             $this->manager->persist($book);
         }
@@ -94,12 +92,12 @@ final class BookUploadService
     /**
      * @throws \Exception
      */
-    private function findOrCreateBook(int $bookId): Book
+    private function findOrCreateBook(int $id): Book
     {
-        if (isset($this->books[$bookId])) {
+        if (isset($this->books[$id])) {
             $this->stats->addExisting();
 
-            return $this->books[$bookId];
+            return $this->books[$id];
         }
 
         $book = new Book();
@@ -116,9 +114,9 @@ final class BookUploadService
     private function updateBookDetails(array $bookDetails, Book $book): void
     {
         $book
-            ->setCode($bookDetails[1])
-            ->setTitle($bookDetails[2])
-            ->setLocation($this->getLocation($bookDetails[3]))
+            ->setCode($bookDetails[0])
+            ->setTitle($bookDetails[1])
+            ->setLocation($this->getLocation($bookDetails[2]))
         ;
         $this->manager->persist($book);
     }

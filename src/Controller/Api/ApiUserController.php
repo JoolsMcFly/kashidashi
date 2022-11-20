@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * Class ApiBorrowerController
@@ -21,33 +20,20 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class ApiUserController extends AbstractController
 {
-
     /**
      * @var SerializerInterface
      */
     private $serializer;
 
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encoder;
-
-    /**
-     * ApiBorrowerController constructor.
-     * @param SerializerInterface $serializer
-     * @param UserPasswordEncoderInterface $encoder
-     */
-    public function __construct(SerializerInterface $serializer, UserPasswordEncoderInterface $encoder)
+    public function __construct(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
-        $this->encoder = $encoder;
     }
 
     /**
      * @Route("", methods={"GET"})
-     * @return JsonResponse
      */
-    public function list()
+    public function list(): JsonResponse
     {
         $users = $this->getDoctrine()->getRepository(User::class)->getNonAdminUsers();
 
@@ -60,10 +46,8 @@ class ApiUserController extends AbstractController
 
     /**
      * @Route("", methods={"POST"})
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function save(Request $request)
+    public function save(Request $request): JsonResponse
     {
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         try {
@@ -85,10 +69,8 @@ class ApiUserController extends AbstractController
 
     /**
      * @Route("/{id}", methods={"DELETE"}, requirements={"id"="\d+"})
-     * @param User $user
-     * @return JsonResponse
      */
-    public function delete(User $user)
+    public function delete(User $user): JsonResponse
     {
         if (!$this->getUser()->isAdmin() && $user->isAdmin()) {
             return $this->json('Insufficient privileges to delete this user.', Response::HTTP_FORBIDDEN);

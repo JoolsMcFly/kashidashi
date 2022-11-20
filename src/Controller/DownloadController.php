@@ -2,17 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\Book;
 use App\Entity\Location;
 use App\Service\Export\Books;
 use App\Service\Export\Borrowers;
 use App\Service\Export\OverdueLoans;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -20,10 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 final class DownloadController extends AbstractController
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -40,10 +34,7 @@ final class DownloadController extends AbstractController
         try {
             $filename = $loansExport->export();
 
-            $fileResponse = new BinaryFileResponse($filename);
-            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-
-            return $fileResponse;
+            return $this->file($filename, basename($filename));
         } catch (\Exception $exception) {
             $this->logger->error("Error downloading overdue loans:\n\n$exception\n\n\n");
 
@@ -59,14 +50,11 @@ final class DownloadController extends AbstractController
         try {
             $filename = $borrowers->export();
 
-            $fileResponse = new BinaryFileResponse($filename);
-            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-
-            return $fileResponse;
+            return $this->file($filename, basename($filename));
         } catch (\Exception $exception) {
             $this->logger->error("Error downloading borrowers:\n\n$exception\n\n\n");
 
-            return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
+            return $this->redirect('/', Response::HTTP_TEMPORARY_REDIRECT);
         }
     }
 
@@ -78,14 +66,11 @@ final class DownloadController extends AbstractController
         try {
             $filename = $books->export();
 
-            $fileResponse = new BinaryFileResponse($filename);
-            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-
-            return $fileResponse;
+            return $this->file($filename, basename($filename));
         } catch (\Exception $exception) {
             $this->logger->error("Error downloading books:\n\n$exception\n\n\n");
 
-            return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
+            return $this->redirect('/', Response::HTTP_TEMPORARY_REDIRECT);
         }
     }
 
@@ -97,14 +82,11 @@ final class DownloadController extends AbstractController
         try {
             $filename = $books->export($location);
 
-            $fileResponse = new BinaryFileResponse($filename);
-            $fileResponse->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-
-            return $fileResponse;
+            return $this->file($filename, basename($filename));
         } catch (\Exception $exception) {
             $this->logger->error("Error downloading books:\n\n$exception\n\n\n");
 
-            return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
+            return $this->redirect('/', Response::HTTP_TEMPORARY_REDIRECT);
         }
     }
 }

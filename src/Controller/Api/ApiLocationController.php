@@ -3,15 +3,10 @@
 namespace App\Controller\Api;
 
 use App\Entity\Location;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\ORMException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,33 +17,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ApiLocationController extends AbstractController
 {
+    private SerializerInterface $serializer;
 
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * ApiBorrowerController constructor.
-     * @param SerializerInterface $serializer
-     * @param LoggerInterface $logger
-     */
-    public function __construct(SerializerInterface $serializer, LoggerInterface $logger)
+    public function __construct(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
-        $this->logger = $logger;
     }
 
     /**
      * @Route("", methods={"GET"})
-     * @return JsonResponse
      */
-    public function list()
+    public function list(): JsonResponse
     {
         $locations = $this->getDoctrine()->getRepository(Location::class)->findAll();
 

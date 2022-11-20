@@ -3,6 +3,8 @@
 namespace App\Service\Export;
 
 use App\Entity\Borrower;
+use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 
 class Borrowers extends Exporter
 {
@@ -11,9 +13,8 @@ class Borrowers extends Exporter
     protected $headers = ['ID', 'Surname', 'French surname', 'Katakana'];
 
     /**
-     * @return string
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws Exception
+     * @throws WriterException
      */
     public function export(): string
     {

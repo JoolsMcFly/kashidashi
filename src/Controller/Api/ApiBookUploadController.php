@@ -2,10 +2,10 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Book;
 use App\Service\BookUploadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,15 +19,13 @@ class ApiBookUploadController extends AbstractController
 {
     /**
      * @Route("/api/books-upload", methods={"POST"})
-     * @param Request $request
-     * @param BookUploadService $bookUploadService
-     * @return JsonResponse
      */
-    public function list(Request $request, BookUploadService $bookUploadService)
+    public function upload(Request $request, BookUploadService $bookUploadService): JsonResponse
     {
+        /** @var UploadedFile $file */
         foreach ($request->files as $file) {
             try {
-                $stats = $bookUploadService->processFile($file);
+                $stats = $bookUploadService->processFile($file->getPathname());
 
                 return $this->json(['message' => $stats->getChangesReport()]);
             } catch (FileException $e) {
@@ -49,5 +47,7 @@ class ApiBookUploadController extends AbstractController
                 return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
+
+        return $this->json(null);
     }
 }

@@ -8,14 +8,10 @@ use App\Repository\BorrowerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class BorrowerUploadService
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    private EntityManagerInterface $manager;
 
     /**
      * @var BorrowerRepository
@@ -25,7 +21,7 @@ final class BorrowerUploadService
     /**
      * @var UploadStats
      */
-    private $stats;
+    private UploadStats $stats;
 
     /**
      * @var ArrayCollection|Borrower[]
@@ -46,41 +42,30 @@ final class BorrowerUploadService
     /**
      * @throws \Exception
      */
-    public function processFile(UploadedFile $file): UploadStats
+    public function processFile(string $filename): UploadStats
     {
-        $spreadSheet = (new Xlsx())->load($file->getPathname());
+        $spreadSheet = (new Xlsx())->load($filename);
         $borrowers = $spreadSheet->getSheet(0)->toArray();
         array_shift($borrowers); // headers
         foreach ($borrowers as $borrowerDetails) {
             if (count($borrowerDetails) !== 4) {
                 continue;
             }
-            if ($localBorrower = $this->getLocalBorrower($borrowerDetails)) {
-                $this->stats->addExisting();
-            } else {
-                $localBorrower = new Borrower();
-                $this->stats->addUploaded();
-            }
-            $this->updateBorrowerDetails($localBorrower, $borrowerDetails);
+            $borrower = $this->findOrCreateBorrower($borrowerDetails);
+            $this->updateBorrowerDetails($borrower, $borrowerDetails);
         }
         $this->manager->flush();
 
         return $this->stats;
     }
 
-    private function getLocalBorrower(array $borrower): ?Borrower
+    private function getLocalBorrower(int $borrowerId): ?Borrower
     {
-        if (empty($this->borrowers)) {
+        if (empty($this->borrowers) || !isset($this->borrowers[$borrowerId])) {
             return null;
         }
 
-        foreach ($this->borrowers as $b) {
-            if ($b->getId() === $borrower[0]) {
-                return $b;
-            }
-        }
-
-        return null;
+        return $this->borrowers[$borrowerId];
     }
 
     /**
@@ -99,6 +84,19 @@ final class BorrowerUploadService
 
     private function fetchBorrowers()
     {
-        $this->borrowers = $this->borrowerRepo->findBy([], ['katakana' => 'asc']);
+        $this->borrowers = $this->borrowerRepo->getAll();
+    }
+
+    private function findOrCreateBorrower(array $borrowerDetails): Borrower
+    {
+        $id = $borrowerDetails[0];
+        if (!empty($id) && $borrower = $this->getLocalBorrower($id)) {
+            $this->stats->addExisting();
+        } else {
+            $borrower = new Borrower();
+            $this->stats->addUploaded();
+        }
+
+        return $borrower;
     }
 }

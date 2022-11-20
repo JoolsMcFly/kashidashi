@@ -16,33 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ApiBorrowerController
 {
-    /**
-     * @var BorrowerService
-     */
-    private $borrowerService;
+    private BorrowerService $borrowerService;
 
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * ApiBorrowerController constructor.
-     * @param BorrowerService $borrowerService
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(BorrowerService $borrowerService, SerializerInterface $serializer)
+    public function __construct(BorrowerService $borrowerService)
     {
         $this->borrowerService = $borrowerService;
-        $this->serializer = $serializer;
     }
 
     /**
      * @Route("/search/{borrowerName}", methods={"GET"})
-     * @param string $borrowerName
-     * @return JsonResponse
      */
-    public function search(string $borrowerName)
+    public function search(string $borrowerName): JsonResponse
     {
         $borrowers = $this->borrowerService->findSuggestions($borrowerName);
 

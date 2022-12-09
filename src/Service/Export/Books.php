@@ -11,11 +11,6 @@ class Books extends Exporter
 
     protected $headers = ['Code', 'Title', 'Location'];
 
-    /**
-     * @return string
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     */
     public function export(Location $location = null): string
     {
         if ($location) {

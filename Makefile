@@ -3,6 +3,9 @@ php_command=docker-compose exec -u dev php
 php:
 	${php_command} bash
 
+db:
+	docker-compose exec db bash
+
 node:
 	docker-compose exec -u node node bash
 
@@ -23,6 +26,9 @@ ci:
 
 require:
 	${php_command} composer require ${NAME}
+
+build:
+	docker-compose up -d --build
 
 up:
 	docker-compose up -d

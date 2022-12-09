@@ -18,9 +18,8 @@ class ApiStatsController extends AbstractController
 {
     /**
      * @Route("", methods={"GET"})
-     * @return JsonResponse
      */
-    public function getStats()
+    public function getStats(): JsonResponse
     {
         $doctrine = $this->getDoctrine();
         $loanRepository = $doctrine->getRepository(Loan::class);

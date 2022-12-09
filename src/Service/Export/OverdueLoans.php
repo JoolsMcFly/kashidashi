@@ -3,6 +3,8 @@
 namespace App\Service\Export;
 
 use App\Entity\Loan;
+use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 
 class OverdueLoans extends Exporter
 {
@@ -18,9 +20,8 @@ class OverdueLoans extends Exporter
     ];
 
     /**
-     * @return string
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws Exception
+     * @throws WriterException
      */
     public function export(): string
     {

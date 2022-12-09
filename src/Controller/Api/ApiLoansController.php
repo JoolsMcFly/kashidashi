@@ -6,7 +6,6 @@ use App\Entity\Book;
 use App\Entity\Borrower;
 use App\Entity\Loan;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,26 +19,21 @@ class ApiLoansController extends ApiBaseController
 {
     /**
      * @Route("/by-user/{borrower}", methods={"GET"})
-     * @param Borrower $borrower
-     * @return JsonResponse
      */
-    public function getLoansByUser(Borrower $borrower)
+    public function getLoansByUser(Borrower $borrower): JsonResponse
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->findBy([
             'borrower' => $borrower,
             'stoppedAt' => null,
-        ])
-        ;
+        ]);
 
         return $this->serializeLoans($loans);
     }
 
     /**
      * @Route("/by-book/{book}", methods={"GET"})
-     * @param Book $book
-     * @return JsonResponse
      */
-    public function getLoansByBook(Book $book)
+    public function getLoansByBook(Book $book): JsonResponse
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->getByBook($book);
 
@@ -48,12 +42,8 @@ class ApiLoansController extends ApiBaseController
 
     /**
      * @Route("/by-user/{borrower}/{bookCode}", methods={"POST"})
-     * @param Borrower $borrower
-     * @param string $bookCode
-     * @return JsonResponse
-     * @throws \Exception
      */
-    public function addLoan(Borrower $borrower, string $bookCode)
+    public function addLoan(Borrower $borrower, string $bookCode): JsonResponse
     {
         try {
             $doctrine = $this->getDoctrine();
@@ -64,8 +54,7 @@ class ApiLoansController extends ApiBaseController
             $existingLoan = $doctrine->getRepository(Loan::class)->findOneBy([
                 'book' => $book,
                 'stoppedAt' => null,
-            ])
-            ;
+            ]);
             if (!empty($existingLoan)) {
                 return $this->json("Book already borrowed by {$existingLoan->getBorrower()}.", Response::HTTP_CONFLICT);
             }
@@ -90,17 +79,14 @@ class ApiLoansController extends ApiBaseController
                 true
             );
         } catch (\Exception $e) {
-            $this->json('An error occurred when saving your book loan.', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->json('An error occurred when saving your book loan.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * @Route("/{loan}", methods={"PUT"})
-     * @param Loan $loan
-     * @return JsonResponse
-     * @throws \Exception
      */
-    public function endLoan(Loan $loan)
+    public function endLoan(Loan $loan): JsonResponse
     {
         try {
             $manager = $this->getDoctrine()->getManager();
@@ -130,9 +116,8 @@ class ApiLoansController extends ApiBaseController
 
     /**
      * @Route("/overdue", name="api_overdue_loans_list", methods={"GET"})
-     * @return JsonResponse
      */
-    public function overdueLoans()
+    public function overdueLoans(): JsonResponse
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->getOverdue();
 

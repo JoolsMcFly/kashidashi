@@ -18,11 +18,8 @@ class ApiBorrowerUploadController extends AbstractController
 {
     /**
      * @Route("/api/borrowers-upload", methods={"POST"})
-     * @param Request $request
-     * @param BorrowerUploadService $userUploadService
-     * @return JsonResponse
      */
-    public function list(Request $request, BorrowerUploadService $userUploadService)
+    public function upload(Request $request, BorrowerUploadService $userUploadService): JsonResponse
     {
         $user = $this->getUser();
         foreach ($request->files as $file) {
@@ -46,5 +43,7 @@ class ApiBorrowerUploadController extends AbstractController
                 return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
+
+        return $this->json(null);
     }
 }

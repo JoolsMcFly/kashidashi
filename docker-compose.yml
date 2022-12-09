@@ -4,7 +4,7 @@ services:
         build: .docker/apache
         container_name: tosyo_apache
         ports:
-            - 80:80
+            - "80:80"
         expose:
             - 80
             - 9000 # x-debug
@@ -19,6 +19,7 @@ services:
         container_name: tosyo_mysql
         volumes:
             - .docker/data:/var/lib/postgresql/data
+#            - .docker/mysql/defaults-file.cnf:/etc/mysql/conf.d/defaults-file.cnf
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: tosyo
@@ -42,7 +43,7 @@ services:
         depends_on:
             - db
         ports:
-            - 8080:80
+            - "8080:80"
         links:
             - db
         environment:

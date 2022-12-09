@@ -21,37 +21,22 @@ class ApiSearchController
     private $borrowerService;
 
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * @var BookService
      */
     private $bookService;
 
-    /**
-     * ApiBorrowerController constructor.
-     * @param BorrowerService $borrowerService
-     * @param BookService $bookService
-     * @param SerializerInterface $serializer
-     */
     public function __construct(
         BorrowerService $borrowerService,
-        BookService $bookService,
-        SerializerInterface $serializer
+        BookService $bookService
     ) {
         $this->borrowerService = $borrowerService;
-        $this->serializer = $serializer;
         $this->bookService = $bookService;
     }
 
     /**
      * @Route("/{search}", methods={"GET"})
-     * @param string $search
-     * @return JsonResponse
      */
-    public function search(string $search = '')
+    public function search(string $search = ''): JsonResponse
     {
         if (is_numeric($search)) {
             $suggestions = $this->bookService->findSuggestions($search);

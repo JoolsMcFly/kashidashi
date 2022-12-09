@@ -4,6 +4,12 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+  ftp.server: '%env(EXPORT_FTP_SERVER)%'
+  ftp.login: '%env(EXPORT_FTP_LOGIN)%'
+  ftp.password: '%env(EXPORT_FTP_PASSWORD)%'
+  security.file_password: '%env(EXPORT_FILE_PASSWORD)%'
+  mysql.dumper_user: '%env(MYSQL_DUMPER_USER)%'
+  mysql.defaults_file: '%env(MYSQL_DEFAULTS_FILE)%'
 
 services:
     # default configuration for services in *this* file

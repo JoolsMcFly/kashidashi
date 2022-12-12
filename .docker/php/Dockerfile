@@ -16,6 +16,7 @@ RUN pecl install xdebug-2.8.1 \
     && docker-php-ext-enable xdebug
 
 ADD xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY set_xdebug_vars.bash /home/dev/
 
 COPY php.ini /etc/php/7.4.30/php.ini
 COPY php-fpm-pool.conf /etc/php/7.4.30/pool.d/www.conf
@@ -23,11 +24,12 @@ COPY php-fpm-pool.conf /etc/php/7.4.30/pool.d/www.conf
 RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
    mv composer.phar /usr/local/bin/composer
 
-RUN groupadd dev -g 999
-RUN useradd dev -g dev -d /home/dev -m
+RUN groupadd dev -g 999 && \
+    useradd dev -g dev -d /home/dev -m && \
+    chmod +x /home/dev/set_xdebug_vars.bash && bash /home/dev/set_xdebug_vars.bash
 
-RUN rm -rf /var/lib/apt/lists/*
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+RUN rm -rf /var/lib/apt/lists/* && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
 

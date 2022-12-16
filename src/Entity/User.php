@@ -65,6 +65,12 @@ class User implements EncoderAwareInterface, UserInterface
     private $roles;
 
     /**
+     * @ORM\ManyToOne(targetEntity=Location::class, inversedBy="users")
+     * @Serializer\Groups({"list"})
+     */
+    private $location;
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -241,5 +247,17 @@ class User implements EncoderAwareInterface, UserInterface
     public function isAdmin()
     {
         return in_array('ROLE_ADMIN', $this->getRoles());
+    }
+
+    public function getLocation(): ?Location
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?Location $location): self
+    {
+        $this->location = $location;
+
+        return $this;
     }
 }

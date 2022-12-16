@@ -15,19 +15,26 @@
                 <input class="form-control" type="password" id="password" v-model="password" placeholder="Password">
             </div>
             <div v-if="isAdmin">
-                <span>Role</span><br />
-                <div class="form-check-inline form-check">
-                    <input type="radio" name="role" class="form-check-input" id="role_admin" value="ROLE_USER"
-                           v-model="role">
+                <span>Roles</span><br />
+                <div class="form-check form-check">
+                    <input type="checkbox" class="form-check-input" id="role_admin" value="ROLE_USER"
+                           v-model="roles">
                     <label class="form-check-label" for="role_admin">Standard</label>
                 </div>
-                <div class="form-check-inline form-check">
-                    <input type="radio" name="role" class="form-check-input" id="role_inventory" value="ROLE_INVENTORY"
-                           v-model="role">
+                <div class="form-check form-check">
+                    <input type="checkbox" class="form-check-input" id="role_inventory" value="ROLE_INVENTORY"
+                           v-model="roles">
                     <label class="form-check-label" for="role_inventory">Inventory</label>
+                    <div v-if="isInventory">
+                        <label for="location">Assigned location:</label>
+                        <select id="location" class="ml-4 custom-select custom-select-sm" style="width: auto" v-model="location">
+                            <option value="0">No location</option>
+                            <option v-for="location in locations" :value="location.id">{{ location.name }}</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <input v-else type="hidden" value="ROLE_USER" v-model="role"/>
+            <input v-else type="hidden" value="ROLE_USER" v-model="roles"/>
             <div class="form-group mt-3">
                 <button @click="saveUser" type="submit" class="btn btn-primary">Save</button>
                 <button @click="cancel" type="submit" class="btn btn-secondary">Cancel</button>
@@ -45,7 +52,8 @@
                 surname: '',
                 email: '',
                 password: '',
-                role: this.isAdmin ? '' : 'ROLE_USER',
+                location: 0,
+                roles: this.isAdmin ? [] : ['ROLE_USER'],
             }
         },
 
@@ -54,6 +62,15 @@
                 return this.$store.dispatch('users/add')
             },
             saveUser() {
+                if (this.roles.filter(r => !!r).length < 1) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: 'User must have at least one role.',
+                        position: 'bottomCenter'
+                    });
+
+                    return
+                }
                 this.$store.dispatch('users/save', this.$data).then(() => this.$router.push('/users'))
             },
             cancel() {
@@ -63,21 +80,33 @@
         },
 
         computed: {
+            locations() {
+                return this.$store.getters['locations/all']
+            },
             currentUser() {
                 return this.$store.getters['users/current']
             },
             isAdmin() {
                 return this.$store.getters['security/hasRole']('ROLE_ADMIN')
+            },
+            isInventory() {
+                return this.currentUser !== null && this.roles.includes('ROLE_INVENTORY')
             }
         },
 
         created() {
             for (let prop in this.currentUser) {
-                this[prop] = this.currentUser[prop]
+                if (prop === 'location') {
+                    this.location = this.currentUser[prop].id
+                } else if (prop !== 'roles') {
+                    this[prop] = this.currentUser[prop]
+                }
             }
             if (this.currentUser !== null) {
-                this.role = JSON.parse(this.currentUser.roles)[0]
+                this.roles = JSON.parse(this.currentUser.roles)
             }
+
+            this.$store.dispatch('locations/all')
         }
     }
 </script>

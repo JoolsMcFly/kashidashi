@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Location;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -47,13 +48,11 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Request $request
-     * @return User
      * @throws EntityNotFoundException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function createUserFromRequest(Request $request)
+    public function createUserFromRequest(Request $request): User
     {
         $manager = $this->getEntityManager();
         $userId = $request->get('id');
@@ -67,11 +66,16 @@ class UserRepository extends ServiceEntityRepository
         }
 
         $plainPassword = $request->get('password');
+        $locationId = $request->get('location');
+        $roles = explode(',', $request->get('roles'));
         $user
             ->setFirstname($request->get('firstname'))
             ->setSurname($request->get('surname'))
             ->setEmail($request->get('email'))
-            ->setRoles([$request->get('role')])
+            ->setRoles(array_values(array_filter($roles)))
+            ->setLocation(
+                $locationId ? $manager->getRepository(Location::class)->find($locationId) : null
+            )
         ;
         if (!empty($plainPassword)) {
             $user->setPassword($this->encoder->encodePassword($user, $plainPassword));

@@ -8,9 +8,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 
 class OverdueLoans extends Exporter
 {
-    protected $title = 'Overdue loans';
+    protected string $title = 'Overdue loans';
 
-    protected $headers = [
+    protected array $headers = [
         'Book code',
         'Borrower',
         'Book location',

@@ -50,6 +50,7 @@
 
         methods: {
             addUser() {
+                this.$store.commit('users/setCurrent', null)
                 return this.$router.push('/users/add')
             },
             editUser(user) {

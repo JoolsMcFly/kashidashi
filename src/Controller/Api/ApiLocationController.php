@@ -3,12 +3,11 @@
 namespace App\Controller\Api;
 
 use App\Entity\Location;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class ApiBorrowerController
@@ -31,9 +30,7 @@ class ApiLocationController extends AbstractController
     {
         $locations = $this->getDoctrine()->getRepository(Location::class)->findAll();
 
-        $context = new SerializationContext();
-        $context->setGroups(['list']);
-        $locations = $this->serializer->serialize($locations, 'json', $context);
+        $locations = $this->serializer->serialize($locations, 'json', ['groups' => ['list']]);
 
         return new JsonResponse($locations, Response::HTTP_CREATED, [], true);
     }

@@ -2,7 +2,7 @@
 
 namespace App\DataStructures;
 
-use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 class TypeahedSuggestion
 {

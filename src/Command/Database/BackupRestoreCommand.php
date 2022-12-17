@@ -55,6 +55,7 @@ class BackupRestoreCommand extends Command
 
             $decryptedFile = $this->fileEncrypter->decryptFile($localFile, $localFile.'-decrypted');
             $io->note("Dump downloaded to $localFile and decrypted to $decryptedFile.");
+            die;
             $dbUser = $this->askUsernameAndPassword($input, $output);
             $this->dumper->restore($decryptedFile, $dbUser);
             $io->success('Restore command executed successfully.');

@@ -9,35 +9,26 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 abstract class Exporter
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $manager;
+    protected EntityManagerInterface $manager;
+
+    private Worksheet $worksheet;
+
+    private Spreadsheet $spreadsheet;
+
+    protected string $title = 'Untitled';
 
     /**
-     * @var Worksheet
+     * @var string[]
      */
-    private $worksheet;
+    protected array $headers = [];
 
     /**
-     * @var Spreadsheet
+     * @throws \LogicException
      */
-    private $spreadsheet;
-
-    /**
-     * @var string
-     */
-    protected $title = 'Untitled';
-
-    /**
-     * @var array|string[]
-     */
-    protected $headers = [];
-
     public function __construct(EntityManagerInterface $manager)
     {
         if (empty($this->headers)) {
-            throw new \Exception("You should set header property in child classes.");
+            throw new \LogicException('You should set header property in child classes.');
         }
 
         $this->manager = $manager;
@@ -45,7 +36,7 @@ abstract class Exporter
         $this->worksheet = $this->spreadsheet->getActiveSheet();
     }
 
-    public function exportData(array $data): string
+    protected function exportData(array $data): string
     {
         array_unshift($data, $this->headers);
         $this->worksheet->fromArray($data);

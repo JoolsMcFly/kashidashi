@@ -25,7 +25,7 @@ class ApiStatsController extends AbstractController
         $loanRepository = $doctrine->getRepository(Loan::class);
         $loans = $loanRepository->getActiveLoansCount();
         $overdue = $loanRepository->getOverdueCount();
-        $books = $doctrine->getRepository(Book::class)->getCount();
+        $books = $doctrine->getRepository(Book::class)->getTotalBookCount();
         $borrowers = $doctrine->getRepository(Borrower::class)->getCount();
 
         return $this->json([

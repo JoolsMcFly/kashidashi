@@ -31,7 +31,7 @@ class ApiBookUploadController extends AbstractController
             } catch (FileException $e) {
                 $error = 'Error reading uploaded file.';
                 if ($this->getUser()->isAdmin()) {
-                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
+                    $error .= "fetchDetails<br>" . $e->getMessage() . "fetchDetails<br>" . $e->getFile() . ':' . $e->getLine();
                 }
 
                 return $this->json(
@@ -41,7 +41,7 @@ class ApiBookUploadController extends AbstractController
             } catch (\Exception $e) {
                 $error = 'An error has occurred when processing your file.';
                 if ($this->getUser()->isAdmin()) {
-                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
+                    $error .= "fetchDetails<br>" . $e->getMessage() . "fetchDetails<br>" . $e->getFile() . ':' . $e->getLine();
                 }
 
                 return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);

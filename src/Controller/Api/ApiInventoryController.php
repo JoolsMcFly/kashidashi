@@ -2,11 +2,12 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Book;
 use App\Entity\Inventory;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\InventoryItem;
+use App\Entity\User;
+use App\Repository\BookRepository;
+use App\Repository\InventoryItemRepository;
+use App\Repository\InventoryRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,136 +20,140 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApiInventoryController extends ApiBaseController
 {
     /**
-     * @Route("", methods={"GET"})
-     * @return JsonResponse
+     * @Route("", methods={"GET"}, name="inventories")
      */
-    public function list(): JsonResponse
+    public function list(InventoryRepository $inventoryRepository): JsonResponse
     {
-        $inventories = $this->getDoctrine()->getRepository(Inventory::class)->findBy([],
-            ['startedAt' => 'desc', 'stoppedAt' => 'asc'])
-        ;
+        $inventories = $inventoryRepository->findBy(
+            [],
+            ['startedAt' => 'desc', 'stoppedAt' => 'asc']
+        );
 
-        $context = (new SerializationContext())->setGroups(['details']);
 
-        return new JsonResponse($this->serialize($inventories, $context), Response::HTTP_CREATED, [], true);
+        return new JsonResponse($this->serialize($inventories, ['groups' => ['details']], 'Y-m-d H:i:s'), Response::HTTP_CREATED, [], true);
     }
 
     /**
-     * @Route("/{inventory}/missing-books", methods={"GET"}, requirements={"inventory"="\d+"})
+     * @Route("/{inventory}/details", methods={"GET"}, requirements={"inventory"="\d+"}, name="inventory_details")
      */
-    public function getMissingBooks(Inventory $inventory): JsonResponse
+    public function details(Inventory $inventory, InventoryItemRepository $itemRepository, BookRepository $bookRepository): JsonResponse
     {
-        $books = $this->getDoctrine()->getRepository(Book::class)->getMissingBooks($inventory->getDetails()['missing']);
-        $context = (new SerializationContext())->setGroups(['details']);
+        $details = [
+            'to_move' => $itemRepository->countBooksToMove($inventory),
+            'missing' => $bookRepository->countBooksNotInInventory($inventory),
+        ];
 
-        return new JsonResponse($this->serialize($books, $context), Response::HTTP_OK, [], true);
+        return new JsonResponse(json_encode($details), Response::HTTP_OK, [], true);
     }
 
     /**
-     * @Route("", methods={"POST"})
-     * @return JsonResponse
+     * @Route("", methods={"POST"}, name="inventory_create")
      */
-    public function create(): JsonResponse
+    public function create(BookRepository $bookRepository): JsonResponse
     {
         try {
-            $doctrine = $this->getDoctrine();
-            $manager = $doctrine->getManager();
-            $bookCount = $doctrine->getRepository(Book::class)->getCount();
+            $bookCount = $bookRepository->getTotalBookCount();
             $inventory = new Inventory();
             $inventory
                 ->setStartedAt(new \DateTime())
                 ->setAvailableBookCount($bookCount)
             ;
-            $manager->persist($inventory);
-            $manager->flush();
-            $context = (new SerializationContext())->setGroups(['details']);
+            $this->entityManager->persist($inventory);
+            $this->entityManager->flush();
 
-            return new JsonResponse($this->serialize($inventory, $context), Response::HTTP_CREATED, [], true);
+            return new JsonResponse($this->serialize($inventory, ['groups' => ['details']]), Response::HTTP_CREATED, [], true);
         } catch (\Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * @Route("/{inventory}/{bookCode}", methods={"PUT"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
+     * @Route("/{inventory}/{bookCode}", methods={"PUT"}, requirements={"inventory"="\d+", "bookCode"="\d+"}, name="inventory_add_book")
      */
-    public function addBookCode(Inventory $inventory, string $bookCode): JsonResponse
-    {
+    public function addBookCode(
+        BookRepository $bookRepository,
+        InventoryItemRepository $itemRepository,
+        Inventory $inventory,
+        string $bookCode
+    ): JsonResponse {
         try {
-            $doctrine = $this->getDoctrine();
-            $book = $doctrine->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
+            $book = $bookRepository->getBookWithCurrentLoan($bookCode);
             if (!$book) {
                 return $this->json("Book code '$bookCode' doesn't exist.", Response::HTTP_BAD_REQUEST);
             }
 
-            $details = $inventory->getDetails();
-            if (in_array($bookCode, $details['returned'])) {
-                return $this->json("Book code '$bookCode' already added..", Response::HTTP_BAD_REQUEST);
+            if ($itemRepository->isCodeAlreadyAdded($inventory, $bookCode)) {
+                return $this->json("Book code '$bookCode' already added.", Response::HTTP_BAD_REQUEST);
             }
 
-            $details['returned'][] = $bookCode;
-            $inventory
-                ->setDetails($details)
-                ->increaseBookCount()
+            $inventory->increaseBookCount();
+            $inventoryItem = new InventoryItem();
+            /** @var User $user */
+            $user = $this->getUser();
+            $inventoryItem
+                ->setFoundAt($user->getLocation())
+                ->setBelongsAt($book->getLocation())
+                ->setBook($book)
+                ->setInventory($inventory)
             ;
-            $manager = $doctrine->getManager();
-            $manager->persist($inventory);
-            $manager->flush();
+            $this->entityManager->persist($inventory);
+            $this->entityManager->persist($inventoryItem);
+            $this->entityManager->flush();
 
-            $context = (new SerializationContext())->setGroups(['details']);
+            $loan = $book->getLoans()->first();
+            if ($loan) {
+                $borrowerName = $loan->getBorrower()->getFullName();
+            } else {
+                $borrowerName = null;
+            }
 
             $responseData = [
-                'inventory' => json_decode($this->serialize($inventory, $context)),
-                'book' => json_decode(
-                    $this->serialize($book, (new SerializationContext())->setGroups(['basic']))
+                'inventory' => json_decode(
+                    $this->serialize($inventory, ['groups' => ['details']]), true
                 ),
+                'book' => json_decode(
+                    $this->serialize($book, ['groups' => ['basic']]), true
+                ),
+                'inventory_item' => json_decode(
+                    $this->serialize($inventoryItem, ['groups' => ['basic']]), true
+                ),
+                'books_to_move' => $itemRepository->getItemsToMove($inventory, $user->getLocation()),
+                'borrowed_by' => $borrowerName,
             ];
 
             return $this->json($responseData, Response::HTTP_ACCEPTED);
         } catch (\Exception $e) {
-            return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * @Route("/{inventory}/{bookCode}", methods={"DELETE"}, requirements={"inventory"="\d+", "bookCode"="\d+"})
+     * @Route("/{inventory}/{bookCode}", methods={"DELETE"}, requirements={"inventory"="\d+", "bookCode"="\d+"}, name="inventory_remove_book")
      */
-    public function removeBook(Inventory $inventory, string $bookCode): JsonResponse
+    public function removeBook(Inventory $inventory, string $bookCode, InventoryItemRepository $itemRepository): JsonResponse
     {
-        $details = $inventory->getDetails();
-        $bookPos = array_search($bookCode, $details['returned']);
-        if ($bookPos) {
-            unset($details['returned'][$bookPos]);
-            $inventory
-                ->setDetails($details)
-                ->decreaseBookCount()
-            ;
-            $manager = $this->getDoctrine()->getManager();
-            $manager->persist($inventory);
-            $manager->flush();
+        if ($itemRepository->removeCode($inventory, $bookCode)) {
+            $inventory->decreaseBookCount();
+            $this->entityManager->persist($inventory);
+            $this->entityManager->flush();
         }
 
-        $context = (new SerializationContext())->setGroups(['details']);
 
-        return new JsonResponse($this->serialize($inventory, $context), Response::HTTP_ACCEPTED, [], true);
+        return $this->json([
+            'inventory' => json_decode($this->serialize($inventory, ['groups' => ['details']]), true),
+            'books_to_move' => $itemRepository->getItemsToMove($inventory, $this->getUser()->getLocation()),
+        ], Response::HTTP_ACCEPTED);
     }
 
     /**
-     * @Route("/{inventory}", methods={"POST"})
+     * @Route("/{inventory}", methods={"POST"}, name="inventory_close")
      */
     public function close(Inventory $inventory): JsonResponse
     {
         try {
-            $doctrine = $this->getDoctrine();
             $inventory->setStoppedAt(new \DateTime());
-            $details = $inventory->getDetails();
-            $missingBookids = $doctrine->getRepository(Book::class)->findNotIn($details['returned'] ?? []);
-            $details['missing'] = $missingBookids;
-            $inventory->setDetails($details);
-
-            $manager = $doctrine->getManager();
-            $manager->persist($inventory);
-            $manager->flush();
+            $this->entityManager->persist($inventory);
+            $this->entityManager->flush();
 
             return $this->json(null, Response::HTTP_OK);
         } catch (\Exception $e) {

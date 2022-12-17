@@ -3,16 +3,15 @@
 namespace App\Service;
 
 use App\DataStructures\TypeahedSuggestion;
-use App\Entity\Book;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\BookRepository;
 
 final class BookService
 {
-    private EntityManagerInterface $manager;
+    private BookRepository $bookRepository;
 
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(BookRepository $bookRepository)
     {
-        $this->manager = $manager;
+        $this->bookRepository = $bookRepository;
     }
 
     /**
@@ -20,15 +19,15 @@ final class BookService
      */
     public function findSuggestions(string $bookCode): array
     {
-        $books = $this->manager->getRepository(Book::class)->findByCode((int)$bookCode);
+        $books = $this->bookRepository->findByCode((int)$bookCode);
 
         preg_match('|^([0]*)[1-9]|', $bookCode, $matches);
         $leadingZeros = $matches[1] ?? '';
         $suggestions = [];
         foreach ($books as $book) {
-            $bookTitle = $book->getTitle()?: 'no title';
-            $suggestions[] = [
-                'text' => $leadingZeros . $book->getCode() . ' - ' . $bookTitle,
+            $bookTitle = $book->getTitle() ?: 'no title';
+            $suggestion = [
+                'text' => $leadingZeros.$book->getCode().' - '.$bookTitle,
                 'item' => [
                     'id' => $book->getId(),
                     'title' => $bookTitle,
@@ -38,6 +37,14 @@ final class BookService
                 ],
                 'type' => 'book',
             ];
+            $location = $book->getLocation();
+            if ($location) {
+                $suggestion['item']['location'] = [
+                    'id' => $location->getId(),
+                    'name' => $location->getName(),
+                ];
+            }
+            $suggestions[] = $suggestion;
         }
 
         return $suggestions;

@@ -5,13 +5,12 @@ namespace App\Controller\Api;
 use App\Entity\User;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityNotFoundException;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class ApiBorrowerController
@@ -20,10 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ApiUserController extends AbstractController
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
+    private SerializerInterface $serializer;
 
     public function __construct(SerializerInterface $serializer)
     {
@@ -37,9 +33,7 @@ class ApiUserController extends AbstractController
     {
         $users = $this->getDoctrine()->getRepository(User::class)->getNonAdminUsers();
 
-        $context = new SerializationContext();
-        $context->setGroups(['list']);
-        $users = $this->serializer->serialize($users, 'json', $context);
+        $users = $this->serializer->serialize($users, 'json', ['groups' => ['list']]);
 
         return new JsonResponse($users, Response::HTTP_CREATED, [], true);
     }
@@ -60,9 +54,7 @@ class ApiUserController extends AbstractController
             return $this->json('An error occurred when creating the user.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $context = new SerializationContext();
-        $context->setGroups(['list']);
-        $user = $this->serializer->serialize($user, 'json', $context);
+        $user = $this->serializer->serialize($user, 'json', ['groups' => ['list']]);
 
         return new JsonResponse($user, Response::HTTP_CREATED, [], true);
     }

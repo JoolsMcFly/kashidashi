@@ -10,7 +10,7 @@
                         {{ location.name }}
                     </div>
                     <div class="">
-                        {{ location.book_count }}
+                        {{ location.bookCount }}
                     </div>
                     <div @click="download(location.id)" class="pointer">
                         <i class="fa fa-download"></i>

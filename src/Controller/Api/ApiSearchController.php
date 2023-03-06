@@ -4,7 +4,6 @@ namespace App\Controller\Api;
 
 use App\Service\BookService;
 use App\Service\BorrowerService;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,32 +15,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApiSearchController
 {
     /**
-     * @var BorrowerService
-     */
-    private $borrowerService;
-
-    /**
-     * @var BookService
-     */
-    private $bookService;
-
-    public function __construct(
-        BorrowerService $borrowerService,
-        BookService $bookService
-    ) {
-        $this->borrowerService = $borrowerService;
-        $this->bookService = $bookService;
-    }
-
-    /**
      * @Route("/{search}", methods={"GET"})
      */
-    public function search(string $search = ''): JsonResponse
+    public function search(BorrowerService $borrowerService, BookService $bookService, string $search = ''): JsonResponse
     {
         if (is_numeric($search)) {
-            $suggestions = $this->bookService->findSuggestions($search);
+            $suggestions = $bookService->findSuggestions($search);
         } else {
-            $suggestions = $this->borrowerService->findSuggestions($search);
+            $suggestions = $borrowerService->findSuggestions($search);
         }
 
         return new JsonResponse($suggestions);

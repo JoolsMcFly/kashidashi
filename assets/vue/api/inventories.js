@@ -7,11 +7,12 @@ export default {
     getAll() {
         return axios.get('/api/inventory')
     },
-    fetchMissingBooks(inventoryId) {
-        return axios.get(`/api/inventory/${inventoryId}/missing-books`)
+    fetchDetails(inventoryId) {
+        return axios.get(`/api/inventory/${inventoryId}/details`)
     },
     addCode(payload) {
-        return axios.put(`/api/inventory/${payload.id}/${payload.code}`)
+        let url = `/api/inventory/${payload.id}/${payload.code}`;
+        return axios.put(url)
     },
     removeBook(payload) {
         return axios.delete(`/api/inventory/${payload.inventoryId}/${payload.bookCode}`)

@@ -7,6 +7,7 @@ export default {
         error: null,
         isAuthenticated: false,
         roles: [],
+        userLocation: null,
     },
     getters: {
         isLoading(state) {
@@ -29,6 +30,9 @@ export default {
                 return state.roles.indexOf(role) !== -1;
             }
         },
+        userLocation(state) {
+            return state.userLocation
+        }
     },
     mutations: {
         ['AUTHENTICATING'](state) {
@@ -55,6 +59,9 @@ export default {
             state.isAuthenticated = payload.isAuthenticated;
             state.roles = payload.roles;
         },
+        ['SET_USER_LOCATION'](state, payload) {
+            state.userLocation = payload
+        }
     },
     actions: {
         login({commit}, payload) {
@@ -65,6 +72,9 @@ export default {
         },
         onRefresh({commit}, payload) {
             commit('PROVIDING_DATA_ON_REFRESH_SUCCESS', payload);
+        },
+        setUserLocation({commit}, payload) {
+            commit('SET_USER_LOCATION', payload)
         }
     },
 }

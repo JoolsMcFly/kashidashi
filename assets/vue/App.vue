@@ -1,55 +1,87 @@
 <template>
     <div>
         <template v-if="isAuthenticated">
-            <div v-if="!isAdmin">
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <div class="row">
-                        <div class="col">
-                            <router-link class="ml-1 ml-lg-3 navbar-brand" to="/loans/overdue">
-                            <span @click="closeMenu"><i
-                                class="fas fa-cash-register d-xs-block d-lg-none mr-2"></i>
-                            </span>
-                            </router-link>
-                            <a class="navbar-brand" href="/api/security/logout">
-                                <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
-                            </a>
+            <div class="row">
+                <div v-if="!isAdmin" class="col">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                        Menu
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <router-link class="dropdown-item" to="/home">
+                                        <span @click="closeMenu">
+                                            <i class="fas fa-home d-xs-block d-lg-none mr-2"></i>Home
+                                        </span>
+                                        </router-link>
+                                        <router-link v-if="showInventoryMenu" class="dropdown-item" to="/inventory-details">
+                                            <span @click="closeMenu">
+                                                <i class="fas fa-warehouse d-xs-block d-lg-none mr-2"></i>Inventory
+                                            </span>
+                                        </router-link>
+                                        <a class="dropdown-item" href="/api/security/logout">
+                                            <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-1"></i>Logout
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-8" v-if="showSearchField">
+                                <vue-bootstrap-typeahead
+                                    ref="typeahead"
+                                    v-model="query"
+                                    :data="suggestions"
+                                    :serializer="s => s.text"
+                                    placeholder="book code or person name"
+                                    @hit="handleSuggestion($event)"
+                                    :minMatchingChars="1"
+                                />
+                            </div>
                         </div>
-                    </div>
-                <div class="row">
+                    </nav>
+                </div>
+                <div class="row" v-if="isAdmin">
                     <div class="col">
-                        <vue-bootstrap-typeahead
-                            ref="typeahead"
-                            v-model="query"
-                            :data="suggestions"
-                            :serializer="s => s.text"
-                            placeholder="book code or person name"
-                            @hit="handleSuggestion($event)"
-                            :minMatchingChars="0"
-                        />
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                            <div class="col-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                        Menu
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <router-link class="dropdown-item" to="/books">
+                                            <i class="fas fa-book mr-2"></i>Books
+                                        </router-link>
+                                        <router-link class="dropdown-item" to="/borrowers-upload">
+                                            <i class="fas fa-address-card mr-2"></i>Borrowers
+                                        </router-link>
+                                        <router-link class="dropdown-item" to="/locations">
+                                            <i class="fas fa-store mr-2"></i>Locations
+                                        </router-link>
+                                        <router-link class="dropdown-item" to="/users">
+                                            <i class="fas fa-users mr-2"></i>Users
+                                        </router-link>
+                                        <router-link class="dropdown-item" to="/inventory"><i class="fas fa-warehouse mr-2"></i>Inventory</router-link>
+                                        <a class="dropdown-item" href="/api/security/logout">
+                                            <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>Logout
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-8" v-if="isStandardUser">
+                                <vue-bootstrap-typeahead
+                                    ref="typeahead"
+                                    v-model="query"
+                                    :data="suggestions"
+                                    :serializer="s => s.text"
+                                    placeholder="book code or person name"
+                                    @hit="handleSuggestion($event)"
+                                    :minMatchingChars="2"
+                                />
+                            </div>
+                        </nav>
                     </div>
-                </div>
-                </nav>
-            </div>
-            <div class="row" v-if="isAdmin">
-                <div class="col">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <router-link class="navbar-brand" to="/books"><i class="fas fa-book"></i></router-link>
-                        <router-link class="navbar-brand" to="/borrowers-upload"><i class="fas fa-address-card"></i>
-                        </router-link>
-                        <router-link class="navbar-brand" to="/locations"><i class="fas fa-store"></i>
-                        </router-link>
-                        <router-link class="navbar-brand" to="/users"><i class="fas fa-users"></i></router-link>
-                        <a class="navbar-brand" href="/api/security/logout">
-                            <i class="fas fa-sign-out-alt fs-22px d-xs-block d-lg-none mr-2"></i>
-                        </a>
-                    </nav>
-                </div>
-            </div>
-            <div class="row" v-if="!isAdmin">
-                <div class="col">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-
-                    </nav>
                 </div>
             </div>
         </template>
@@ -68,16 +100,22 @@
 
         data() {
             return {
-                query: ''
+                query: '',
+                activeInventory: null,
+                locations: [],
+                userLocation: null
             }
         },
 
         components: {VueBootstrapTypeahead},
 
         methods: {
-            handleSuggestion(suggestion) {
+            clearSearch() {
                 this.query = ''
                 this.$refs.typeahead.inputValue = ''
+            },
+            handleSuggestion(suggestion) {
+                this.clearSearch()
                 let action, route
                 if (suggestion.type === 'book') {
                     action = 'activeBook/setCurrent'
@@ -103,6 +141,9 @@
         },
 
         computed: {
+            showSearchField() {
+                return this.$router.currentRoute.name !== 'inventory-details'
+            },
             suggestions() {
                 return this.$store.getters['search/results']
             },
@@ -114,12 +155,29 @@
             },
             isAdmin() {
                 return this.$store.getters['security/hasRole']('ROLE_ADMIN')
+            },
+            isStandardUser() {
+                return this.$store.getters['security/hasRole']('ROLE_USER')
+            },
+            isInventory() {
+                return this.$store.getters['security/hasRole']('ROLE_INVENTORY')
+            },
+            selectedInventory() {
+                return this.$store.getters['inventory/selectedInventory']
+            },
+            showInventoryMenu() {
+                return this.isInventory && this.selectedInventory.id !== undefined
             }
         },
 
         watch: {
             query() {
-                if (this.query.replace(/\s/g, '') !== '') {
+                // condition sur la vue au lieu de celle-ci
+                if (this.$router.currentRoute.name === 'inventory-details') {
+                    return
+                }
+                let cleanQuery = this.query.replace(/\s/g, '');
+                if (cleanQuery !== '' && (cleanQuery.length >= 2 || parseInt(cleanQuery, 10))) {
                     this.$store.dispatch('search/search', this.query)
                 }
             },
@@ -135,7 +193,21 @@
 
         created() {
             let isAuthenticated = JSON.parse(this.$parent.$el.attributes['data-is-authenticated'].value),
-                roles = JSON.parse(this.$parent.$el.attributes['data-roles'].value);
+                roles = JSON.parse(this.$parent.$el.attributes['data-roles'].value)
+            ;
+            let activeInventory = this.$parent.$el.attributes['data-active-inventory'].value;
+            let booksToMove = this.$parent.$el.attributes['data-books-to-move'].value;
+            if (activeInventory !== '') {
+                this.activeInventory = JSON.parse(activeInventory)
+                this.activeInventory.books_to_move = booksToMove !== '' ? JSON.parse(booksToMove) : null
+            }
+            if (this.activeInventory) {
+                this.$store.dispatch('inventory/setSelected', this.activeInventory)
+            }
+            this.$store.dispatch(
+                'security/setUserLocation',
+                JSON.parse(this.$parent.$el.attributes['data-user-location'].value)
+            );
 
             let payload = {isAuthenticated: isAuthenticated, roles: roles};
             this.$store.dispatch('security/onRefresh', payload);

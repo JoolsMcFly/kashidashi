@@ -15,7 +15,7 @@
                 <input class="form-control" type="password" id="password" v-model="password" placeholder="Password">
             </div>
             <div v-if="isAdmin">
-                <span>Roles</span><br />
+                <span>Roles</span><br>
                 <div class="form-check form-check">
                     <input type="checkbox" class="form-check-input" id="role_admin" value="ROLE_USER"
                            v-model="roles">
@@ -71,6 +71,14 @@
 
                     return
                 }
+                if (this.roles.includes('ROLE_INVENTORY') && this.location === 0) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: 'You must assign a location to inventory users.',
+                        position: 'bottomCenter'
+                    });
+                    return;
+                }
                 this.$store.dispatch('users/save', this.$data).then(() => this.$router.push('/users'))
             },
             cancel() {
@@ -90,20 +98,20 @@
                 return this.$store.getters['security/hasRole']('ROLE_ADMIN')
             },
             isInventory() {
-                return this.currentUser !== null && this.roles.includes('ROLE_INVENTORY')
+                return this.roles.includes('ROLE_INVENTORY')
             }
         },
 
         created() {
-            for (let prop in this.currentUser) {
-                if (prop === 'location') {
-                    this.location = this.currentUser[prop].id
-                } else if (prop !== 'roles') {
-                    this[prop] = this.currentUser[prop]
-                }
-            }
             if (this.currentUser !== null) {
-                this.roles = JSON.parse(this.currentUser.roles)
+                for (let prop in this.currentUser) {
+                    if (prop === 'location' && this.currentUser[prop] != null) {
+                        this.location = this.currentUser[prop].id
+                    } else if (prop !== 'roles') {
+                        this[prop] = this.currentUser[prop]
+                    }
+                }
+                this.roles = this.currentUser.roles
             }
 
             this.$store.dispatch('locations/all')

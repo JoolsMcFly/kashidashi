@@ -5,30 +5,18 @@ namespace App\Service;
 use App\DataStructures\TypeahedSuggestion;
 use App\Entity\Borrower;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 
 final class BorrowerService
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
+    private EntityManagerInterface $manager;
 
     /**
      * UserService constructor.
      * @param EntityManagerInterface $manager
-     * @param SerializerInterface $serializer
      */
-    public function __construct(EntityManagerInterface $manager, SerializerInterface $serializer)
+    public function __construct(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -41,19 +29,17 @@ final class BorrowerService
 
         $suggestions = [];
         foreach ($borrowers as $borrower) {
-            $text = $borrower->getKatakana() . " (" . $borrower->getSurname() . ")";
-            if ($borrower->getSurname() !== $borrower->getFrenchSurname()) {
-                $text .= " / " . $borrower->getFrenchSurname();
-            }
+            $fullName = $borrower->getFullName();
             $suggestions[] = [
                 'id' => $borrower->getId(),
-                'text' => $text,
+                'text' => $fullName,
                 'item' => [
                     'id' => $borrower->getId(),
                     'surname' => $borrower->getSurname(),
                     'french_surname' => $borrower->getFrenchSurname(),
                     'katakana' => $borrower->getKatakana(),
                     'stats' => $borrower->getStats(),
+                    'fullname' => $fullName,
                 ],
                 'type' => 'borrower',
             ];

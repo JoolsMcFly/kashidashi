@@ -18,7 +18,7 @@ services:
         image: mariadb:10.3.36
         container_name: tosyo_mysql
         volumes:
-            - .docker/data:/var/lib/postgresql/data
+            - .docker/data:/var/lib/mysql/data
 #            - .docker/mysql/defaults-file.cnf:/etc/mysql/conf.d/defaults-file.cnf
         environment:
             MYSQL_ROOT_PASSWORD: root

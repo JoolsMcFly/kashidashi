@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3 class="mt-2">{{ fullname }}</h3>
+        <h3 class="mt-2">{{ fullName }}</h3>
         <div class="row mb-2">
             <div class="col" id="book-search">
                 <vue-bootstrap-typeahead
@@ -49,16 +49,12 @@
         },
 
         computed: {
-            fullname() {
+            fullName() {
                 if (!Boolean(this.borrower)) {
                     return '';
                 }
 
-                let name = this.borrower.katakana;
-                if (this.borrower.surname !== this.borrower.french_surname) {
-                    name += " / " + this.borrower.french_surname
-                }
-                return name
+                return this.borrower.fullName
             },
 
             loans() {

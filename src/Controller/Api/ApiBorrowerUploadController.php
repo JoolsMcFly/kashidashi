@@ -30,14 +30,14 @@ class ApiBorrowerUploadController extends AbstractController
             } catch (FileException $e) {
                 $error = 'Error reading uploaded file.';
                 if ($user->isAdmin()) {
-                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
+                    $error .= "fetchDetails<br>" . $e->getMessage() . "fetchDetails<br>" . $e->getFile() . ':' . $e->getLine();
                 }
 
                 return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);
             } catch (\Exception $e) {
                 $error = 'An error has occurred when processing your file.';
                 if ($user->isAdmin()) {
-                    $error .= "<br />" . $e->getMessage() . "<br />" . $e->getFile() . ':' . $e->getLine();
+                    $error .= "fetchDetails<br>" . $e->getMessage() . "fetchDetails<br>" . $e->getFile() . ':' . $e->getLine();
                 }
 
                 return $this->json($error, Response::HTTP_INTERNAL_SERVER_ERROR);

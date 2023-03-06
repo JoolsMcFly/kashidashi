@@ -21,7 +21,7 @@ let router = new VueRouter({
     mode: 'history',
 
     routes: [
-        {path: '/home', component: Home, meta: {requiresAuth: true}},
+        {path: '/home', name: 'home', component: Home, meta: {requiresAuth: true}},
         {path: '/login', component: Login},
         {path: '/loans/overdue', component: OverdueLoans, meta: {requiresAuth: true}},
         {path: '/borrowers', component: Borrowers, meta: {requiresAuth: true}},
@@ -32,7 +32,7 @@ let router = new VueRouter({
         {path: '/users/add', component: UserForm, meta: {requiresAuth: true}},
         {path: '/borrowers-upload', component: BorrowerUpload, meta: {requiresAuth: true}},
         {path: '/inventory', component: Inventory, meta: {requiresAuth: true}},
-        {path: '/inventory-details', component: InventoryDetails, meta: {requiresAuth: true}},
+        {path: '/inventory-details', name: 'inventory-details', component: InventoryDetails, meta: {requiresAuth: true}},
         {path: '/locations', component: Locations, meta: {requiresAuth: true}},
         {path: '*', redirect: '/home'}
     ],

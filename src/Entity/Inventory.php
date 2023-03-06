@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity()
@@ -23,7 +25,6 @@ class Inventory
      * @var \DateTime
      * @ORM\Column(type="datetime")
      * @Serializer\Groups({"details"})
-     * @Serializer\Type("DateTime<'Y-m-d H:i:s'>")
      */
     private $startedAt;
 
@@ -31,7 +32,6 @@ class Inventory
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @Serializer\Groups({"details"})
-     * @Serializer\Type("DateTime<'Y-m-d H:i:s'>")
      */
     private $stoppedAt;
 
@@ -50,10 +50,14 @@ class Inventory
     private $availableBookCount = 0;
 
     /**
-     * @var string
-     * @ORM\Column(type="text")
+     * @ORM\OneToMany(targetEntity=InventoryItem::class, mappedBy="inventory", orphanRemoval=true)
      */
-    private $details = '';
+    private $items;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -63,18 +67,11 @@ class Inventory
         return $this->id;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getStartedAt(): \DateTime
     {
         return $this->startedAt;
     }
 
-    /**
-     * @param \DateTime $startedAt
-     * @return Inventory
-     */
     public function setStartedAt(\DateTime $startedAt): Inventory
     {
         $this->startedAt = $startedAt;
@@ -82,18 +79,11 @@ class Inventory
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getStoppedAt(): ?\DateTime
     {
         return $this->stoppedAt;
     }
 
-    /**
-     * @param \DateTime $stoppedAt
-     * @return Inventory
-     */
     public function setStoppedAt(\DateTime $stoppedAt): Inventory
     {
         $this->stoppedAt = $stoppedAt;
@@ -101,18 +91,11 @@ class Inventory
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getBookCount(): int
     {
         return $this->bookCount;
     }
 
-    /**
-     * @param int $bookCount
-     * @return Inventory
-     */
     public function setBookCount(int $bookCount): Inventory
     {
         $this->bookCount = $bookCount;
@@ -120,10 +103,6 @@ class Inventory
         return $this;
     }
 
-    /**
-     * @param int $count
-     * @return Inventory
-     */
     public function increaseBookCount(int $count = 1): Inventory
     {
         $this->bookCount += $count;
@@ -131,55 +110,49 @@ class Inventory
         return $this;
     }
 
-    /**
-     * @param int $count
-     */
     public function decreaseBookCount(int $count = 1)
     {
         $this->bookCount -= $count;
     }
 
-    /**
-     * @return array
-     */
-    public function getDetails(): array
-    {
-        if (empty($this->details)) {
-            return [];
-        }
-
-        return json_decode($this->details, true);
-    }
-
-    /**
-     * @param mixed $details
-     * @return Inventory
-     */
-    public function setDetails($details): Inventory
-    {
-        if (is_array($details)) {
-            $details = json_encode($details);
-        }
-        $this->details = $details;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
     public function getAvailableBookCount(): int
     {
         return $this->availableBookCount ?? 0;
     }
 
-    /**
-     * @param int $availableBookCount
-     * @return Inventory
-     */
     public function setAvailableBookCount(int $availableBookCount): Inventory
     {
         $this->availableBookCount = $availableBookCount;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|InventoryItem[]
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function addItem(InventoryItem $item): self
+    {
+        if (!$this->items->contains($item)) {
+            $this->items[] = $item;
+            $item->setInventory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeItem(InventoryItem $item): self
+    {
+        if ($this->items->removeElement($item)) {
+            // set the owning side to null (unless already changed)
+            if ($item->getInventory() === $this) {
+                $item->setInventory(null);
+            }
+        }
 
         return $this;
     }

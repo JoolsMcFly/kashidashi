@@ -5,7 +5,6 @@ namespace App\Controller\Api;
 use App\Entity\Book;
 use App\Entity\Borrower;
 use App\Entity\Loan;
-use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -70,10 +69,9 @@ class ApiLoansController extends ApiBaseController
             $manager->persist($loan);
             $manager->persist($borrower);
             $manager->flush();
-            $context = (new SerializationContext())->setGroups(['details']);
 
             return new JsonResponse(
-                $this->serialize($loan, $context),
+                $this->serialize($loan, ['groups' => ['details']]),
                 Response::HTTP_OK,
                 [],
                 true
@@ -126,10 +124,8 @@ class ApiLoansController extends ApiBaseController
 
     private function serializeLoans(array $loans): JsonResponse
     {
-        $context = (new SerializationContext())->setGroups(['details']);
-
         return new JsonResponse(
-            $this->serialize($loans, $context),
+            $this->serialize($loans, ['groups' => ['loan-details']]),
             Response::HTTP_OK,
             [],
             true

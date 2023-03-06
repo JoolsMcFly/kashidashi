@@ -6,7 +6,7 @@ export default {
     state: {
         inventories: [],
         selectedInventory: {},
-        missingBooks: [],
+        details: [],
         lastAddedBooks: []
     },
 
@@ -17,8 +17,8 @@ export default {
         selectedInventory(state) {
             return state.selectedInventory
         },
-        missingBooks(state) {
-            return state.missingBooks
+        details(state) {
+            return state.details
         },
         lastAddedBooks(state) {
             return state.lastAddedBooks
@@ -34,8 +34,17 @@ export default {
             state.selectedInventory = inventory
         },
         updateInventory(state, inventoryData) {
-            state.selectedInventory = inventoryData.inventory
-            state.lastAddedBooks.unshift(inventoryData.book)
+            if (typeof inventoryData.inventory !== "undefined") {
+                state.selectedInventory = {
+                    ...inventoryData.inventory,
+                    ...{books_to_move: inventoryData.books_to_move},
+                }
+                state.lastAddedBooks.unshift({
+                    ...inventoryData.book,
+                    ...{inventory_item: inventoryData.inventory_item},
+                    ...{borrowed_by: inventoryData.borrowed_by || null},
+                })
+            }
             state.lastAddedBooks = state.lastAddedBooks.slice(0, 5)
         },
         setSelected(state, inventory) {
@@ -45,11 +54,14 @@ export default {
             state.inventories = state.inventories.filter(inv => inv.id !== state.selectedInventory.id)
             state.selectedInventory = null
         },
-        setMissingBooks(state, books) {
-            state.missingBooks = books
+        setDetails(state, books) {
+            state.details = books
         },
         removeBook(state, payload) {
-            state.selectedInventory = payload.inventory
+            state.selectedInventory = {
+                ...payload.inventory,
+                ...{books_to_move: payload.books_to_move},
+            }
             state.lastAddedBooks = state.lastAddedBooks.filter(book => book.code !== payload.bookCode)
         }
     },
@@ -73,7 +85,11 @@ export default {
         removeBook({commit}, payload) {
             return InventoryAPI
                 .removeBook(payload)
-                .then(res => commit('removeBook', {inventory: res.data, bookCode: payload.bookCode}))
+                .then(res => commit('removeBook', {
+                    inventory: res.data.inventory,
+                    bookCode: payload.bookCode,
+                    books_to_move: res.data.books_to_move || null
+                }))
         },
         setSelected({commit}, inventory) {
             commit('setSelected', inventory)
@@ -86,10 +102,10 @@ export default {
                     dispatch('getAll')
                 })
         },
-        fetchMissingBooks({commit}, inventoryId) {
+        fetchDetails({commit}, inventoryId) {
             return InventoryAPI
-                .fetchMissingBooks(inventoryId)
-                .then(res => commit('setMissingBooks', res.data))
+                .fetchDetails(inventoryId)
+                .then(res => commit('setDetails', res.data))
         }
     }
 }

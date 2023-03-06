@@ -23,6 +23,9 @@ export default {
         search({commit}, query) {
             return SearchAPI.search(query)
                 .then(res => commit('setResults', res.data))
+        },
+        clearSearch({commit}) {
+            commit('setResults', [])
         }
     }
 }

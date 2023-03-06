@@ -1,6 +1,6 @@
 <template>
     <div @click="$emit('show-borrower', borrower)">
-        <div class="borrower">{{ fullname }}</div>
+        <div class="borrower">{{ fullName }}</div>
     </div>
 </template>
 
@@ -11,9 +11,9 @@
         props: ['borrower'],
 
         computed: {
-            fullname() {
+            fullName() {
                 return this.borrower.surname + ` (${this.borrower.katakana})`
-                + this.borrower.surname !== this.borrower.french_surname ? this.borrower.french_surname : ''
+                + this.borrower.surname !== this.borrower.frenchSurname ? this.borrower.frenchSurname : ''
             }
         }
     }

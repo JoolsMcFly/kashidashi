@@ -13,7 +13,7 @@
                 </div>
                 <div class="row">
                     <div class="col mt-4">
-                        <input v-model="password" type="password" class="form-control mb-2" placeholder="password">
+                        <input v-model="password" type="password" class="form-control mb-2" placeholder="password" @keyup.13="performLogin()">
                     </div>
                 </div>
                 <div class="row">

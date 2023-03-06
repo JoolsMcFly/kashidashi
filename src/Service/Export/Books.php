@@ -7,9 +7,9 @@ use App\Entity\Location;
 
 class Books extends Exporter
 {
-    protected $title = 'Books';
+    protected string $title = 'Books';
 
-    protected $headers = ['Code', 'Title', 'Location'];
+    protected array $headers = ['Code', 'Title', 'Location'];
 
     public function export(Location $location = null): string
     {

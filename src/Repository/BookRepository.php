@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Inventory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,50 +18,55 @@ class BookRepository extends ServiceEntityRepository
         parent::__construct($registry, Book::class);
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function getBookWithCurrentLoan(string $bookCode): ?Book
+    {
+        return $this->createQueryBuilder('b')
+            ->addSelect('loans' ,'borrower')
+            ->leftJoin('b.loans', 'loans')
+            ->leftJoin('loans.borrower', 'borrower')
+            ->where('b.code = :bookCode')
+            ->andWhere('loans.stoppedAt IS NULL')
+            ->setParameter('bookCode', $bookCode)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getTotalBookCount(): int
     {
         return $this->createQueryBuilder('b')
             ->select('count(b.id)')
-            ->getQuery()->getSingleScalarResult()
-            ;
-    }
-
-    /**
-     * @param array $ids
-     * @return ArrayCollection
-     */
-    public function findNotIn(array $ids)
-    {
-        $ids = $this->createQueryBuilder('b')
-            ->select('b.id')
-            ->where("b.id NOT IN (:ids)")
-            ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
             ->getQuery()
-            ->getResult()
+            ->getSingleScalarResult()
         ;
-
-        return array_map(function ($element) {
-            return $element['id'];
-        }, $ids);
     }
 
-    /**
-     * @param array $ids
-     * @return ArrayCollection
-     */
-    public function getMissingBooks(array $ids)
+    public function getBooksNotInInventory(Inventory $inventory): array
     {
-        return $this->createQueryBuilder('b')
-            ->addSelect('l')
-            ->leftJoin('b.loans', 'l', Join::WITH, 'l.stoppedAt IS NULL')
-            ->where('b.id IN (:ids)')
-            ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
-            ->getQuery()
-            ->getResult()
-            ;
+        return $this->getEntityManager()->getConnection()
+            ->fetchAllAssociative('
+                SELECT b.code, b.title, loc.name AS location,  l.started_at AS loanStart, CONCAT(borrower.katakana, " / ", borrower.french_surname) AS borrower
+                FROM book b
+                LEFT JOIN location loc ON b.location_id = loc.id
+                LEFT JOIN loan l ON b.id = l.book_id
+                LEFT JOIN borrower ON borrower.id = l.borrower_id
+                WHERE b.id NOT IN (SELECT book_id from inventory_item ii WHERE ii.inventory_id = :inventory)
+                AND l.stopped_at IS NULL
+                ',
+                ['inventory' => $inventory->getId()]
+            )
+        ;
+    }
+
+    public function countBooksNotInInventory(Inventory $inventory): int
+    {
+        return $this->getEntityManager()->getConnection()
+            ->fetchOne('
+                SELECT COUNT(*)
+                FROM book
+                WHERE id NOT IN (SELECT book_id from inventory_item ii WHERE ii.inventory_id = :inventory)',
+                ['inventory' => $inventory->getId()]
+            )
+        ;
     }
 
     /**
@@ -70,20 +77,6 @@ class BookRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('b', 'b.code')
             ->getQuery()
             ->getResult()
-            ;
-    }
-
-    /**
-     * @param array $codes
-     */
-    public function removeNotInCodeList(array $codes)
-    {
-        $this->createQueryBuilder('books')
-            ->delete(Book::class, 'b')
-            ->where('b.code NOT IN (:codes)')
-            ->setParameter('codes', $codes, Connection::PARAM_INT_ARRAY)
-            ->getQuery()
-            ->getResult()
-            ;
+        ;
     }
 }

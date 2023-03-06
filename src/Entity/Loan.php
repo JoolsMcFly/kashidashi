@@ -3,8 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\Type;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LoanRepository")
@@ -15,35 +14,33 @@ class Loan
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"details", "loan-details"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="loans", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"details", "loan-details"})
      */
     private $book;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Borrower", inversedBy="loans", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"details", "loan-details"})
      */
     private $borrower;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Serializer\Groups({"details"})
-     * @Type("DateTime<'Y-m-d'>")
+     * @Serializer\Groups({"details", "loan-details"})
      */
     private $startedAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Serializer\Groups({"details"})
-     * @Type("DateTime<'Y-m-d'>")
+     * @Serializer\Groups({"details", "loan-details"})
      */
     private $stoppedAt;
 
@@ -138,10 +135,9 @@ class Loan
     }
 
     /**
-     * @Serializer\VirtualProperty(name="duration")
      * @Serializer\Groups({"details"})
      */
-    public function duration()
+    public function getDuration()
     {
         return (new \DateTime())->diff($this->startedAt, true)->format('%a');
     }

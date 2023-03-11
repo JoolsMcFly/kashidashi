@@ -25,7 +25,6 @@ class BookRepository extends ServiceEntityRepository
             ->leftJoin('b.loans', 'loans')
             ->leftJoin('loans.borrower', 'borrower')
             ->where('b.code = :bookCode')
-            ->andWhere('loans.stoppedAt IS NULL')
             ->setParameter('bookCode', $bookCode)
             ->getQuery()
             ->getOneOrNullResult();

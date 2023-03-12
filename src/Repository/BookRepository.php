@@ -26,6 +26,7 @@ class BookRepository extends ServiceEntityRepository
             ->leftJoin('loans.borrower', 'borrower')
             ->where('b.code = :bookCode')
             ->setParameter('bookCode', $bookCode)
+            ->orderBy('loans.startedAt', 'desc')
             ->getQuery()
             ->getOneOrNullResult();
     }

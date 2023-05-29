@@ -66,6 +66,12 @@ class Book
      */
     private $stats;
 
+    /**
+     * @var bool
+     * @ORM\Column(type="smallint", nullable=true)
+     */
+    private $deleted;
+
     public function __construct()
     {
         $this->loans = new ArrayCollection();
@@ -181,6 +187,18 @@ class Book
     public function setLocation(?Location $location): Book
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return (bool) $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): Book
+    {
+        $this->deleted = $deleted;
 
         return $this;
     }

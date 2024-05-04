@@ -9,7 +9,7 @@ class Books extends Exporter
 {
     protected string $title = 'Books';
 
-    protected array $headers = ['Code', 'Title', 'Location', 'Deleted'];
+    protected array $headers = ['Code', 'Title', 'Location'];
 
     public function export(Location $location = null): string
     {
@@ -22,7 +22,6 @@ class Books extends Exporter
                 $book->getCode(),
                 $book->getTitle(),
                 $book->getLocation(),
-                $book->isDeleted() ? 'Yes' : 'No',
             ];
         },
             $bookRepository->getBooks($location)

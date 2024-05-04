@@ -117,7 +117,7 @@ final class BookUploadService
             ->setCode($bookDetails[0])
             ->setTitle($bookDetails[1])
             ->setLocation($this->getLocation($bookDetails[2]))
-            ->setDeleted(strcasecmp($bookDetails[3], 'Yes') === 0)
+            ->setDeleted($bookDetails[2] === '廃棄')
         ;
         $this->manager->persist($book);
     }

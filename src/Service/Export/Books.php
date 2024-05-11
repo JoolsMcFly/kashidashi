@@ -13,11 +13,9 @@ class Books extends Exporter
 
     public function export(Location $location = null): string
     {
+        $bookRepository = $this->manager->getRepository(Book::class);
         if ($location) {
             $this->title .= '-'.$location->getName();
-            $params = ['location' => $location];
-        } else {
-            $params = [];
         }
         $data = array_map(function (Book $book) {
             return [
@@ -26,9 +24,7 @@ class Books extends Exporter
                 $book->getLocation(),
             ];
         },
-            $this->manager
-                ->getRepository(Book::class)
-                ->findBy($params, ['code' => 'asc'])
+            $bookRepository->getBooks($location)
         );
 
         return parent::exportData($data);

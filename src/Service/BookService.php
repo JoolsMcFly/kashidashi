@@ -19,7 +19,7 @@ final class BookService
      */
     public function findSuggestions(string $bookCode): array
     {
-        $books = $this->bookRepository->findByCode((int)$bookCode);
+        $books = $this->bookRepository->findByCode((int) $bookCode);
 
         preg_match('|^([0]*)[1-9]|', $bookCode, $matches);
         $leadingZeros = $matches[1] ?? '';

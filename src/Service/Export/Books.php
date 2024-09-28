@@ -11,7 +11,7 @@ class Books extends Exporter
 
     protected array $headers = ['Code', 'Title', 'Location'];
 
-    public function export(Location $location = null): string
+    public function export(?Location $location = null): string
     {
         $bookRepository = $this->manager->getRepository(Book::class);
         if ($location) {

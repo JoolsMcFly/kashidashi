@@ -22,6 +22,7 @@ class ApiBaseController extends AbstractController
     public function serialize($objects, array $context, string $dateFormat = 'Y-m-d')
     {
         $context[DateTimeNormalizer::FORMAT_KEY] = $dateFormat;
+
         return $this->serializer->serialize($objects, 'json', $context);
     }
 }

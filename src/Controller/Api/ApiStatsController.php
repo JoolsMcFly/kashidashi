@@ -10,10 +10,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ApiBorrowerController
- * @package App\Controller\Api
- * @Route("/api/stats")
+ * Class ApiBorrowerController.
  */
+#[Route(path: '/api/stats')]
 class ApiStatsController extends AbstractController
 {
     private LoanRepository $loanRepository;
@@ -29,9 +28,7 @@ class ApiStatsController extends AbstractController
         $this->borrowerRepository = $borrowerRepository;
     }
 
-    /**
-     * @Route("", methods={"GET"})
-     */
+    #[Route(path: '', methods: ['GET'])]
     public function getStats(): JsonResponse
     {
         $loans = $this->loanRepository->getActiveLoansCount();

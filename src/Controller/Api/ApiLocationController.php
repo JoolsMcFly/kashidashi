@@ -2,7 +2,7 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Location;
+use _Entity\Location;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,10 +10,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * Class ApiBorrowerController
- * @package App\Controller\Api
- * @Route("/api/locations")
+ * Class ApiBorrowerController.
  */
+#[Route(path: '/api/locations')]
 class ApiLocationController extends AbstractController
 {
     private SerializerInterface $serializer;
@@ -23,9 +22,7 @@ class ApiLocationController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    /**
-     * @Route("", methods={"GET"})
-     */
+    #[Route(path: '', methods: ['GET'])]
     public function list(): JsonResponse
     {
         $locations = $this->getDoctrine()->getRepository(Location::class)->findAll();

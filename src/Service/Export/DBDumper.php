@@ -4,7 +4,8 @@ namespace App\Service\Export;
 
 use App\DataStructures\DBUser;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use RuntimeException;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class DBDumper
 {
@@ -14,14 +15,14 @@ class DBDumper
 
     private string $dumperUser;
 
-    public function __construct(ContainerBagInterface $containerBag, EntityManagerInterface $entityManager)
+    public function __construct(ParameterBagInterface $parameterBag, EntityManagerInterface $entityManager)
     {
         if (PHP_SAPI !== 'cli') {
-            throw new \RuntimeException('DB operations only possible via CLI.');
+            throw new RuntimeException('DB operations only possible via CLI.');
         }
 
-        $this->mysqlDefaultsFile = (string) $containerBag->get('mysql.defaults_file');
-        $this->dumperUser = (string) $containerBag->get('mysql.dumper_user');
+        $this->mysqlDefaultsFile = (string) $parameterBag->get('mysql.defaults_file');
+        $this->dumperUser = (string) $parameterBag->get('mysql.dumper_user');
         $this->database = $entityManager->getConnection()->getDatabase();
     }
 
@@ -32,7 +33,7 @@ class DBDumper
         $output = shell_exec("mysqldump --defaults-file={$this->mysqlDefaultsFile} -u {$this->dumperUser} {$this->database} > $dumpFile");
 
         if (!is_file($dumpFile)) {
-            throw new \RuntimeException(sprintf("Could not dump to %s:\n%s", $dumpFile, $output));
+            throw new RuntimeException(sprintf("Could not dump to %s:\n%s", $dumpFile, $output));
         }
 
         return $dumpFile;
@@ -41,7 +42,7 @@ class DBDumper
     public function restore(string $dumpFile, DBUser $user)
     {
         if (!is_file($dumpFile) || !is_readable($dumpFile)) {
-            throw new \RuntimeException(sprintf('Could not open dump file for processing (%s).', $dumpFile));
+            throw new RuntimeException(sprintf('Could not open dump file for processing (%s).', $dumpFile));
         }
 
         return shell_exec("mysql -u {$user->getUsername()} -p{$user->getPassword()} {$this->database} < $dumpFile");

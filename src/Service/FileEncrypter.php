@@ -2,7 +2,8 @@
 
 namespace App\Service;
 
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use RuntimeException;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class FileEncrypter
 {
@@ -14,13 +15,12 @@ class FileEncrypter
 
     private string $filePassword;
 
-
-    public function __construct(ContainerBagInterface $containerBag)
+    public function __construct(ParameterBagInterface $parameterBag)
     {
-        $this->filePassword = (string)$containerBag->get('security.file_password');
+        $this->filePassword = (string) $parameterBag->get('security.file_password');
     }
 
-    public function encryptFile(string $inputFile, string $outputFile = null): string
+    public function encryptFile(string $inputFile, ?string $outputFile = null): string
     {
         $outputFile = $outputFile ?? "$inputFile.gpg";
         file_put_contents($outputFile, $this->encryptString(file_get_contents($inputFile)));
@@ -28,7 +28,7 @@ class FileEncrypter
         return $outputFile;
     }
 
-    public function decryptFile(string $inputFile, string $outputFile = null): string
+    public function decryptFile(string $inputFile, ?string $outputFile = null): string
     {
         $outputFile = $outputFile ?? str_replace('.gpg', '', $inputFile);
         file_put_contents($outputFile, $this->decryptString(file_get_contents($inputFile)));
@@ -56,8 +56,8 @@ class FileEncrypter
         $key = hash($this->shaAlgo, $this->filePassword, true);
 
         if (!hash_equals(hash_hmac($this->shaAlgo, $encryptedContent.$iv, $key, true), $hash)) {
-            throw new \RuntimeException('Hashes do not match. Cannot decrypt file contents.');
-        };
+            throw new RuntimeException('Hashes do not match. Cannot decrypt file contents.');
+        }
 
         return openssl_decrypt($encryptedContent, $this->cipher, $key, OPENSSL_RAW_DATA, $iv);
     }

@@ -2,26 +2,25 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Inventory;
-use App\Entity\InventoryItem;
-use App\Entity\User;
+use _Entity\Inventory;
+use _Entity\InventoryItem;
+use _Entity\User;
 use App\Repository\BookRepository;
 use App\Repository\InventoryItemRepository;
 use App\Repository\InventoryRepository;
+use DateTime;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ApiBorrowerController
- * @package App\Controller\Api
- * @Route("/api/inventory")
+ * Class ApiBorrowerController.
  */
+#[Route(path: '/api/inventory')]
 class ApiInventoryController extends ApiBaseController
 {
-    /**
-     * @Route("", methods={"GET"}, name="inventories")
-     */
+    #[Route(path: '', methods: ['GET'], name: 'inventories')]
     public function list(InventoryRepository $inventoryRepository): JsonResponse
     {
         $inventories = $inventoryRepository->findBy(
@@ -29,13 +28,10 @@ class ApiInventoryController extends ApiBaseController
             ['startedAt' => 'desc', 'stoppedAt' => 'asc']
         );
 
-
         return new JsonResponse($this->serialize($inventories, ['groups' => ['details']], 'Y-m-d H:i:s'), Response::HTTP_CREATED, [], true);
     }
 
-    /**
-     * @Route("/{inventory}/details", methods={"GET"}, requirements={"inventory"="\d+"}, name="inventory_details")
-     */
+    #[Route(path: '/{inventory}/details', methods: ['GET'], requirements: ['inventory' => '\d+'], name: 'inventory_details')]
     public function details(Inventory $inventory, InventoryItemRepository $itemRepository, BookRepository $bookRepository): JsonResponse
     {
         $details = [
@@ -46,35 +42,31 @@ class ApiInventoryController extends ApiBaseController
         return new JsonResponse(json_encode($details), Response::HTTP_OK, [], true);
     }
 
-    /**
-     * @Route("", methods={"POST"}, name="inventory_create")
-     */
+    #[Route(path: '', methods: ['POST'], name: 'inventory_create')]
     public function create(BookRepository $bookRepository): JsonResponse
     {
         try {
             $bookCount = $bookRepository->getTotalBookCount();
             $inventory = new Inventory();
             $inventory
-                ->setStartedAt(new \DateTime())
+                ->setStartedAt(new DateTime())
                 ->setAvailableBookCount($bookCount)
             ;
             $this->entityManager->persist($inventory);
             $this->entityManager->flush();
 
             return new JsonResponse($this->serialize($inventory, ['groups' => ['details']]), Response::HTTP_CREATED, [], true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * @Route("/{inventory}/{bookCode}", methods={"PUT"}, requirements={"inventory"="\d+", "bookCode"="\d+"}, name="inventory_add_book")
-     */
+    #[Route(path: '/{inventory}/{bookCode}', methods: ['PUT'], requirements: ['inventory' => '\d+', 'bookCode' => '\d+'], name: 'inventory_add_book')]
     public function addBookCode(
         BookRepository $bookRepository,
         InventoryItemRepository $itemRepository,
         Inventory $inventory,
-        string $bookCode
+        string $bookCode,
     ): JsonResponse {
         try {
             $book = $bookRepository->getBookWithCurrentLoan($bookCode);
@@ -122,14 +114,12 @@ class ApiInventoryController extends ApiBaseController
             ];
 
             return $this->json($responseData, Response::HTTP_ACCEPTED);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * @Route("/{inventory}/{bookCode}", methods={"DELETE"}, requirements={"inventory"="\d+", "bookCode"="\d+"}, name="inventory_remove_book")
-     */
+    #[Route(path: '/{inventory}/{bookCode}', methods: ['DELETE'], requirements: ['inventory' => '\d+', 'bookCode' => '\d+'], name: 'inventory_remove_book')]
     public function removeBook(Inventory $inventory, string $bookCode, InventoryItemRepository $itemRepository): JsonResponse
     {
         if ($itemRepository->removeCode($inventory, $bookCode)) {
@@ -138,25 +128,22 @@ class ApiInventoryController extends ApiBaseController
             $this->entityManager->flush();
         }
 
-
         return $this->json([
             'inventory' => json_decode($this->serialize($inventory, ['groups' => ['details']]), true),
             'books_to_move' => $itemRepository->getItemsToMove($inventory, $this->getUser()->getLocation()),
         ], Response::HTTP_ACCEPTED);
     }
 
-    /**
-     * @Route("/{inventory}", methods={"POST"}, name="inventory_close")
-     */
+    #[Route(path: '/{inventory}', methods: ['POST'], name: 'inventory_close')]
     public function close(Inventory $inventory): JsonResponse
     {
         try {
-            $inventory->setStoppedAt(new \DateTime());
+            $inventory->setStoppedAt(new DateTime());
             $this->entityManager->persist($inventory);
             $this->entityManager->flush();
 
             return $this->json(null, Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

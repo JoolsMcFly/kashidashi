@@ -6,41 +6,29 @@ use App\Repository\InventoryItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @ORM\Entity(repositoryClass=InventoryItemRepository::class)
- */
+#[ORM\Entity(repositoryClass: InventoryItemRepository::class)]
 class InventoryItem
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Inventory::class, inversedBy="items")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Inventory::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(nullable: false)]
     private $inventory;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Book::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Book::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
     private $book;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Location::class)
-     * @ORM\JoinColumn(nullable=false)
-     * @Serializer\Groups({"basic"})
-     */
+    #[ORM\ManyToOne(targetEntity: Location::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Serializer\Groups(['basic'])]
     private $foundAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Location::class)
-     * @Serializer\Groups({"basic"})
-     */
+    #[ORM\ManyToOne(targetEntity: Location::class)]
+    #[Serializer\Groups(['basic'])]
     private $belongsAt;
 
     public function getId(): ?int

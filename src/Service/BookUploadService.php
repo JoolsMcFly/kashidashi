@@ -7,7 +7,9 @@ use App\Entity\Book;
 use App\Entity\Location;
 use App\Repository\BookRepository;
 use App\Repository\LocationRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Psr\Log\LoggerInterface;
 
@@ -50,8 +52,6 @@ final class BookUploadService
 
     /**
      * UserService constructor.
-     * @param EntityManagerInterface $manager
-     * @param LoggerInterface $logger
      */
     public function __construct(EntityManagerInterface $manager, LoggerInterface $logger)
     {
@@ -63,7 +63,7 @@ final class BookUploadService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function processFile(string $pathName): UploadStats
     {
@@ -75,14 +75,14 @@ final class BookUploadService
             if (empty($bookDetails[0])) {
                 continue;
             }
-            $book = $this->findOrCreateBook((int)$bookDetails[0]);
+            $book = $this->findOrCreateBook((int) $bookDetails[0]);
             $this->updateBookDetails($bookDetails, $book);
             $this->manager->persist($book);
         }
 
         try {
             $this->manager->flush();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Error uploading book file\n$e\n\n");
         }
 
@@ -90,7 +90,7 @@ final class BookUploadService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function findOrCreateBook(int $id): Book
     {
@@ -101,7 +101,7 @@ final class BookUploadService
         }
 
         $book = new Book();
-        $book->setCreatedAt(new \DateTime());
+        $book->setCreatedAt(new DateTime());
 
         $this->stats->addUploaded();
 
@@ -109,7 +109,7 @@ final class BookUploadService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateBookDetails(array $bookDetails, Book $book): void
     {
@@ -117,13 +117,13 @@ final class BookUploadService
             ->setCode($bookDetails[0])
             ->setTitle($bookDetails[1])
             ->setLocation($this->getLocation($bookDetails[2]))
-            ->setDeleted($bookDetails[2] === '廃棄')
+            ->setDeleted('廃棄' === $bookDetails[2])
         ;
         $this->manager->persist($book);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function getLocation(?string $location): ?Location
     {
@@ -139,7 +139,7 @@ final class BookUploadService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function findOrCreateLocationByName(string $locationName): Location
     {
@@ -150,7 +150,7 @@ final class BookUploadService
         $location = new Location();
         $location
             ->setName($locationName)
-            ->setCreatedAt(new \DateTime())
+            ->setCreatedAt(new DateTime())
         ;
 
         $this->manager->persist($location);

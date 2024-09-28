@@ -2,16 +2,15 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\User;
+use _Entity\User;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 final class ApiSecurityController extends AbstractController
 {
-    /**
-     * @Route("/api/security/login", name="login")
-     */
+    #[Route(path: '/api/security/login', name: 'login')]
     public function loginAction(): JsonResponse
     {
         /** @var User $user */
@@ -21,11 +20,11 @@ final class ApiSecurityController extends AbstractController
     }
 
     /**
-     * @Route("/api/security/logout", name="logout")
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
+    #[Route(path: '/api/security/logout', name: 'logout')]
     public function logoutAction(): void
     {
-        throw new \RuntimeException('This should not be reached!');
+        throw new RuntimeException('This should not be reached!');
     }
 }

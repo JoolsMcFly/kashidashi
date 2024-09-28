@@ -8,6 +8,9 @@ use App\Entity\Location;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Book>
+ */
 class BookRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -68,9 +71,6 @@ class BookRepository extends ServiceEntityRepository
         ;
     }
 
-    /**
-     * @return mixed
-     */
     public function indexByCode()
     {
         return $this->createQueryBuilder('b', 'b.code')
@@ -93,7 +93,7 @@ class BookRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getBooks(Location $location = null)
+    public function getBooks(?Location $location = null)
     {
         $qb = $this->createQueryBuilder('b');
         if ($location) {

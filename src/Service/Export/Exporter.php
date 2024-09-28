@@ -3,6 +3,7 @@
 namespace App\Service\Export;
 
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -23,12 +24,12 @@ abstract class Exporter
     protected array $headers = [];
 
     /**
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function __construct(EntityManagerInterface $manager)
     {
         if (empty($this->headers)) {
-            throw new \LogicException('You should set header property in child classes.');
+            throw new LogicException('You should set header property in child classes.');
         }
 
         $this->manager = $manager;
@@ -53,9 +54,9 @@ abstract class Exporter
     {
         $headersCount = count($this->headers);
         $letter = 'A';
-        for ($col = 0; $col < $headersCount; $col++) {
+        for ($col = 0; $col < $headersCount; ++$col) {
             $this->worksheet->getColumnDimension($letter)->setAutoSize(true);
-            $letter++;
+            ++$letter;
         }
     }
 }

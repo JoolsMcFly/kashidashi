@@ -12,14 +12,12 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class IndexController extends AbstractController
 {
-    /**
-     * @Route("/{vueRouting}", requirements={"vueRouting"="^(?!api|_(profiler|wdt)).*"}, name="index")
-     */
+    #[Route(path: '/{vueRouting}', requirements: ['vueRouting' => '^(?!api|_(profiler|wdt)).*'], name: 'index')]
     public function indexAction(
         InventoryRepository $inventoryRepository,
         InventoryItemRepository $inventoryItemRepository,
         LocationRepository $locationRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
     ): Response {
         $user = $this->getUser();
         $userLocation = $user ? $user->getLocation() : null;
@@ -37,6 +35,7 @@ final class IndexController extends AbstractController
                 'name' => $userLocation->getName(),
             ];
         }
+
         return $this->render('base.html.twig', [
             'isAuthenticated' => json_encode(!empty($user)),
             'roles' => json_encode(!empty($user) ? $user->getRoles() : []),

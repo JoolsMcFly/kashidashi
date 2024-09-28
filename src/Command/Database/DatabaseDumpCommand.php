@@ -6,15 +6,16 @@ use App\Exception\FtpException;
 use App\Service\Export\DBDumper;
 use App\Service\FileEncrypter;
 use App\Service\Ftp\Ftp;
+use RuntimeException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'admin:backup:dump', description: 'Dumps the database and uploads an encrypted version to the configured FTP.')]
 class DatabaseDumpCommand extends Command
 {
-    protected static $defaultName = 'admin:backup:dump';
-
     private Ftp $ftp;
 
     private DBDumper $dumper;
@@ -23,7 +24,6 @@ class DatabaseDumpCommand extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Dumps the database and uploads an encrypted version to the configured FTP.');
     }
 
     public function __construct(DBDumper $dumper, Ftp $ftp, FileEncrypter $fileEncrypter)
@@ -46,7 +46,7 @@ class DatabaseDumpCommand extends Command
             } else {
                 $io->warning(sprintf('FTP is not enabled, dump is only available locally: %s', $dumpFile));
             }
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             $io->error("An error occurred when dumping the database:\n".$e->getMessage());
 
             return 1;

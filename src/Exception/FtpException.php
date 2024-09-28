@@ -2,7 +2,8 @@
 
 namespace App\Exception;
 
-class FtpException extends \Exception
-{
+use Exception;
 
+class FtpException extends Exception
+{
 }

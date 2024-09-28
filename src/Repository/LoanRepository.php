@@ -4,9 +4,13 @@ namespace App\Repository;
 
 use App\Entity\Book;
 use App\Entity\Loan;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Loan>
+ */
 class LoanRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -24,7 +28,7 @@ class LoanRepository extends ServiceEntityRepository
             ->setParameter('book', $book)
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 
     public function getActiveLoansCount(): int
@@ -33,7 +37,7 @@ class LoanRepository extends ServiceEntityRepository
             ->select('count(l.id)')
             ->where('l.stoppedAt IS NULL')
             ->getQuery()->getSingleScalarResult()
-            ;
+        ;
     }
 
     public function getOverdueCount(): int
@@ -42,10 +46,10 @@ class LoanRepository extends ServiceEntityRepository
             ->select('count(l.id)')
             ->where('l.stoppedAt IS NULL')
             ->andWhere('l.startedAt < :date')
-            ->setParameter('date', new \DateTime('3 weeks ago'))
+            ->setParameter('date', new DateTime('3 weeks ago'))
             ->getQuery()
             ->getSingleScalarResult()
-            ;
+        ;
     }
 
     public function getOverdue(): array
@@ -53,10 +57,10 @@ class LoanRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('l')
             ->where('l.stoppedAt IS NULL')
             ->andWhere('l.startedAt < :date')
-            ->setParameter('date', new \DateTime('3 weeks ago'))
+            ->setParameter('date', new DateTime('3 weeks ago'))
             ->orderBy('l.startedAt', 'ASC')
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 }

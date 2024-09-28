@@ -2,74 +2,64 @@
 
 namespace App\Entity;
 
+use App\Repository\BookRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
- * @Table(indexes={
- *     @Index(name="book_title", columns={"title"}),
- *     @Index(name="book_code", columns={"code"})
- * })
- */
+#[ORM\Entity(repositoryClass: BookRepository::class)]
+#[Table]
+#[Index(name: 'book_title', columns: ['title'])]
+#[Index(name: 'book_code', columns: ['code'])]
 class Book
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"details", "basic"})
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['details', 'basic'])]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups({"details", "loan-details", "basic"})
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Serializer\Groups(['details', 'loan-details', 'basic'])]
     private $title;
 
-    /**
-     * @ORM\Column(type="smallint")
-     * @Serializer\Groups({"details", "loan-details", "basic"})
-     */
+    #[ORM\Column(type: 'smallint')]
+    #[Serializer\Groups(['details', 'loan-details', 'basic'])]
     private $code;
 
     /**
      * @var Location
-     * @ORM\ManyToOne(targetEntity="Location", fetch="EAGER")
-     * @Serializer\Groups({"details", "loan-details", "basic"})
      */
+    #[ORM\ManyToOne(targetEntity: Location::class, fetch: 'EAGER')]
+    #[Serializer\Groups(['details', 'loan-details', 'basic'])]
     private $location;
 
     /**
-     * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Loan", mappedBy="book")
-     * @Serializer\Groups({"loasn-details"})
-     */
+    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'book')]
+    #[Serializer\Groups(['loasn-details'])]
     private $loans;
 
     /**
      * @var array
-     * @ORM\Column(type="text", nullable=true)
-     * @Serializer\Groups({"details"})
      */
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Serializer\Groups(['details'])]
     private $stats;
 
     /**
      * @var bool
-     * @ORM\Column(type="smallint", nullable=true)
      */
+    #[ORM\Column(type: 'smallint', nullable: true)]
     private $deleted;
 
     public function __construct()
@@ -107,12 +97,12 @@ class Book
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -166,7 +156,7 @@ class Book
     public function incLoansCount(): void
     {
         $stats = $this->getStats();
-        $stats['loansCount']++;
+        ++$stats['loansCount'];
 
         $this->setStats($stats);
     }

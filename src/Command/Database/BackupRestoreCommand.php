@@ -7,6 +7,8 @@ use App\Exception\FtpException;
 use App\Service\Export\DBDumper;
 use App\Service\FileEncrypter;
 use App\Service\Ftp\Ftp;
+use RuntimeException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,10 +16,9 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'admin:backup:restore', description: 'Restores a DB from available dumps.')]
 class BackupRestoreCommand extends Command
 {
-    protected static $defaultName = 'admin:backup:restore';
-
     private Ftp $ftp;
 
     private DBDumper $dumper;
@@ -26,7 +27,6 @@ class BackupRestoreCommand extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Restores a DB from available dumps.');
     }
 
     public function __construct(DBDumper $dumper, Ftp $ftp, FileEncrypter $fileEncrypter)
@@ -55,11 +55,11 @@ class BackupRestoreCommand extends Command
 
             $decryptedFile = $this->fileEncrypter->decryptFile($localFile, $localFile.'-decrypted');
             $io->note("Dump downloaded to $localFile and decrypted to $decryptedFile.");
-            die;
+            exit;
             $dbUser = $this->askUsernameAndPassword($input, $output);
             $this->dumper->restore($decryptedFile, $dbUser);
             $io->success('Restore command executed successfully.');
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             $io->error("An error occurred when restoring the database:\n".$e->getMessage());
             $statusCode = 1;
         } catch (FtpException $e) {

@@ -3,7 +3,8 @@
 namespace App\Service\Ftp;
 
 use App\Exception\FtpException;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use Exception;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class Ftp
 {
@@ -11,7 +12,7 @@ class Ftp
 
     private const UPLOAD_ERROR = 2;
 
-    const MISSING_SETTINGS = 3;
+    public const MISSING_SETTINGS = 3;
 
     private string $ftpServer;
 
@@ -19,13 +20,13 @@ class Ftp
 
     private string $ftpPassword;
 
-    private string $dumpDir = "kashidashi/";
+    private string $dumpDir = 'kashidashi/';
 
-    public function __construct(ContainerBagInterface $containerBag)
+    public function __construct(ParameterBagInterface $parameterBag)
     {
-        $this->ftpServer = (string)$containerBag->get('ftp.server');
-        $this->ftpLogin = (string)$containerBag->get('ftp.login');
-        $this->ftpPassword = (string)$containerBag->get('ftp.password');
+        $this->ftpServer = (string) $parameterBag->get('ftp.server');
+        $this->ftpLogin = (string) $parameterBag->get('ftp.login');
+        $this->ftpPassword = (string) $parameterBag->get('ftp.password');
     }
 
     /**
@@ -34,7 +35,7 @@ class Ftp
     public function upload(string $filePath): string
     {
         if (!$this->isEnabled()) {
-            throw new FtpException("Ftp settings not found.", self::MISSING_SETTINGS);
+            throw new FtpException('Ftp settings not found.', self::MISSING_SETTINGS);
         }
 
         $ftp = $this->connect();
@@ -72,7 +73,7 @@ class Ftp
         $files = ftp_nlist($ftp, $this->dumpDir);
         ftp_close($ftp);
 
-        if ($files === false) {
+        if (false === $files) {
             throw new FtpException('Could not retrieve dumps from FTP.');
         }
 
@@ -103,6 +104,7 @@ class Ftp
 
     /**
      * @return resource
+     *
      * @throws FtpException
      */
     private function connect()
@@ -110,7 +112,7 @@ class Ftp
         $ftp = ftp_connect($this->ftpServer);
         try {
             $login = ftp_login($ftp, $this->ftpLogin, $this->ftpPassword);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new FtpException("Could not login to $this->ftpServer. Upload aborted.", self::LOGIN_ERROR);
         }
 
@@ -138,7 +140,7 @@ class Ftp
                 $distantFile = $this->dumpDir.$dump;
                 ftp_delete($ftp, $distantFile);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
         ftp_close($ftp);
     }

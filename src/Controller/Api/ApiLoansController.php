@@ -2,23 +2,22 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Book;
-use App\Entity\Borrower;
-use App\Entity\Loan;
+use _Entity\Book;
+use _Entity\Borrower;
+use _Entity\Loan;
+use DateTime;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ApiBorrowerController
- * @package App\Controller\Api
- * @Route("/api/loans")
+ * Class ApiBorrowerController.
  */
+#[Route(path: '/api/loans')]
 class ApiLoansController extends ApiBaseController
 {
-    /**
-     * @Route("/by-user/{borrower}", methods={"GET"})
-     */
+    #[Route(path: '/by-user/{borrower}', methods: ['GET'])]
     public function getLoansByUser(Borrower $borrower): JsonResponse
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->findBy([
@@ -29,9 +28,7 @@ class ApiLoansController extends ApiBaseController
         return $this->serializeLoans($loans);
     }
 
-    /**
-     * @Route("/by-book/{book}", methods={"GET"})
-     */
+    #[Route(path: '/by-book/{book}', methods: ['GET'])]
     public function getLoansByBook(Book $book): JsonResponse
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->getByBook($book);
@@ -39,9 +36,7 @@ class ApiLoansController extends ApiBaseController
         return $this->serializeLoans($loans);
     }
 
-    /**
-     * @Route("/by-user/{borrower}/{bookCode}", methods={"POST"})
-     */
+    #[Route(path: '/by-user/{borrower}/{bookCode}', methods: ['POST'])]
     public function addLoan(Borrower $borrower, string $bookCode): JsonResponse
     {
         try {
@@ -60,7 +55,7 @@ class ApiLoansController extends ApiBaseController
             $loan = new Loan();
             $loan->setBorrower($borrower)
                 ->setBook($book)
-                ->setStartedAt(new \DateTime())
+                ->setStartedAt(new DateTime())
                 ->setCreator($this->getUser())
             ;
             $borrower->incLoansCount();
@@ -76,19 +71,17 @@ class ApiLoansController extends ApiBaseController
                 [],
                 true
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json('An error occurred when saving your book loan.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * @Route("/{loan}", methods={"PUT"})
-     */
+    #[Route(path: '/{loan}', methods: ['PUT'])]
     public function endLoan(Loan $loan): JsonResponse
     {
         try {
             $manager = $this->getDoctrine()->getManager();
-            $loan->setStoppedAt(new \DateTime());
+            $loan->setStoppedAt(new DateTime());
 
             $book = $loan->getBook();
             $borrower = $loan->getBorrower();
@@ -107,14 +100,12 @@ class ApiLoansController extends ApiBaseController
             $manager->flush();
 
             return $this->json(null);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * @Route("/overdue", name="api_overdue_loans_list", methods={"GET"})
-     */
+    #[Route(path: '/overdue', name: 'api_overdue_loans_list', methods: ['GET'])]
     public function overdueLoans(): JsonResponse
     {
         $loans = $this->getDoctrine()->getRepository(Loan::class)->getOverdue();

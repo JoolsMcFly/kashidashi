@@ -2,73 +2,76 @@
 
 namespace App\Entity;
 
+use App\Repository\BorrowerRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\BorrowerRepository")
- * @ORM\Table(indexes={@Index(name="surname_firstname", columns={"surname", "firstname"})})
- */
+#[ORM\Entity(repositoryClass: BorrowerRepository::class)]
+#[ORM\Table]
+#[Index(name: 'surname_firstname', columns: ['surname', 'firstname'])]
 class Borrower
 {
     /**
      * @var int
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"list", "details", "loan-details"})
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['list', 'details', 'loan-details'])]
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100, nullable=true)
-     * @Serializer\Groups({"list", "details", "loan-details"})
      */
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    #[Serializer\Groups(['list', 'details', 'loan-details'])]
     private $firstname;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100)
-     * @Serializer\Groups({"list", "details", "loan-details"})
      */
+    #[ORM\Column(type: 'string', length: 100)]
+    #[Serializer\Groups(['list', 'details', 'loan-details'])]
     private $surname;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100)
-     * @Serializer\Groups({"list", "details", "loan-details"})
      */
+    #[ORM\Column(type: 'string', length: 100)]
+    #[Serializer\Groups(['list', 'details', 'loan-details'])]
     private $katakana;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100)
-     * @Serializer\Groups({"list", "details", "loan-details"})
      */
+    #[ORM\Column(type: 'string', length: 100)]
+    #[Serializer\Groups(['list', 'details', 'loan-details'])]
     private $frenchSurname;
 
     /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime")
+     * @var DateTime
+     *
      * @Gedmo\Timestampable(on="create")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     /**
      * @var Loan[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Loan", mappedBy="borrower", orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'borrower', orphanRemoval: true)]
     private $loans;
 
     /**
      * @var array
-     * @ORM\Column(type="text", nullable=true)
-     * @Serializer\Groups({"details", "list"})
      */
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Serializer\Groups(['details', 'list'])]
     private $stats;
 
     public function __construct()
@@ -105,12 +108,12 @@ class Borrower
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -158,7 +161,7 @@ class Borrower
     public function incLoansCount(): void
     {
         $stats = $this->getStats();
-        $stats['loansCount']++;
+        ++$stats['loansCount'];
 
         $this->setStats($stats);
     }
@@ -200,14 +203,12 @@ class Borrower
         return $this;
     }
 
-    /**
-     * @Serializer\Groups({"details", "list", "loan-details"})
-     */
+    #[Serializer\Groups(['details', 'list', 'loan-details'])]
     public function getFullName(): string
     {
-        $fullname = $this->getKatakana()." (".$this->getSurname().")";
+        $fullname = $this->getKatakana().' ('.$this->getSurname().')';
         if ($this->getSurname() !== $this->getFrenchSurname()) {
-            $fullname .= " / ".$this->getFrenchSurname();
+            $fullname .= ' / '.$this->getFrenchSurname();
         }
 
         return $fullname;

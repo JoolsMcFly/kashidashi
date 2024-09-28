@@ -7,10 +7,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ApiBorrowerController
- * @package App\Controller\Api
- * @Route("/api/borrowers")
+ * Class ApiBorrowerController.
  */
+#[Route(path: '/api/borrowers')]
 class ApiBorrowerController
 {
     private BorrowerService $borrowerService;
@@ -20,9 +19,7 @@ class ApiBorrowerController
         $this->borrowerService = $borrowerService;
     }
 
-    /**
-     * @Route("/search/{borrowerName}", methods={"GET"})
-     */
+    #[Route(path: '/search/{borrowerName}', methods: ['GET'])]
     public function search(string $borrowerName): JsonResponse
     {
         $borrowers = $this->borrowerService->findSuggestions($borrowerName);

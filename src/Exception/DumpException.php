@@ -2,7 +2,8 @@
 
 namespace App\Exception;
 
-class DumpException extends \Exception
-{
+use Exception;
 
+class DumpException extends Exception
+{
 }

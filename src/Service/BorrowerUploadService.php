@@ -5,8 +5,10 @@ namespace App\Service;
 use App\DataStructures\UploadStats;
 use App\Entity\Borrower;
 use App\Repository\BorrowerRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 final class BorrowerUploadService
@@ -18,9 +20,6 @@ final class BorrowerUploadService
      */
     private $borrowerRepo;
 
-    /**
-     * @var UploadStats
-     */
     private UploadStats $stats;
 
     /**
@@ -28,9 +27,6 @@ final class BorrowerUploadService
      */
     private $borrowers;
 
-    /**
-     * @param EntityManagerInterface $manager
-     */
     public function __construct(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
@@ -40,7 +36,7 @@ final class BorrowerUploadService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function processFile(string $filename): UploadStats
     {
@@ -48,7 +44,7 @@ final class BorrowerUploadService
         $borrowers = $spreadSheet->getSheet(0)->toArray();
         array_shift($borrowers); // headers
         foreach ($borrowers as $borrowerDetails) {
-            if (count($borrowerDetails) !== 4) {
+            if (4 !== count($borrowerDetails)) {
                 continue;
             }
             $borrower = $this->findOrCreateBorrower($borrowerDetails);
@@ -69,7 +65,7 @@ final class BorrowerUploadService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateBorrowerDetails(Borrower $borrower, array $borrowerDetails): void
     {
@@ -77,7 +73,7 @@ final class BorrowerUploadService
             ->setSurname(mb_strtolower($borrowerDetails[1]))
             ->setFrenchSurname(mb_strtolower($borrowerDetails[2]))
             ->setKatakana($borrowerDetails[3])
-            ->setCreatedAt(new \DateTime())
+            ->setCreatedAt(new DateTime())
         ;
         $this->manager->persist($borrower);
     }

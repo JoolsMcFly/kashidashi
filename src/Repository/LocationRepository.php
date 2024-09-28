@@ -6,6 +6,9 @@ use App\Entity\Location;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Location>
+ */
 class LocationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,10 +19,10 @@ class LocationRepository extends ServiceEntityRepository
     public function bookCount()
     {
         return $this->createQueryBuilder('location')
-            ->select('location', "count(books.id) as count")
+            ->select('location', 'count(books.id) as count')
             ->join('location.books', 'books')
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 }

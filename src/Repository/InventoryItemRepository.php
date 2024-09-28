@@ -15,10 +15,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method InventoryItem|null find($id, $lockMode = null, $lockVersion = null)
- * @method InventoryItem|null findOneBy(array $criteria, array $orderBy = null)
- * @method InventoryItem[]    findAll()
- * @method InventoryItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<InventoryItem>
  */
 class InventoryItemRepository extends ServiceEntityRepository
 {
@@ -36,7 +33,7 @@ class InventoryItemRepository extends ServiceEntityRepository
                 ->andWhere('ii.inventory = :id')
                 ->setParameters([
                     'id' => $inventory,
-                    'code' => (int)$code,
+                    'code' => (int) $code,
                 ])
                 ->getQuery()
                 ->getSingleResult()
@@ -59,7 +56,7 @@ class InventoryItemRepository extends ServiceEntityRepository
                 ->andWhere('ii.inventory = :id')
                 ->setParameters([
                     'id' => $inventory,
-                    'code' => (int)$code,
+                    'code' => (int) $code,
                 ])
                 ->getQuery()
                 ->getResult()
@@ -125,7 +122,7 @@ class InventoryItemRepository extends ServiceEntityRepository
     }
 
     // TODO use a data structure
-    public function getItemsToMove(Inventory $inventory, Location $location = null): array
+    public function getItemsToMove(Inventory $inventory, ?Location $location = null): array
     {
         $qb = $this->createQueryBuilder('ii')
             ->select('book.code', 'book.title', 'belongsAtLocation.name AS location')

@@ -2,94 +2,84 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Security\Core\Encoder\EncoderAwareInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="`user`")
- */
-class User implements EncoderAwareInterface, UserInterface
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     /**
      * @var int
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"list"})
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['list'])]
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Serializer\Groups({"list"})
      */
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Serializer\Groups(['list'])]
     private $email;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100, nullable=true)
-     * @Serializer\Groups({"list"})
      */
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    #[Serializer\Groups(['list'])]
     private $firstname;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100, nullable=true)
-     * @Serializer\Groups({"list"})
      */
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    #[Serializer\Groups(['list'])]
     private $surname;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=100)
      */
+    #[ORM\Column(type: 'string', length: 100)]
     private $password;
 
     /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime")
+     * @var DateTime
+     *
      * @Gedmo\Timestampable(on="create")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     /**
      * @var array
-     * @ORM\Column(type="string", length=255)
-     * @Serializer\Groups({"list"})
      */
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Serializer\Groups(['list'])]
     private $roles;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Location::class, inversedBy="users")
-     * @Serializer\Groups({"list"})
-     */
+    #[ORM\ManyToOne(targetEntity: Location::class, inversedBy: 'users')]
+    #[Serializer\Groups(['list'])]
     private $location;
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     * @return User
-     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -97,18 +87,11 @@ class User implements EncoderAwareInterface, UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFirstname(): ?string
     {
         return $this->firstname;
     }
 
-    /**
-     * @param string|null $firstname
-     * @return User
-     */
     public function setFirstname(?string $firstname): self
     {
         $this->firstname = $firstname;
@@ -116,18 +99,11 @@ class User implements EncoderAwareInterface, UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSurname(): ?string
     {
         return $this->surname;
     }
 
-    /**
-     * @param string|null $surname
-     * @return User
-     */
     public function setSurname(?string $surname): self
     {
         $this->surname = $surname;
@@ -135,18 +111,11 @@ class User implements EncoderAwareInterface, UserInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getPassword(): string
     {
         return $this->password;
     }
 
-    /**
-     * @param string $password
-     * @return User
-     */
     public function setPassword(string $password): User
     {
         $this->password = $password;
@@ -154,41 +123,27 @@ class User implements EncoderAwareInterface, UserInterface
         return $this;
     }
 
-    /**
-     * @return \DateTimeInterface|null
-     */
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param \DateTimeInterface $createdAt
-     * @return User
-     */
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getRoles(): array
     {
-        if ($this->roles === null) {
+        if (null === $this->roles) {
             return [];
         }
 
         return json_decode($this->roles, true);
     }
 
-    /**
-     * @param array $roles
-     * @return User
-     */
     public function setRoles(array $roles): self
     {
         $this->roles = json_encode($roles);
@@ -237,7 +192,7 @@ class User implements EncoderAwareInterface, UserInterface
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
     }
 
@@ -259,5 +214,10 @@ class User implements EncoderAwareInterface, UserInterface
         $this->location = $location;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // TODO: Implement getUserIdentifier() method.
     }
 }

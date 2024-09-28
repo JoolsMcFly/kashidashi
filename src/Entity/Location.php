@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Repository\LocationRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,42 +12,31 @@ use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\LocationRepository")
- * @Table(indexes={
- *     @Index(name="location_name", columns={"name"}),
- * })
- */
+#[ORM\Entity(repositoryClass: LocationRepository::class)]
+#[Table]
+#[Index(name: 'location_name', columns: ['name'])]
 class Location
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"list", "basic"})
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['list', 'basic'])]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups({"list", "basic", "loan-details"})
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Serializer\Groups(['list', 'basic', 'loan-details'])]
     private $name;
 
     /**
-     * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="location")
-     */
+    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'location')]
     private $books;
 
-    /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="location")
-     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'location')]
     private $users;
 
     public function __construct()
@@ -54,24 +45,17 @@ class Location
         $this->users = new ArrayCollection();
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string|null $name
      * @return Book
      */
     public function setName(?string $name): self
@@ -81,28 +65,22 @@ class Location
         return $this;
     }
 
-    /**
-     * @return \DateTimeInterface|null
-     */
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTimeInterface $createdAt
      * @return Book
      */
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    /**
-     * @Serializer\Groups({"list"})
-     */
+    #[Serializer\Groups(['list'])]
     public function getBookCount()
     {
         return $this->books->count();

@@ -8,27 +8,21 @@ class TypeahedSuggestion
 {
     /**
      * @var string
-     * @Serializer\Groups({"details"})
      */
+    #[Serializer\Groups(['details'])]
     private $text;
 
-    /**
-     * @var mixed
-     * @Serializer\Groups({"details"})
-     */
+    #[Serializer\Groups(['details'])]
     private $item;
 
     /**
      * @var string
-     * @Serializer\Groups({"details"})
      */
+    #[Serializer\Groups(['details'])]
     private $type;
 
     /**
      * TypeahedSuggestion constructor.
-     * @param string $text
-     * @param $item
-     * @param string $type
      */
     public function __construct(string $text, $item, string $type)
     {
@@ -37,25 +31,16 @@ class TypeahedSuggestion
         $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
     public function getText(): string
     {
         return $this->text;
     }
 
-    /**
-     * @return mixed
-     */
     public function getItem()
     {
         return $this->item;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;

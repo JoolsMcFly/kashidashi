@@ -12,7 +12,6 @@ final class BorrowerService
 
     /**
      * UserService constructor.
-     * @param EntityManagerInterface $manager
      */
     public function __construct(EntityManagerInterface $manager)
     {
@@ -20,7 +19,6 @@ final class BorrowerService
     }
 
     /**
-     * @param string $borrowerName
      * @return TypeahedSuggestion[]
      */
     public function findSuggestions(string $borrowerName): array

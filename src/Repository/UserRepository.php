@@ -9,31 +9,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * @extends ServiceEntityRepository<User>
+ */
 class UserRepository extends ServiceEntityRepository
 {
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encoder;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    /**
-     * UserRepository constructor.
-     * @param RegistryInterface $registry
-     * @param UserPasswordEncoderInterface $encoder
-     */
-    public function __construct(ManagerRegistry $registry, UserPasswordEncoderInterface $encoder)
+    public function __construct(ManagerRegistry $registry, UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct($registry, User::class);
-        $this->encoder = $encoder;
+        $this->passwordHasher = $passwordHasher;
     }
 
-    /**
-     * @return ArrayCollection
-     */
     public function getNonAdminUsers()
     {
         try {
@@ -41,17 +32,12 @@ class UserRepository extends ServiceEntityRepository
                 ->where("u.roles NOT LIKE '%ROLE_ADMIN%'")
                 ->getQuery()
                 ->getResult()
-                ;
+            ;
         } catch (QueryException $e) {
             return new ArrayCollection();
         }
     }
 
-    /**
-     * @throws EntityNotFoundException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function createUserFromRequest(Request $request): User
     {
         $manager = $this->getEntityManager();
@@ -78,11 +64,17 @@ class UserRepository extends ServiceEntityRepository
             )
         ;
         if (!empty($plainPassword)) {
-            $user->setPassword($this->encoder->encodePassword($user, $plainPassword));
+            $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
         }
         $manager->persist($user);
         $manager->flush();
 
         return $user;
+    }
+
+    public function remove(User $user): void
+    {
+        $this->getEntityManager()->remove($user);
+        $this->getEntityManager()->flush();
     }
 }

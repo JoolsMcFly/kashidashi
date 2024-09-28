@@ -2,56 +2,53 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class Inventory
 {
     /**
      * @var int
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"details"})
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['details'])]
     private $id;
 
     /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime")
-     * @Serializer\Groups({"details"})
+     * @var DateTime
      */
+    #[ORM\Column(type: 'datetime')]
+    #[Serializer\Groups(['details'])]
     private $startedAt;
 
     /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Serializer\Groups({"details"})
+     * @var DateTime
      */
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Serializer\Groups(['details'])]
     private $stoppedAt;
 
     /**
      * @var int
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"details"})
      */
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['details'])]
     private $bookCount = 0;
 
     /**
      * @var int
-     * @ORM\Column(type="integer")
-     * @Serializer\Groups({"details"})
      */
+    #[ORM\Column(type: 'integer')]
+    #[Serializer\Groups(['details'])]
     private $availableBookCount = 0;
 
-    /**
-     * @ORM\OneToMany(targetEntity=InventoryItem::class, mappedBy="inventory", orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: InventoryItem::class, mappedBy: 'inventory', orphanRemoval: true)]
     private $items;
 
     public function __construct()
@@ -59,32 +56,29 @@ class Inventory
         $this->items = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getStartedAt(): \DateTime
+    public function getStartedAt(): DateTime
     {
         return $this->startedAt;
     }
 
-    public function setStartedAt(\DateTime $startedAt): Inventory
+    public function setStartedAt(DateTime $startedAt): Inventory
     {
         $this->startedAt = $startedAt;
 
         return $this;
     }
 
-    public function getStoppedAt(): ?\DateTime
+    public function getStoppedAt(): ?DateTime
     {
         return $this->stoppedAt;
     }
 
-    public function setStoppedAt(\DateTime $stoppedAt): Inventory
+    public function setStoppedAt(DateTime $stoppedAt): Inventory
     {
         $this->stoppedAt = $stoppedAt;
 

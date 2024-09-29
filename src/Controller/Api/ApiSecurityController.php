@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ApiSecurityController extends AbstractController
 {
     #[Route(path: '/api/security/login', name: 'login')]
-    public function loginAction(): JsonResponse
+    public function login(): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -23,7 +23,7 @@ final class ApiSecurityController extends AbstractController
      * @throws RuntimeException
      */
     #[Route(path: '/api/security/logout', name: 'logout')]
-    public function logoutAction(): void
+    public function logout(): void
     {
         throw new RuntimeException('This should not be reached!');
     }

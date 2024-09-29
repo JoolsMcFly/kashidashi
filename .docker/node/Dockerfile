@@ -15,5 +15,5 @@ RUN chown -R nodeuser:nodeuser /usr/local/lib/node_modules /usr/local/bin /usr/l
 RUN npm completion >> ~/.bashrc
 
 USER nodeuser
-ENV HOME /home/nodeuser/app
+ENV HOME=/home/nodeuser/app
 WORKDIR /home/nodeuser/app

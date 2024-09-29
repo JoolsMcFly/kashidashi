@@ -8,9 +8,36 @@
         {% endblock %}
 
         {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+            <div data-controller="hello">
+                <input data-hello-target="name" type="text">
+                <button data-action="click->hello#greet">Greet</button>
+            </div>
+            <hr />
+            <div data-controller="clipboard" data-clipboard-supported-class="clipboard--supported">
+                PIN: <input data-clipboard-target="pin" type="text" value="1234" readonly />
+                <button data-action="clipboard#copy" class="clipboard-button">Copy to Clipboard</button>
+            </div>
+
+            <div data-controller="slideshow" data-slideshow-index-value="3">
+                <button data-action="slideshow#previous"> ← </button>
+                <button data-action="slideshow#next"> → </button>
+
+                <div data-slideshow-target="slide">🐵</div>
+                <div data-slideshow-target="slide">🙈</div>
+                <div data-slideshow-target="slide">🙉</div>
+                <div data-slideshow-target="slide">🙊</div>
+            </div>
+
+            <div data-controller="content-loader">
+                <a href="#" data-content-loader-url-param="/messages" data-action="content-loader#load">Messages</a>
+                <a href="#" data-content-loader-url-param="/comments" data-action="content-loader#load">Comments</a>
+                <div data-content-loader-target="content"></div>
+            </div>
+        {% endblock %}
     </body>
 </html>

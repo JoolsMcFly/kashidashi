@@ -1,0 +1,11 @@
+body {
+    background-color: skyblue;
+}
+
+.clipboard-button {
+    display: none;
+}
+
+.clipboard--supported .clipboard-button {
+    display: initial;
+}

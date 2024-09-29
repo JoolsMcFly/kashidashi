@@ -12,15 +12,35 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class IndexController extends AbstractController
 {
-    #[Route(path: '/{vueRouting}', requirements: ['vueRouting' => '^(?!api|_(profiler|wdt)).*'], name: 'index')]
-    public function indexAction(
+    #[Route('/messages', name: 'messages')]
+    public function messages(): Response
+    {
+        return new Response('
+            <ol>
+              <li>New Message: Stimulus Launch Party</li>
+              <li>Overdue: Finish Stimulus 1.0</li>
+            </ol>
+        ');
+    }
+
+    #[Route('/comments', name: 'comments')]
+    public function comments(): Response
+    {
+        return new Response('
+            <p>Ceci est un message</p>
+            <p>Ceci aussi !</p>
+        ');
+    }
+
+    #[Route(path: '/{vueRouting}', name: 'index', requirements: ['vueRouting' => '^(?!api|_(profiler|wdt)).*'])]
+    public function index(
         InventoryRepository $inventoryRepository,
         InventoryItemRepository $inventoryItemRepository,
         LocationRepository $locationRepository,
         SerializerInterface $serializer,
     ): Response {
         $user = $this->getUser();
-        $userLocation = $user ? $user->getLocation() : null;
+        $userLocation = $user?->getLocation();
 
         $inventoryDetails = null;
         $inventory = $inventoryRepository->getOpenInventory();

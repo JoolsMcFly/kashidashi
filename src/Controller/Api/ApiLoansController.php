@@ -46,6 +46,7 @@ class ApiLoansController extends ApiBaseController
     {
         try {
             $doctrine = $this->getDoctrine();
+            /** @var Book $book */
             $book = $doctrine->getRepository(Book::class)->findOneBy(['code' => $bookCode]);
             if (empty($book)) {
                 return $this->json("Book code $bookCode does not exist.", Response::HTTP_NOT_FOUND);

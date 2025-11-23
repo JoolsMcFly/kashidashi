@@ -1,19 +1,24 @@
-php_command=docker-compose exec -u dev php
+php_command=docker compose exec -e XDEBUG_MODE=off -u dev php
+php_command_husky=docker compose exec -e XDEBUG_MODE=off -T -u dev php
+js_command=docker compose exec -T -u node node
 
-php:
+p:
 	${php_command} bash
 
-db:
-	docker-compose exec db bash
+phproot:
+	docker compose exec -e XDEBUG_MODE=off php bash
 
 node:
-	docker-compose exec -u node node bash
+	docker compose exec -u node node /bin/ash
+
+mysql:
+	docker compose exec mysql bash
 
 status:
 	${php_command} bin/console doctrine:migrations:status
 
 migrate:
-	${php_command} bin/console doctrine:migrations:migrate
+	${php_command} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
 diff:
 	${php_command} bin/console doctrine:migrations:diff
@@ -24,17 +29,20 @@ generate:
 ci:
 	${php_command} composer install
 
-require:
-	${php_command} composer require ${NAME}
-
-build:
-	docker-compose up -d --build
-
 up:
-	docker-compose up -d
+	docker compose up -d
 
 down:
-	docker-compose down
+	docker compose down
 
-jsrouting:
-	${php_command} bin/console fos:js-routing:dump --format=json --target=public/js/fos_js_routes.json
+dbuild:
+	docker compose up -d --build --remove-orphans
+
+mig:
+	${php_command} bin/console make:migration
+
+test:
+	${php_command} vendor/bin/phpunit
+
+cc:
+	${php_command} bin/console cache:clear

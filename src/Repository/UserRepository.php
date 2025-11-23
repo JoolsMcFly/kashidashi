@@ -5,11 +5,9 @@ namespace App\Repository;
 use App\Entity\Location;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -24,20 +22,13 @@ class UserRepository extends ServiceEntityRepository
         $this->encoder = $encoder;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getNonAdminUsers(): ArrayCollection
+    public function getNonAdminUsers(): array
     {
-        try {
-            return $this->createQueryBuilder('u')
-                ->where("u.roles NOT LIKE '%ROLE_ADMIN%'")
-                ->getQuery()
-                ->getResult()
-                ;
-        } catch (QueryException $e) {
-            return new ArrayCollection();
-        }
+        return $this->createQueryBuilder('u')
+            ->where("u.roles NOT LIKE '%ROLE_ADMIN%'")
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
     /**

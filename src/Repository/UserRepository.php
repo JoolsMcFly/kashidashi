@@ -7,24 +7,17 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserRepository extends ServiceEntityRepository
 {
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encoder;
+    private UserPasswordEncoderInterface $encoder;
 
-    /**
-     * UserRepository constructor.
-     * @param RegistryInterface $registry
-     * @param UserPasswordEncoderInterface $encoder
-     */
     public function __construct(ManagerRegistry $registry, UserPasswordEncoderInterface $encoder)
     {
         parent::__construct($registry, User::class);
@@ -34,7 +27,7 @@ class UserRepository extends ServiceEntityRepository
     /**
      * @return ArrayCollection
      */
-    public function getNonAdminUsers()
+    public function getNonAdminUsers(): ArrayCollection
     {
         try {
             return $this->createQueryBuilder('u')
@@ -49,8 +42,8 @@ class UserRepository extends ServiceEntityRepository
 
     /**
      * @throws EntityNotFoundException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function createUserFromRequest(Request $request): User
     {

@@ -85,7 +85,7 @@ class BookRepository extends ServiceEntityRepository
     public function findByCode(int $code): array
     {
         return $this->createQueryBuilder('b')
-            ->where('b.deleted = 0')
+            ->where('b.deleted IS NULL')
             ->andWhere('b.code = :code')
             ->setParameter('code', $code)
             ->getQuery()

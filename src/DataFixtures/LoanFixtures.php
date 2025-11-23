@@ -20,13 +20,17 @@ class LoanFixtures extends Fixture implements DependentFixtureInterface
         $user = $manager->getRepository(User::class)->findOneBy([]);
 
         for ($counter = 0; $counter < count($borrowers); $counter++) {
+            /** @var Book $book */
+            $book = $books[$counter];
             $loan = new Loan();
-            $loan->setBook($books[$counter])
+            $loan->setBook($book)
                 ->setBorrower($borrowers[$counter])
                 ->setStartedAt(new \DateTime())
                 ->setCreator($user)
             ;
+            $book->incLoansCount();
             $manager->persist($loan);
+            $manager->persist($book);
         }
 
         $manager->flush();

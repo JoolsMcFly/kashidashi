@@ -54,6 +54,7 @@ services:
       VITE_API_URL: http://localhost:3000
     volumes:
       - ./frontend:/app
+      - ./package.json:/package.json:ro
 #      - /app/node_modules
     depends_on:
       - backend

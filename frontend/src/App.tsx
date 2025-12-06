@@ -5,8 +5,13 @@ import Login from './pages/Login';
 import Search from './pages/Search';
 import BorrowerDetails from './pages/BorrowerDetails';
 import BookDetails from './pages/BookDetails';
-import Users from './pages/admin/Users';
-import Upload from './pages/admin/Upload';
+import Admin from './pages/Admin';
+import { useAuth } from './contexts/AuthContext';
+
+function RootRedirect() {
+  const { isAdmin } = useAuth();
+  return <Navigate to={isAdmin ? '/admin' : '/search'} replace />;
+}
 
 function App() {
   return (
@@ -17,6 +22,15 @@ function App() {
 
           <Route
             path="/"
+            element={
+              <ProtectedRoute>
+                <RootRedirect />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/search"
             element={
               <ProtectedRoute>
                 <Search />
@@ -43,19 +57,10 @@ function App() {
           />
 
           <Route
-            path="/admin/users"
+            path="/admin"
             element={
               <ProtectedRoute adminOnly>
-                <Users />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/upload"
-            element={
-              <ProtectedRoute adminOnly>
-                <Upload />
+                <Admin />
               </ProtectedRoute>
             }
           />

@@ -120,12 +120,12 @@ export default function Users() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">User Management</h1>
-          <button
+            {!showForm && <button
             onClick={() => setShowForm(!showForm)}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
-            {showForm ? 'Cancel' : 'Add User'}
-          </button>
+            Add User
+          </button>}
         </div>
 
         {showForm && (
@@ -228,7 +228,7 @@ export default function Users() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
                 >
                   Cancel
                 </button>

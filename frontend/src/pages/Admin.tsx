@@ -16,6 +16,8 @@ export default function Admin() {
   const [booksResult, setBooksResult] = useState<UploadResult | null>(null);
   const [borrowersResult, setBorrowersResult] = useState<UploadResult | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [booksStats, setBooksStats] = useState<{ total: number; onLoan: number } | null>(null);
+  const [borrowersStats, setBorrowersStats] = useState<{ total: number } | null>(null);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -28,6 +30,8 @@ export default function Admin() {
   useEffect(() => {
     loadUsers();
     loadLocations();
+    loadBooksStats();
+    loadBorrowersStats();
   }, []);
 
   const loadUsers = async () => {
@@ -45,6 +49,24 @@ export default function Admin() {
       setLocations(response.data);
     } catch (error) {
       console.error('Error loading locations:', error);
+    }
+  };
+
+  const loadBooksStats = async () => {
+    try {
+      const response = await api.get<{ total: number; onLoan: number }>('/books/stats/count');
+      setBooksStats(response.data);
+    } catch (error) {
+      console.error('Error loading books stats:', error);
+    }
+  };
+
+  const loadBorrowersStats = async () => {
+    try {
+      const response = await api.get<{ total: number }>('/borrowers/stats/count');
+      setBorrowersStats(response.data);
+    } catch (error) {
+      console.error('Error loading borrowers stats:', error);
     }
   };
 
@@ -123,6 +145,7 @@ export default function Admin() {
       });
       setBooksResult(response.data);
       setBooksFile(null);
+      await loadBooksStats();
     } catch (error: any) {
       alert(error.response?.data?.message || 'Failed to upload books');
     } finally {
@@ -145,6 +168,7 @@ export default function Admin() {
       });
       setBorrowersResult(response.data);
       setBorrowersFile(null);
+      await loadBorrowersStats();
     } catch (error: any) {
       alert(error.response?.data?.message || 'Failed to upload borrowers');
     } finally {
@@ -275,6 +299,13 @@ export default function Admin() {
           <h2 className="text-xl font-semibold mb-4" style={{ color: '#111827' }}>
             Books
           </h2>
+          {booksStats && (
+            <div className="mb-6 pb-6 border-b border-gray-200 text-center">
+              <p className="text-gray-600 text-sm">
+                Total books: <strong>{booksStats.total}</strong> • On loan: <strong>{booksStats.onLoan}</strong>
+              </p>
+            </div>
+          )}
           <div
             className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all"
             style={{ borderColor: '#d1d5db' }}
@@ -337,6 +368,13 @@ export default function Admin() {
           <h2 className="text-xl font-semibold mb-4" style={{ color: '#111827' }}>
             Borrowers
           </h2>
+          {borrowersStats && (
+            <div className="mb-6 pb-6 border-b border-gray-200 text-center">
+              <p className="text-gray-600 text-sm">
+                Total borrowers: <strong>{borrowersStats.total}</strong>
+              </p>
+            </div>
+          )}
           <div
             className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all"
             style={{ borderColor: '#d1d5db' }}

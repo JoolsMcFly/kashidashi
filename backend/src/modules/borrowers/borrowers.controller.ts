@@ -27,6 +27,11 @@ export class BorrowersController {
     return this.borrowersService.search(query);
   }
 
+  @Get('stats/count')
+  async getStats() {
+    return this.borrowersService.getStats();
+  }
+
   @Get()
   findAll() {
     return this.borrowersService.findAll();

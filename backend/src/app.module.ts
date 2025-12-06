@@ -8,6 +8,7 @@ import { BooksModule } from './modules/books/books.module';
 import { LoansModule } from './modules/loans/loans.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UploadModule } from './modules/upload/upload.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
-      type: 'mariadb',
+      type: 'mysql',
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT, 10) || 3306,
       username: process.env.DB_USERNAME || 'kashidashi',
@@ -32,6 +33,7 @@ import { UploadModule } from './modules/upload/upload.module';
     LoansModule,
     LocationsModule,
     UploadModule,
+    DatabaseModule,
   ],
 })
 export class AppModule {}

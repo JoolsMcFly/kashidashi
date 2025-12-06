@@ -183,19 +183,26 @@ export default function Users() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Location {!formData.isAdmin && <span className="text-red-500">*</span>}
+                </label>
                 <select
-                  value={formData.locationId}
-                  onChange={(e) => setFormData({ ...formData, locationId: parseInt(e.target.value) })}
+                  value={formData.locationId || ''}
+                  onChange={(e) => setFormData({ ...formData, locationId: e.target.value ? parseInt(e.target.value) : undefined })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  required
+                  required={!formData.isAdmin}
+                  disabled={formData.isAdmin}
                 >
+                  <option value="">None (Admin only)</option>
                   {locations.map((location) => (
                     <option key={location.id} value={location.id}>
                       {location.name}
                     </option>
                   ))}
                 </select>
+                {formData.isAdmin && (
+                  <p className="text-sm text-gray-500 mt-1">Admin users don't need a location</p>
+                )}
               </div>
 
               <div className="flex items-center">

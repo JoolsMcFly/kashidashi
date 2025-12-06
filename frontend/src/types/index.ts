@@ -4,7 +4,7 @@ export type User = {
   firstname: string;
   lastname: string;
   isAdmin: boolean;
-  locationId: number;
+  locationId: number | null;
 };
 
 export type Location = {

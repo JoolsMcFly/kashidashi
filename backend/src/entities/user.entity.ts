@@ -21,10 +21,10 @@ export class User {
   @Column()
   lastname: string;
 
-  @Column({ name: 'location_id' })
-  locationId: number;
+  @Column({ name: 'location_id', nullable: true })
+  locationId: number | null;
 
-  @ManyToOne(() => Location, location => location.users)
+  @ManyToOne(() => Location, location => location.users, { nullable: true })
   @JoinColumn({ name: 'location_id' })
-  location: Location;
+  location: Location | null;
 }

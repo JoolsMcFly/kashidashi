@@ -8,6 +8,7 @@ import { BooksModule } from './modules/books/books.module';
 import { LoansModule } from './modules/loans/loans.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { SearchModule } from './modules/search/search.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -33,6 +34,7 @@ import { DatabaseModule } from './database/database.module';
     LoansModule,
     LocationsModule,
     UploadModule,
+    SearchModule,
     DatabaseModule,
   ],
 })

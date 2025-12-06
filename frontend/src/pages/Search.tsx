@@ -4,8 +4,12 @@ import api from '../services/api';
 import Layout from '../components/Layout';
 import type { Borrower, Book } from '../types';
 
+interface SearchResult {
+  books: Book[];
+  borrowers: Borrower[];
+}
+
 export default function Search() {
-  const [searchType, setSearchType] = useState<'borrower' | 'book'>('borrower');
   const [query, setQuery] = useState('');
   const [borrowerResults, setBorrowerResults] = useState<Borrower[]>([]);
   const [bookResults, setBookResults] = useState<Book[]>([]);
@@ -17,15 +21,9 @@ export default function Search() {
 
     setLoading(true);
     try {
-      if (searchType === 'borrower') {
-        const response = await api.get<Borrower[]>(`/borrowers/search?q=${encodeURIComponent(query)}`);
-        setBorrowerResults(response.data);
-        setBookResults([]);
-      } else {
-        const response = await api.get<Book[]>(`/books/search?q=${encodeURIComponent(query)}`);
-        setBookResults(response.data);
-        setBorrowerResults([]);
-      }
+      const response = await api.get<SearchResult>(`/search?q=${encodeURIComponent(query)}`);
+      setBorrowerResults(response.data.borrowers);
+      setBookResults(response.data.books);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
@@ -42,43 +40,14 @@ export default function Search() {
   return (
     <Layout title="Search">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Search</h1>
-
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <div className="flex gap-4 mb-4">
-            <button
-              onClick={() => setSearchType('borrower')}
-              className={`flex-1 py-2 px-4 rounded-md ${
-                searchType === 'borrower'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Borrower
-            </button>
-            <button
-              onClick={() => setSearchType('book')}
-              className={`flex-1 py-2 px-4 rounded-md ${
-                searchType === 'book'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Book
-            </button>
-          </div>
-
           <div className="flex gap-2">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder={
-                searchType === 'borrower'
-                  ? 'Search by katakana or French surname...'
-                  : 'Search by book code...'
-              }
+              onKeyDown={handleKeyPress}
+              placeholder="Search by book code or borrower name..."
               className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               autoFocus
             />
@@ -90,6 +59,9 @@ export default function Search() {
               {loading ? 'Searching...' : 'Search'}
             </button>
           </div>
+          <p className="mt-3 text-sm text-gray-500">
+            💡 Tip: Use numbers to search for books (e.g., "JPN-001"), or text to search for borrowers
+          </p>
         </div>
 
         {borrowerResults.length > 0 && (

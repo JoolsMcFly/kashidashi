@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Kashidashi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-content {
+            max-width: 1024px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #111827;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-btn:hover {
+            background: #5568d3;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 150px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f9fafb;
+        }
+
+        .dropdown-item.active {
+            background: #eef2ff;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            background: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #111827;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f9fafb;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #eef2ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th {
+            background: #f9fafb;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .user-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+
+        .user-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-user {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-edit {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+        }
+
+        .user-name {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .btn-icon:hover {
+            opacity: 0.7;
+        }
+
+        .stats {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stat-line {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .user-table {
+                font-size: 0.75rem;
+            }
+
+            .user-table th,
+            .user-table td {
+                padding: 0.5rem;
+            }
+
+            .actions {
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Admin Panel</h1>
+            <div class="header-actions">
+                <div class="dropdown">
+                    <button class="dropdown-btn">
+                        ⚙️ Menu
+                    </button>
+                    <div class="dropdown-menu show">
+                        <div class="dropdown-item active">Users</div>
+                        <div class="dropdown-item">Books</div>
+                        <div class="dropdown-item">Borrowers</div>
+                    </div>
+                </div>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Users Page -->
+        <div class="section" style="display: none;">
+            <h2>Users</h2>
+            <button class="btn-primary" style="margin-bottom: 1.5rem;">+ Add User</button>
+
+            <div class="user-list">
+                <div class="user-item">
+                    <span class="user-name">John Admin</span>
+                    <div class="actions">
+                        <button class="btn-icon">✏️</button>
+                        <button class="btn-icon">🗑️</button>
+                    </div>
+                </div>
+                <div class="user-item">
+                    <span class="user-name">Marie Dupont</span>
+                    <div class="actions">
+                        <button class="btn-icon">✏️</button>
+                        <button class="btn-icon">🗑️</button>
+                    </div>
+                </div>
+                <div class="user-item">
+                    <span class="user-name">Yuki Tanaka</span>
+                    <div class="actions">
+                        <button class="btn-icon">✏️</button>
+                        <button class="btn-icon">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Page (hidden initially) -->
+        <div class="section" style="display: none;">
+            <h2>Books</h2>
+            <div class="upload-area">
+                <div class="upload-icon">📚</div>
+                <p class="upload-text">Drop XLSX file here or click to browse</p>
+                <p class="upload-text" style="margin-top: 0.5rem; font-size: 0.75rem;">
+                    Expected columns: title, code, location, deleted
+                </p>
+            </div>
+            <div class="stats">
+                <p class="stat-line">Total books: <strong>245</strong> • On loan: <strong>38</strong></p>
+            </div>
+        </div>
+
+        <!-- Borrowers Page (hidden initially) -->
+        <div class="section">
+            <h2>Borrowers</h2>
+            <div class="upload-area">
+                <div class="upload-icon">📤</div>
+                <p class="upload-text">Drop XLSX file here or click to browse</p>
+                <p class="upload-text" style="margin-top: 0.5rem; font-size: 0.75rem;">
+                    Expected columns: firstname, lastname, katakana, frenchSurname
+                </p>
+            </div>
+            <div class="stats">
+                <p class="stat-line">Total borrowers: <strong>42</strong></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

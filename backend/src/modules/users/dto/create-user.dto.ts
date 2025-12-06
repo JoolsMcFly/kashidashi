@@ -22,7 +22,7 @@ export class CreateUserDto {
   @IsBoolean()
   isAdmin?: boolean;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  locationId: number;
+  locationId?: number;
 }

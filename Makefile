@@ -1,4 +1,4 @@
-.PHONY: up down restart logs fi bi fd bd backend frontend db
+.PHONY: up down restart logs fi bi fd bd be fe db seed
 
 # Docker Compose commands
 up:
@@ -55,3 +55,7 @@ bd:
 		exit 1; \
 	fi
 	docker compose exec backend npm install --save-dev $(DEP_NAME)
+
+# Database seeding
+seed:
+	docker compose exec backend npm run seed

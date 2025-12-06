@@ -1,0 +1,78 @@
+services:
+  db:
+    image: mariadb:11.4.9
+    container_name: kashidashi-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: kashidashi
+      MARIADB_USER: kashidashi
+      MARIADB_PASSWORD: kashidashi
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kashidashi-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USERNAME: kashidashi
+      DB_PASSWORD: kashidashi
+      DB_DATABASE: kashidashi
+      JWT_SECRET: change-me-in-production
+    volumes:
+      - ./backend:/app
+#      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npm install && npm run start:dev"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kashidashi-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3000
+    volumes:
+      - ./frontend:/app
+#      - /app/node_modules
+    depends_on:
+      - backend
+    command: sh -c "npm install && npm run dev -- --host"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: kashidashi-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: kashidashi
+      PMA_PASSWORD: kashidashi
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db
+
+volumes:
+  db_data:

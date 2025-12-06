@@ -29,10 +29,10 @@
 ## Implementation Steps
 
 ### 1. Project Setup
-- [ ] Create docker-compose.yml (MariaDB, backend, frontend)
-- [ ] Initialize NestJS backend
-- [ ] Initialize React + Vite frontend
-- [ ] Configure TypeORM with entities
+- [x] Create docker-compose.yml (MariaDB, backend, frontend)
+- [x] Initialize NestJS backend
+- [x] Initialize React + Vite frontend
+- [x] Configure TypeORM with entities
 
 ### 2. Backend API
 

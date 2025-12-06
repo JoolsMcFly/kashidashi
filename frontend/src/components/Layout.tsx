@@ -41,11 +41,11 @@ export default function Layout({
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       <header className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-start">
           <h1 className="text-2xl font-bold" style={{ color: '#111827' }}>
             {title}
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4">
             {showMenu && (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -97,15 +97,18 @@ export default function Layout({
                 )}
               </div>
             )}
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-white font-medium rounded-md transition-colors"
-              style={{ background: '#ef4444' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#dc2626')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = '#ef4444')}
-            >
-              Logout
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-white font-medium rounded-md transition-colors"
+                style={{ background: '#ef4444' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#dc2626')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#ef4444')}
+              >
+                Logout
+              </button>
+              <span className="text-xs text-gray-400">v{__APP_VERSION__}</span>
+            </div>
           </div>
         </div>
       </header>

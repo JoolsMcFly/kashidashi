@@ -57,7 +57,7 @@ export default function Search() {
             autoFocus
           />
           <p className="mt-3 text-sm text-gray-500">
-            💡 Tip: Type at least 2 characters. Use numbers for books, text for borrowers.
+            💡 Tip: Type at least 2 characters.<br />Use numbers for books, text for borrowers.
           </p>
           {loading && (
             <p className="mt-2 text-sm text-gray-500">Searching...</p>

@@ -99,4 +99,22 @@ export class BooksService {
       relations: ['location'],
     });
   }
+
+  async getStats() {
+    const total = await this.booksRepository.count({
+      where: { deleted: false },
+    });
+
+    const booksWithLoans = await this.booksRepository
+      .createQueryBuilder('book')
+      .leftJoin('book.loans', 'loan')
+      .where('book.deleted = :deleted', { deleted: false })
+      .andWhere('loan.returnDate IS NULL')
+      .getCount();
+
+    return {
+      total,
+      onLoan: booksWithLoans,
+    };
+  }
 }

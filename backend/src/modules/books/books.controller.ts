@@ -27,6 +27,11 @@ export class BooksController {
     return this.booksService.searchByCode(query);
   }
 
+  @Get('stats/count')
+  async getStats() {
+    return this.booksService.getStats();
+  }
+
   @Get('code/:code')
   findByCode(@Param('code') code: string) {
     return this.booksService.findByCode(code);

@@ -42,4 +42,12 @@ export class BorrowersService {
   async findAll(): Promise<Borrower[]> {
     return this.borrowersRepository.find();
   }
+
+  async getStats() {
+    const total = await this.borrowersRepository.count();
+
+    return {
+      total,
+    };
+  }
 }

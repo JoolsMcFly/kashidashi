@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import Layout from '../components/Layout';
 import type { Borrower, Book } from '../types';
 
 export default function BorrowerDetails() {
@@ -73,19 +72,53 @@ export default function BorrowerDetails() {
     }
   };
 
+  const getDaysBetween = (start: string, end: string) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   if (loading) {
     return (
-      <Layout>
-        <div>Loading...</div>
-      </Layout>
+      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
+        <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="px-2 py-2 rounded-lg text-xl"
+              style={{ background: '#f3f4f6' }}
+            >
+              ←
+            </button>
+            <div>
+              <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>Loading...</h1>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
   if (!borrower) {
     return (
-      <Layout>
-        <div>Borrower not found</div>
-      </Layout>
+      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
+        <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="px-2 py-2 rounded-lg text-xl"
+              style={{ background: '#f3f4f6' }}
+            >
+              ←
+            </button>
+            <div>
+              <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>Borrower not found</h1>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -93,98 +126,136 @@ export default function BorrowerDetails() {
   const loanHistory = borrower.loans?.filter((loan) => loan.returnDate) || [];
 
   return (
-    <Layout>
-      <div className="max-w-4xl mx-auto">
-        <button
-          onClick={() => navigate('/')}
-          className="mb-4 text-blue-600 hover:text-blue-800"
-        >
-          ← Back to Search
-        </button>
-
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h1 className="text-2xl font-bold mb-2">
-            {borrower.firstname} {borrower.lastname}
-          </h1>
-          <div className="text-gray-600">
-            {borrower.katakana} / {borrower.frenchSurname}
+    <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
+      {/* Header */}
+      <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-2 py-2 rounded-lg text-xl"
+            style={{ background: '#f3f4f6' }}
+          >
+            ←
+          </button>
+          <div>
+            <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
+              {borrower.katakana}
+            </h1>
+            <p className="text-sm text-gray-600">{borrower.frenchSurname}</p>
           </div>
         </div>
+      </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold mb-4">Checkout Book</h2>
+      <div className="max-w-3xl mx-auto px-4 py-4">
+        {/* Search Box */}
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <label className="block text-gray-700 font-medium mb-2 text-sm">
+            Add a book by Code
+          </label>
           <div className="relative">
             <input
               type="text"
               value={bookQuery}
               onChange={(e) => setBookQuery(e.target.value)}
-              placeholder="Search by book code..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter book code..."
+              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
               disabled={checkingOut}
             />
             {bookSuggestions.length > 0 && (
-              <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-auto shadow-lg">
+              <div className="mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden">
                 {bookSuggestions.map((book) => (
-                  <li
+                  <div
                     key={book.id}
                     onClick={() => handleCheckout(book.id)}
                     className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
                   >
-                    <div className="font-medium">{book.title}</div>
-                    <div className="text-sm text-gray-600">
-                      Code: {book.code} | Location: {book.location?.name}
-                    </div>
-                  </li>
+                    <strong>{book.code}</strong> - {book.title}
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>
 
+        {/* Active Loans */}
         {activeLoans.length > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold mb-4">Active Loans</h2>
-            <ul className="space-y-3">
+          <>
+            <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+              Active Loans
+            </h3>
+            <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6">
               {activeLoans.map((loan) => (
-                <li
+                <div
                   key={loan.id}
-                  className="flex justify-between items-center p-3 bg-gray-50 rounded-md"
+                  className="p-4 border-b last:border-b-0 flex justify-between items-center"
                 >
                   <div>
-                    <div className="font-medium">{loan.book?.title}</div>
-                    <div className="text-sm text-gray-600">
-                      Code: {loan.book?.code} | Started: {new Date(loan.startDate).toLocaleDateString()}
-                    </div>
+                    <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
+                      <span
+                        className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
+                        style={{ background: '#667eea' }}
+                      >
+                        {loan.book?.code}
+                      </span>
+                      {loan.book?.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">Location: {loan.book?.location?.name}</p>
+                    <p className="text-sm text-gray-600">
+                      Since {new Date(loan.startDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                      })}
+                    </p>
                   </div>
                   <button
                     onClick={() => handleReturn(loan.id)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                    className="px-3 py-2 rounded-md text-white font-medium"
+                    style={{ background: '#ef4444' }}
                   >
-                    Return
+                    X
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
-          </div>
+            </div>
+          </>
         )}
 
+        {/* Loan History */}
         {loanHistory.length > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Loan History</h2>
-            <ul className="space-y-2">
+          <>
+            <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+              Loan History
+            </h3>
+            <div className="bg-white rounded-xl p-4 shadow-sm">
               {loanHistory.map((loan) => (
-                <li key={loan.id} className="p-3 bg-gray-50 rounded-md">
-                  <div className="font-medium">{loan.book?.title}</div>
-                  <div className="text-sm text-gray-600">
-                    Code: {loan.book?.code} |
-                    {new Date(loan.startDate).toLocaleDateString()} - {new Date(loan.returnDate!).toLocaleDateString()}
-                  </div>
-                </li>
+                <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
+                  <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
+                    <span
+                      className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
+                      style={{ background: '#667eea' }}
+                    >
+                      {loan.book?.code}
+                    </span>
+                    {loan.book?.title}
+                  </h4>
+                  <p className="text-xs text-gray-600">
+                    From {new Date(loan.startDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit'
+                    })} to {new Date(loan.returnDate!).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit'
+                    })} ({getDaysBetween(loan.startDate, loan.returnDate!)} days)
+                  </p>
+                </div>
               ))}
-            </ul>
-          </div>
+            </div>
+          </>
         )}
       </div>
-    </Layout>
+    </div>
   );
 }

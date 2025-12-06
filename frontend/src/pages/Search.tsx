@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Layout from '../components/Layout';
@@ -16,8 +16,21 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      if (query.trim().length >= 2) {
+        handleSearch();
+      } else {
+        setBorrowerResults([]);
+        setBookResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delaySearch);
+  }, [query]);
+
   const handleSearch = async () => {
-    if (!query.trim()) return;
+    if (!query.trim() || query.trim().length < 2) return;
 
     setLoading(true);
     try {
@@ -31,37 +44,24 @@ export default function Search() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
   return (
     <Layout title="Search">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Search by book code or borrower name..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
-            />
-            <button
-              onClick={handleSearch}
-              disabled={loading}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </div>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by book code or borrower name..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoFocus
+          />
           <p className="mt-3 text-sm text-gray-500">
-            💡 Tip: Use numbers to search for books (e.g., "JPN-001"), or text to search for borrowers
+            💡 Tip: Type at least 2 characters. Use numbers for books, text for borrowers.
           </p>
+          {loading && (
+            <p className="mt-2 text-sm text-gray-500">Searching...</p>
+          )}
         </div>
 
         {borrowerResults.length > 0 && (

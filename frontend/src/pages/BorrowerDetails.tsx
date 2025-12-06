@@ -11,6 +11,7 @@ export default function BorrowerDetails() {
   const [bookSuggestions, setBookSuggestions] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     loadBorrower();
@@ -178,59 +179,18 @@ export default function BorrowerDetails() {
         </div>
 
         {/* Active Loans */}
-        {activeLoans.length > 0 && (
-          <>
-            <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-              Active Loans
-            </h3>
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6">
-              {activeLoans.map((loan) => (
-                <div
-                  key={loan.id}
-                  className="p-4 border-b last:border-b-0 flex justify-between items-center"
-                >
-                  <div>
-                    <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
-                      <span
-                        className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
-                        style={{ background: '#667eea' }}
-                      >
-                        {loan.book?.code}
-                      </span>
-                      {loan.book?.title}
-                    </h3>
-                    <p className="text-sm text-gray-600">Location: {loan.book?.location?.name}</p>
-                    <p className="text-sm text-gray-600">
-                      Since {new Date(loan.startDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                      })}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleReturn(loan.id)}
-                    className="px-3 py-2 rounded-md text-white font-medium"
-                    style={{ background: '#ef4444' }}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Loan History */}
-        {loanHistory.length > 0 && (
-          <>
-            <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-              Loan History
-            </h3>
-            <div className="bg-white rounded-xl p-4 shadow-sm">
-              {loanHistory.map((loan) => (
-                <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
-                  <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
+        <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+          Active Loans
+        </h3>
+        <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6">
+          {activeLoans.length > 0 ? (
+            activeLoans.map((loan) => (
+              <div
+                key={loan.id}
+                className="p-4 border-b last:border-b-0 flex justify-between items-center"
+              >
+                <div>
+                  <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
                     <span
                       className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
                       style={{ background: '#667eea' }}
@@ -238,21 +198,70 @@ export default function BorrowerDetails() {
                       {loan.book?.code}
                     </span>
                     {loan.book?.title}
-                  </h4>
-                  <p className="text-xs text-gray-600">
-                    From {new Date(loan.startDate).toLocaleDateString('en-US', {
+                  </h3>
+                  <p className="text-sm text-gray-600">Location: {loan.book?.location?.name}</p>
+                  <p className="text-sm text-gray-600">
+                    Since {new Date(loan.startDate).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: '2-digit',
                       day: '2-digit'
-                    })} to {new Date(loan.returnDate!).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit'
-                    })} ({getDaysBetween(loan.startDate, loan.returnDate!)} days)
+                    })}
                   </p>
                 </div>
-              ))}
+                <button
+                  onClick={() => handleReturn(loan.id)}
+                  className="px-3 py-2 rounded-md text-white font-medium"
+                  style={{ background: '#ef4444' }}
+                >
+                  X
+                </button>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 text-center text-gray-500 text-sm">
+              Add a book by using the above search
             </div>
+          )}
+        </div>
+
+        {/* Loan History */}
+        {loanHistory.length > 0 && (
+          <>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="w-full text-left flex items-center justify-between text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3 hover:text-gray-800 transition-colors"
+            >
+              <span>Loan History ({loanHistory.length})</span>
+              <span className="text-lg">{showHistory ? '▼' : '▶'}</span>
+            </button>
+            {showHistory && (
+              <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
+                {loanHistory.map((loan) => (
+                  <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
+                    <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
+                      <span
+                        className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
+                        style={{ background: '#667eea' }}
+                      >
+                        {loan.book?.code}
+                      </span>
+                      {loan.book?.title}
+                    </h4>
+                    <p className="text-xs text-gray-600">
+                      From {new Date(loan.startDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                      })} to {new Date(loan.returnDate!).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                      })} ({getDaysBetween(loan.startDate, loan.returnDate!)} days)
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

@@ -8,6 +8,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isInventoryUser: boolean;
   loading: boolean;
 }
 
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     isAuthenticated: !!user,
     isAdmin: user?.roles?.includes('ROLE_ADMIN') || false,
+    isInventoryUser: user?.roles?.includes('ROLE_INVENTORY') || false,
     loading,
   };
 

@@ -1,5 +1,5 @@
 import api from './api';
-import type { Inventory, InventoryItem, Book } from '../types';
+import type { Inventory, InventoryItem } from '../types';
 
 export const inventoryService = {
   async getCurrent(): Promise<Inventory | null> {

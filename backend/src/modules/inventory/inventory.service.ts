@@ -81,20 +81,30 @@ export class InventoryService {
       throw new BadRequestException('Cannot add items to a closed inventory');
     }
 
-    // Check if book exists
+    // Check if book exists and load its location
     const book = await this.bookRepository.findOne({
       where: { id: addItemDto.bookId },
+      relations: ['location'],
     });
 
     if (!book) {
       throw new NotFoundException(`Book with ID ${addItemDto.bookId} not found`);
     }
 
+    // Load foundAt location
+    const foundAtLocation = await this.bookRepository.manager.getRepository('Location').findOne({
+      where: { id: addItemDto.foundAtId },
+    });
+
+    if (!foundAtLocation) {
+      throw new NotFoundException(`Location with ID ${addItemDto.foundAtId} not found`);
+    }
+
     // Check if book is already in this inventory
     const existingItem = await this.inventoryItemRepository.findOne({
       where: {
-        inventory,
-        book,
+        inventory: { id: inventoryId },
+        book: { id: addItemDto.bookId },
       },
     });
 
@@ -102,19 +112,22 @@ export class InventoryService {
       throw new BadRequestException('This book has already been added to the inventory');
     }
 
-    // Create inventory item
+    // Create inventory item with relation objects
     const item = this.inventoryItemRepository.create({
       inventory,
       book,
-      foundAtId: addItemDto.foundAtId,
-      belongsAtId: book.locationId,
+      foundAt: foundAtLocation,
+      belongsAt: book.location,
     });
 
     const savedItem = await this.inventoryItemRepository.save(item);
 
     // Increment book count
-    inventory.bookCount += 1;
-    await this.inventoryRepository.save(inventory);
+      await this.inventoryRepository.increment(
+          { id: inventoryId },
+          "bookCount",
+          1
+      );
 
     // Return item with relations
     return this.inventoryItemRepository.findOne({

@@ -8,7 +8,7 @@ export class InventoryItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Inventory, inventory => inventory.items)
+  @ManyToOne(() => Inventory)
   @JoinColumn({ name: 'inventory_id' })
   inventory: Inventory;
 

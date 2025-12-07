@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { inventoryService } from '../services/inventory';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import type { Inventory, InventoryItem, Book, Loan } from '../types';
+import type { Inventory, InventoryItem, Book } from '../types';
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
@@ -135,10 +135,6 @@ export default function InventoryScan() {
 
   const isBookMisplaced = (item: InventoryItem): boolean => {
     return item.book.locationId !== user?.locationId;
-  };
-
-  const getActiveLoan = (item: InventoryItem): Loan | undefined => {
-    return item.book.location as any; // This would need to be properly typed with loan info
   };
 
   if (loading) {

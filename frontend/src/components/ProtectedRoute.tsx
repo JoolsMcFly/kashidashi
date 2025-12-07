@@ -4,10 +4,11 @@ import { useAuth } from '../contexts/AuthContext';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   adminOnly?: boolean;
+  inventoryOnly?: boolean;
 }
 
-export default function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
+export default function ProtectedRoute({ children, adminOnly = false, inventoryOnly = false }: ProtectedRouteProps) {
+  const { isAuthenticated, isAdmin, isInventoryUser, loading } = useAuth();
 
   if (loading) {
     return null;
@@ -17,7 +18,7 @@ export default function ProtectedRoute({ children, adminOnly = false }: Protecte
     return <Navigate to="/login" replace />;
   }
 
-  if (adminOnly && !isAdmin) {
+  if ((adminOnly && !isAdmin) || (inventoryOnly && !isInventoryUser)) {
     return <Navigate to="/" replace />;
   }
 

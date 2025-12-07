@@ -45,7 +45,7 @@ export default function Search() {
   };
 
   return (
-    <Layout title="Search">
+    <Layout title="KashiDashi">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
           <input

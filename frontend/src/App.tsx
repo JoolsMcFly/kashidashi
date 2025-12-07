@@ -6,6 +6,8 @@ import Search from './pages/Search';
 import BorrowerDetails from './pages/BorrowerDetails';
 import BookDetails from './pages/BookDetails';
 import Admin from './pages/Admin';
+import InventoryAdmin from './pages/admin/Inventory';
+import InventoryScan from './pages/InventoryScan';
 import { useAuth } from './contexts/AuthContext';
 
 function RootRedirect() {
@@ -61,6 +63,24 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <Admin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/inventory"
+            element={
+              <ProtectedRoute adminOnly>
+                <InventoryAdmin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/inventory"
+            element={
+              <ProtectedRoute>
+                <InventoryScan />
               </ProtectedRoute>
             }
           />

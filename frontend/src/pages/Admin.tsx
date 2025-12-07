@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import type { User, Location, UploadResult } from '../types';
 
-type Tab = 'users' | 'books' | 'borrowers';
+type Tab = 'users' | 'books' | 'borrowers' | 'inventory';
 
 export default function Admin() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -183,11 +185,19 @@ export default function Admin() {
     }
   };
 
+  const handleMenuItemClick = (item: string) => {
+    if (item === 'inventory') {
+      navigate('/admin/inventory');
+    } else {
+      setActiveTab(item as Tab);
+    }
+  };
+
   return (
     <Layout
       showMenu={true}
       activeMenuItem={activeTab}
-      onMenuItemClick={(item) => setActiveTab(item as Tab)}
+      onMenuItemClick={handleMenuItemClick}
     >
 
       {/* Users Tab */}
@@ -261,6 +271,7 @@ export default function Admin() {
                     <option value="">Select Role</option>
                     <option value="ROLE_USER">User</option>
                     <option value="ROLE_ADMIN">Admin</option>
+                    <option value="ROLE_INVENTORY">Inventory</option>
                   </select>
                 </div>
               </div>

@@ -65,7 +65,7 @@ export default function Layout({
                       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
                     }}
                   >
-                    {['Users', 'Books', 'Borrowers'].map((item) => (
+                    {['Users', 'Books', 'Borrowers', 'Inventory'].map((item) => (
                       <div
                         key={item}
                         onClick={() => {

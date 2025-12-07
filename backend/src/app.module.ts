@@ -9,6 +9,7 @@ import { LoansModule } from './modules/loans/loans.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { SearchModule } from './modules/search/search.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -35,6 +36,7 @@ import { DatabaseModule } from './database/database.module';
     LocationsModule,
     UploadModule,
     SearchModule,
+    InventoryModule,
     DatabaseModule,
   ],
 })

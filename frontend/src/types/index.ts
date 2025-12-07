@@ -52,3 +52,23 @@ export type UploadResult = {
   failed: number;
   errors: Array<{ row: any; error: string }>;
 };
+
+export type Inventory = {
+  id: number;
+  startedAt: string;
+  stoppedAt: string | null;
+  bookCount: number;
+  availableBookCount: number;
+  items?: InventoryItem[];
+};
+
+export type InventoryItem = {
+  id: number;
+  inventoryId: number;
+  bookId: number;
+  book: Book;
+  foundAtId: number;
+  foundAt: Location;
+  belongsAtId: number | null;
+  belongsAt: Location | null;
+};

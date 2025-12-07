@@ -172,19 +172,14 @@ export default function BorrowerDetails() {
             activeLoans.map((loan) => (
               <div
                 key={loan.id}
-                className="p-4 border-b last:border-b-0 flex justify-between items-center"
+                className="p-4 border-b last:border-b-0 flex justify-between items-start"
               >
                 <div>
                   <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
-                    <span
-                      className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
-                      style={{ background: '#667eea' }}
-                    >
-                      {loan.book?.code}
-                    </span>
-                    {loan.book?.title}
+                    <Badge content={loan.book.code} type={"code"} />
+                    <span className={"ml-2"}>{loan.book.title}</span>
                   </h3>
-                  <p className="text-sm text-gray-600">Location: {loan.book?.location?.name}</p>
+                  {loan.book.location?.name && <Badge content={loan.book.location.name} type={"location"} />}
                   <p className="text-sm text-gray-600">
                     Since {new Date(loan.startedAt).toLocaleDateString('en-US', {
                       year: 'numeric',

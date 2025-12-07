@@ -1,11 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Borrower } from './borrower.entity';
 import { Book } from './book.entity';
+import { User } from './user.entity';
 
-@Entity('loans')
+@Entity('loan')
 export class Loan {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ name: 'book_id' })
+  bookId: number;
+
+  @ManyToOne(() => Book, book => book.loans, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'book_id' })
+  book: Book;
 
   @Column({ name: 'borrower_id' })
   borrowerId: number;
@@ -14,16 +22,16 @@ export class Loan {
   @JoinColumn({ name: 'borrower_id' })
   borrower: Borrower;
 
-  @Column({ name: 'book_id' })
-  bookId: number;
+  @Column({ name: 'creator_id', nullable: true })
+  creatorId: number | null;
 
-  @ManyToOne(() => Book, book => book.loans)
-  @JoinColumn({ name: 'book_id' })
-  book: Book;
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'creator_id' })
+  creator: User | null;
 
-  @Column({ name: 'start_date', type: 'date' })
-  startDate: Date;
+  @Column({ name: 'started_at', type: 'datetime' })
+  startedAt: Date;
 
-  @Column({ name: 'return_date', type: 'date', nullable: true })
-  returnDate: Date | null;
+  @Column({ name: 'stopped_at', type: 'datetime', nullable: true })
+  stoppedAt: Date | null;
 }

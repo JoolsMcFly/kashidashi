@@ -5,8 +5,8 @@ import { UsersService } from '../../users/users.service';
 
 export interface JwtPayload {
   sub: number;
-  username: string;
-  isAdmin: boolean;
+  email: string;
+  roles: string;
 }
 
 @Injectable()
@@ -24,6 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return { userId: payload.sub, username: payload.username, isAdmin: payload.isAdmin };
+    return { userId: payload.sub, email: payload.email, roles: payload.roles };
   }
 }

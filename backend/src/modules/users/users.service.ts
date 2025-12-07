@@ -15,18 +15,22 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.usersRepository.findOne({
-      where: { username: createUserDto.username },
+      where: { email: createUserDto.email },
     });
 
     if (existingUser) {
-      throw new ConflictException('Username already exists');
+      throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 13);
 
     const user = this.usersRepository.create({
-      ...createUserDto,
-      passwordHash: hashedPassword,
+      email: createUserDto.email,
+      firstname: createUserDto.firstname,
+      surname: createUserDto.surname,
+      password: hashedPassword,
+      roles: createUserDto.roles || 'ROLE_USER',
+      locationId: createUserDto.locationId,
     });
 
     return this.usersRepository.save(user);
@@ -35,7 +39,7 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     return this.usersRepository.find({
       relations: ['location'],
-      select: ['id', 'username', 'firstname', 'lastname', 'isAdmin', 'locationId'],
+      select: ['id', 'email', 'firstname', 'surname', 'roles', 'locationId'],
     });
   }
 
@@ -52,20 +56,20 @@ export class UsersService {
     return user;
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { username } });
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
-    if (updateUserDto.username && updateUserDto.username !== user.username) {
+    if (updateUserDto.email && updateUserDto.email !== user.email) {
       const existingUser = await this.usersRepository.findOne({
-        where: { username: updateUserDto.username },
+        where: { email: updateUserDto.email },
       });
 
       if (existingUser) {
-        throw new ConflictException('Username already exists');
+        throw new ConflictException('Email already exists');
       }
     }
 
@@ -80,8 +84,8 @@ export class UsersService {
 
   async resetPassword(id: number, newPassword: string): Promise<void> {
     const user = await this.findOne(id);
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.passwordHash = hashedPassword;
+    const hashedPassword = await bcrypt.hash(newPassword, 13);
+    user.password = hashedPassword;
     await this.usersRepository.save(user);
   }
 }

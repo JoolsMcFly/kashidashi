@@ -1,30 +1,30 @@
 export type User = {
   id: number;
-  username: string;
-  firstname: string;
-  lastname: string;
-  isAdmin: boolean;
+  email: string;
+  firstname: string | null;
+  surname: string | null;
+  roles: string;
   locationId: number | null;
 };
 
 export type Location = {
   id: number;
-  name: string;
+  name: string | null;
 };
 
 export type Book = {
   id: number;
-  code: string;
-  title: string;
-  locationId: number;
+  code: number;
+  title: string | null;
+  locationId: number | null;
   location?: Location;
-  deleted: boolean;
+  deleted: number | null;
 };
 
 export type Borrower = {
   id: number;
-  firstname: string;
-  lastname: string;
+  firstname: string | null;
+  surname: string;
   katakana: string;
   frenchSurname: string;
   loans?: Loan[];
@@ -36,8 +36,10 @@ export type Loan = {
   borrower?: Borrower;
   bookId: number;
   book?: Book;
-  startDate: string;
-  returnDate: string | null;
+  creatorId: number | null;
+  creator?: User;
+  startedAt: string;
+  stoppedAt: string | null;
 };
 
 export type AuthResponse = {

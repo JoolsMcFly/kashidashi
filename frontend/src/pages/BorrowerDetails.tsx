@@ -123,8 +123,8 @@ export default function BorrowerDetails() {
     );
   }
 
-  const activeLoans = borrower.loans?.filter((loan) => !loan.returnDate) || [];
-  const loanHistory = borrower.loans?.filter((loan) => loan.returnDate) || [];
+  const activeLoans = borrower.loans?.filter((loan) => !loan.stoppedAt) || [];
+  const loanHistory = borrower.loans?.filter((loan) => loan.stoppedAt) || [];
 
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
@@ -201,7 +201,7 @@ export default function BorrowerDetails() {
                   </h3>
                   <p className="text-sm text-gray-600">Location: {loan.book?.location?.name}</p>
                   <p className="text-sm text-gray-600">
-                    Since {new Date(loan.startDate).toLocaleDateString('en-US', {
+                    Since {new Date(loan.startedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: '2-digit',
                       day: '2-digit'
@@ -248,15 +248,15 @@ export default function BorrowerDetails() {
                       {loan.book?.title}
                     </h4>
                     <p className="text-xs text-gray-600">
-                      From {new Date(loan.startDate).toLocaleDateString('en-US', {
+                      From {new Date(loan.startedAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit'
-                      })} to {new Date(loan.returnDate!).toLocaleDateString('en-US', {
+                      })} to {new Date(loan.stoppedAt!).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit'
-                      })} ({getDaysBetween(loan.startDate, loan.returnDate!)} days)
+                      })} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
                     </p>
                   </div>
                 ))}

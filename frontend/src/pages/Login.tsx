@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(username, password);
+      await login(email, password);
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid credentials');
@@ -43,16 +43,16 @@ export default function Login() {
           )}
 
           <div className="mb-6">
-            <label htmlFor="username" className="block text-gray-700 font-medium mb-2 text-sm">
-              Username
+            <label htmlFor="email" className="block text-gray-700 font-medium mb-2 text-sm">
+              Email
             </label>
             <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
-              autoComplete="username"
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              autoComplete="email"
               className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea] transition-colors"
               required
               autoFocus

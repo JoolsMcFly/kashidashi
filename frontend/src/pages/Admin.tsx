@@ -18,12 +18,19 @@ export default function Admin() {
   const [uploading, setUploading] = useState(false);
   const [booksStats, setBooksStats] = useState<{ total: number; onLoan: number } | null>(null);
   const [borrowersStats, setBorrowersStats] = useState<{ total: number } | null>(null);
-  const [formData, setFormData] = useState({
-    username: '',
+  const [formData, setFormData] = useState<{
+    email: string;
+    password: string;
+    firstname: string;
+    surname: string;
+    roles: string;
+    locationId: number | undefined;
+  }>({
+    email: '',
     password: '',
     firstname: '',
-    lastname: '',
-    isAdmin: false,
+    surname: '',
+    roles: '',
     locationId: 1,
   });
 
@@ -76,10 +83,10 @@ export default function Admin() {
     try {
       if (editingUser) {
         await api.put(`/users/${editingUser.id}`, {
-          username: formData.username,
+          email: formData.email,
           firstname: formData.firstname,
-          lastname: formData.lastname,
-          isAdmin: formData.isAdmin,
+          surname: formData.surname,
+          roles: formData.roles,
           locationId: formData.locationId,
         });
       } else {
@@ -96,12 +103,12 @@ export default function Admin() {
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     setFormData({
-      username: user.username,
+      email: user.email,
       password: '',
-      firstname: user.firstname,
-      lastname: user.lastname,
-      isAdmin: user.isAdmin,
-      locationId: user.locationId,
+      firstname: user.firstname || '',
+      surname: user.surname || '',
+      roles: user.roles,
+      locationId: user.locationId || 1,
     });
     setShowUserForm(true);
   };
@@ -119,11 +126,11 @@ export default function Admin() {
 
   const resetUserForm = () => {
     setFormData({
-      username: '',
+      email: '',
       password: '',
       firstname: '',
-      lastname: '',
-      isAdmin: false,
+      surname: '',
+      roles: '',
       locationId: locations[0]?.id || 1,
     });
     setEditingUser(null);
@@ -203,11 +210,11 @@ export default function Admin() {
             <form onSubmit={handleUserSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">Username</label>
+                  <label className="block text-gray-700 font-medium mb-2 text-sm">Email</label>
                   <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                     required
                   />
@@ -232,18 +239,29 @@ export default function Admin() {
                     value={formData.firstname}
                     onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
                     className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">Last Name</label>
+                  <label className="block text-gray-700 font-medium mb-2 text-sm">Surname</label>
                   <input
                     type="text"
-                    value={formData.lastname}
-                    onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+                    value={formData.surname}
+                    onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
+                    className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2 text-sm">Role</label>
+                  <select
+                    value={formData.roles}
+                    onChange={(e) => setFormData({ ...formData, roles: e.target.value })}
                     className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                     required
-                  />
+                  >
+                    <option value="">Select Role</option>
+                    <option value="ROLE_USER">User</option>
+                    <option value="ROLE_ADMIN">Admin</option>
+                  </select>
                 </div>
               </div>
               <button
@@ -271,7 +289,7 @@ export default function Admin() {
                 style={{ background: '#f9fafb' }}
               >
                 <span className="font-medium" style={{ color: '#111827' }}>
-                  {user.firstname} {user.lastname}
+                  {user.firstname} {user.surname}
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -401,7 +419,7 @@ export default function Admin() {
               {borrowersFile ? borrowersFile.name : 'Drop XLSX file here or click to browse'}
             </p>
             <p className="text-gray-500 text-xs mt-2">
-              Expected columns: firstname, lastname, katakana, frenchSurname
+              Expected columns: firstname, surname, katakana, frenchSurname
             </p>
             <input
               id="borrowers-file-input"

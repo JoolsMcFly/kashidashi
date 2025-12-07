@@ -33,7 +33,7 @@ export class BooksController {
   }
 
   @Get('code/:code')
-  findByCode(@Param('code') code: string) {
+  findByCode(@Param('code') code: number) {
     return this.booksService.findByCode(code);
   }
 

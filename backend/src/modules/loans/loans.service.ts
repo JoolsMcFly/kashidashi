@@ -16,7 +16,7 @@ export class LoansService {
     const existingLoan = await this.loansRepository.findOne({
       where: {
         bookId: createLoanDto.bookId,
-        returnDate: IsNull(),
+        stoppedAt: IsNull(),
       },
     });
 
@@ -25,14 +25,17 @@ export class LoansService {
     }
 
     const loan = this.loansRepository.create({
-      ...createLoanDto,
-      startDate: createLoanDto.startDate ? new Date(createLoanDto.startDate) : new Date(),
+      borrowerId: createLoanDto.borrowerId,
+      bookId: createLoanDto.bookId,
+      creatorId: createLoanDto.creatorId || null,
+      startedAt: createLoanDto.startedAt ? new Date(createLoanDto.startedAt) : new Date(),
+      stoppedAt: null,
     });
 
     return this.loansRepository.save(loan);
   }
 
-  async returnBook(loanId: number, returnDate?: string): Promise<Loan> {
+  async returnBook(loanId: number, stoppedAt?: string): Promise<Loan> {
     const loan = await this.loansRepository.findOne({
       where: { id: loanId },
     });
@@ -41,40 +44,40 @@ export class LoansService {
       throw new NotFoundException(`Loan with ID ${loanId} not found`);
     }
 
-    if (loan.returnDate) {
+    if (loan.stoppedAt) {
       throw new BadRequestException('This book has already been returned');
     }
 
-    loan.returnDate = returnDate ? new Date(returnDate) : new Date();
+    loan.stoppedAt = stoppedAt ? new Date(stoppedAt) : new Date();
     return this.loansRepository.save(loan);
   }
 
   async findAll(): Promise<Loan[]> {
     return this.loansRepository.find({
-      relations: ['borrower', 'book', 'book.location'],
+      relations: ['borrower', 'book', 'book.location', 'creator'],
     });
   }
 
   async findActiveLoans(): Promise<Loan[]> {
     return this.loansRepository.find({
-      where: { returnDate: IsNull() },
-      relations: ['borrower', 'book', 'book.location'],
+      where: { stoppedAt: IsNull() },
+      relations: ['borrower', 'book', 'book.location', 'creator'],
     });
   }
 
   async findByBorrower(borrowerId: number): Promise<Loan[]> {
     return this.loansRepository.find({
       where: { borrowerId },
-      relations: ['book', 'book.location'],
-      order: { startDate: 'DESC' },
+      relations: ['book', 'book.location', 'creator'],
+      order: { startedAt: 'DESC' },
     });
   }
 
   async findByBook(bookId: number): Promise<Loan[]> {
     return this.loansRepository.find({
       where: { bookId },
-      relations: ['borrower'],
-      order: { startDate: 'DESC' },
+      relations: ['borrower', 'creator'],
+      order: { startedAt: 'DESC' },
     });
   }
 }

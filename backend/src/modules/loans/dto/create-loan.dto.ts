@@ -10,6 +10,10 @@ export class CreateLoanDto {
   bookId: number;
 
   @IsOptional()
+  @IsNumber()
+  creatorId?: number;
+
+  @IsOptional()
   @IsDateString()
-  startDate?: string;
+  startedAt?: string;
 }

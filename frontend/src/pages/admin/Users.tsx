@@ -8,12 +8,19 @@ export default function Users() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [formData, setFormData] = useState({
-    username: '',
+  const [formData, setFormData] = useState<{
+    email: string;
+    password: string;
+    firstname: string;
+    surname: string;
+    roles: string;
+    locationId: number | undefined;
+  }>({
+    email: '',
     password: '',
     firstname: '',
-    lastname: '',
-    isAdmin: false,
+    surname: '',
+    roles: '',
     locationId: 1,
   });
 
@@ -46,10 +53,10 @@ export default function Users() {
     try {
       if (editingUser) {
         await api.put(`/users/${editingUser.id}`, {
-          username: formData.username,
+          email: formData.email,
           firstname: formData.firstname,
-          lastname: formData.lastname,
-          isAdmin: formData.isAdmin,
+          surname: formData.surname,
+          roles: formData.roles,
           locationId: formData.locationId,
         });
       } else {
@@ -66,12 +73,12 @@ export default function Users() {
   const handleEdit = (user: User) => {
     setEditingUser(user);
     setFormData({
-      username: user.username,
+      email: user.email,
       password: '',
-      firstname: user.firstname,
-      lastname: user.lastname,
-      isAdmin: user.isAdmin,
-      locationId: user.locationId,
+      firstname: user.firstname || '',
+      surname: user.surname || '',
+      roles: user.roles,
+      locationId: user.locationId || 1,
     });
     setShowForm(true);
   };
@@ -104,11 +111,11 @@ export default function Users() {
 
   const resetForm = () => {
     setFormData({
-      username: '',
+      email: '',
       password: '',
       firstname: '',
-      lastname: '',
-      isAdmin: false,
+      surname: '',
+      roles: '',
       locationId: locations[0]?.id || 1,
     });
     setEditingUser(null);
@@ -135,11 +142,11 @@ export default function Users() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   required
                 />
@@ -167,31 +174,43 @@ export default function Users() {
                     value={formData.firstname}
                     onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Surname</label>
                   <input
                     type="text"
-                    value={formData.lastname}
-                    onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+                    value={formData.surname}
+                    onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    required
                   />
                 </div>
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <select
+                  value={formData.roles}
+                  onChange={(e) => setFormData({ ...formData, roles: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  required
+                >
+                  <option value="">Select Role</option>
+                  <option value="ROLE_USER">User</option>
+                  <option value="ROLE_ADMIN">Admin</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location {!formData.isAdmin && <span className="text-red-500">*</span>}
+                  Location {formData.roles !== 'ROLE_ADMIN' && <span className="text-red-500">*</span>}
                 </label>
                 <select
                   value={formData.locationId || ''}
                   onChange={(e) => setFormData({ ...formData, locationId: e.target.value ? parseInt(e.target.value) : undefined })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  required={!formData.isAdmin}
-                  disabled={formData.isAdmin}
+                  required={formData.roles !== 'ROLE_ADMIN'}
+                  disabled={formData.roles === 'ROLE_ADMIN'}
                 >
                   <option value="">None (Admin only)</option>
                   {locations.map((location) => (
@@ -200,22 +219,9 @@ export default function Users() {
                     </option>
                   ))}
                 </select>
-                {formData.isAdmin && (
+                {formData.roles === 'ROLE_ADMIN' && (
                   <p className="text-sm text-gray-500 mt-1">Admin users don't need a location</p>
                 )}
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isAdmin"
-                  checked={formData.isAdmin}
-                  onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
-                  className="mr-2"
-                />
-                <label htmlFor="isAdmin" className="text-sm font-medium text-gray-700">
-                  Administrator
-                </label>
               </div>
 
               <div className="flex gap-2">
@@ -250,12 +256,12 @@ export default function Users() {
             <tbody className="divide-y">
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td className="px-6 py-4">{user.username}</td>
+                  <td className="px-6 py-4">{user.email}</td>
                   <td className="px-6 py-4">
-                    {user.firstname} {user.lastname}
+                    {user.firstname} {user.surname}
                   </td>
                   <td className="px-6 py-4">
-                    {user.isAdmin ? (
+                    {user.roles.includes('ROLE_ADMIN') ? (
                       <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Admin</span>
                     ) : (
                       <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">User</span>

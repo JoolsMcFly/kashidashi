@@ -6,13 +6,14 @@ import api from '../services/api';
 import type { Inventory, InventoryItem, Book } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
+import Logout from "../components/Logout.tsx";
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
 const MAX_LATEST_BOOKS: number = 2;
 
 export default function InventoryScan() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [inventory, setInventory] = useState<Inventory | null>(null);
   const [scannedItems, setScannedItems] = useState<InventoryItem[]>([]);
@@ -48,7 +49,6 @@ export default function InventoryScan() {
     try {
       const current = await inventoryService.getCurrent();
       if (!current) {
-        alert('No inventory is currently open. Please ask an admin to create one.');
         navigate('/search');
         return;
       }
@@ -132,11 +132,6 @@ export default function InventoryScan() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const isBookMisplaced = (item: InventoryItem): boolean => {
     return item.book.locationId !== user?.locationId;
   };
@@ -162,7 +157,6 @@ export default function InventoryScan() {
   // TODO display user location next to the title
     return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-      {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex justify-between items-start mb-3">
@@ -183,15 +177,7 @@ export default function InventoryScan() {
                     {inventory.bookCount} / {inventory.availableBookCount} books scanned
                 </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-white font-medium rounded-md transition-colors"
-              style={{ background: '#ef4444' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#dc2626')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = '#ef4444')}
-            >
-              Logout
-            </button>
+            <Logout />
           </div>
 
           {/* Progress bar */}
@@ -319,7 +305,7 @@ export default function InventoryScan() {
                                   fontWeight: isBookMisplaced(item) ? 600 : 400,
                               }}
                           >
-                              Location: {item.book.location?.name || 'Unknown'}
+                              <Badge content={item.book.location?.name || 'Unknown'} type={"location"} small={true} />
                               {isBookMisplaced(item) && ' (MISPLACED)'}
                               {item.book.loans?.length ? <span className={"ml-2"}>Borrowed by {item.book.loans[0].borrower.katakana}</span>: ''}
                           </p>

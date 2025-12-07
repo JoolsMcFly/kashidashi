@@ -5,6 +5,7 @@ import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { AddInventoryItemDto } from './dto/add-inventory-item.dto';
 import { CloseInventoryDto } from './dto/close-inventory.dto';
+import { Put } from "@nestjs/common";
 
 @Controller('inventory')
 @UseGuards(JwtAuthGuard)
@@ -58,7 +59,7 @@ export class InventoryController {
     return this.inventoryService.removeItem(id, itemId);
   }
 
-  @Post(':id/close')
+  @Put(':id/close')
   @UseGuards(AdminGuard)
   close(
     @Param('id', ParseIntPipe) id: number,

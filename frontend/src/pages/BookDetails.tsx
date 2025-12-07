@@ -4,6 +4,7 @@ import api from '../services/api';
 import type { Book, Loan } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
+import Logout from "../components/Logout.tsx";
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
@@ -74,18 +75,23 @@ export default function BookDetails() {
 
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-      <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-2 py-2 rounded-lg text-xl"
-            style={{ background: '#f3f4f6' }}
-          >
-            ←
-          </button>
-          <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
-            Book Details
-          </h1>
+      <div className="bg-white shadow-sm sticky top-0 z-10 mx-auto px-4 py-4" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+        <div className="flex justify-between items-start mb-3">
+            <div>
+                <div className="max-w-3xl mx-auto flex items-center gap-4">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="px-2 py-2 rounded-lg text-xl"
+                        style={{ background: '#f3f4f6' }}
+                    >
+                        ←
+                    </button>
+                    <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
+                      Book Details
+                    </h1>
+                </div>
+            </div>
+            <Logout />
         </div>
       </div>
 

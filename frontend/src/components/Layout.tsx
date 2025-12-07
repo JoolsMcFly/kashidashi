@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import Logout from "./Logout.tsx";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,15 +16,8 @@ export default function Layout({
   activeMenuItem,
   onMenuItemClick
 }: LayoutProps) {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -97,18 +89,7 @@ export default function Layout({
                 )}
               </div>
             )}
-            <div className="flex flex-col items-end gap-1">
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-white font-medium rounded-md transition-colors"
-                style={{ background: '#ef4444' }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#dc2626')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#ef4444')}
-              >
-                Logout
-              </button>
-              <span className="text-xs text-gray-400">v{__APP_VERSION__}</span>
-            </div>
+            <Logout />
           </div>
         </div>
       </header>

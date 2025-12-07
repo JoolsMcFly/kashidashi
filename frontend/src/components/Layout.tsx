@@ -55,7 +55,7 @@ export default function Layout({
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#5568d3')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = '#667eea')}
                 >
-                  ⚙️ Menu
+                  ⚙️
                 </button>
                 {menuOpen && (
                   <div

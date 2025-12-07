@@ -79,7 +79,7 @@ function App() {
           <Route
             path="/inventory"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute inventoryOnly>
                 <InventoryScan />
               </ProtectedRoute>
             }

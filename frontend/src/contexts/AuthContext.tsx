@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     isAdmin: user?.roles?.includes('ROLE_ADMIN') || false,
     isInventoryUser: user?.roles?.includes('ROLE_INVENTORY') || false,
+    isRegularUser: user?.roles?.includes('ROLE_USER') || false,
     loading,
   };
 

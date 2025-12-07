@@ -7,6 +7,8 @@ import type { Inventory, InventoryItem, Book } from '../types';
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
+const MAX_LATEST_BOOKS: number = 2;
+
 export default function InventoryScan() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -164,19 +166,29 @@ export default function InventoryScan() {
   }
 
   // TODO display user location next to the title
-  return (
+
+    return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
-                Inventory Scan
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                {inventory.bookCount} / {inventory.availableBookCount} books scanned
-              </p>
+                <div className="max-w-3xl mx-auto flex items-center gap-4">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="px-2 py-2 rounded-lg text-xl"
+                        style={{ background: '#f3f4f6' }}
+                    >
+                        ←
+                    </button>
+                  <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
+                    Inventory Scan
+                  </h1>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">
+                    {inventory.bookCount} / {inventory.availableBookCount} books scanned
+                </p>
             </div>
             <button
               onClick={handleLogout}
@@ -246,7 +258,7 @@ export default function InventoryScan() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 overflow-x-auto">
+        <div className="flex mb-4 overflow-x-auto">
           <button
             onClick={() => setActiveTab('scanned')}
             className="px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors"
@@ -278,6 +290,7 @@ export default function InventoryScan() {
             By Location
           </button>
         </div>
+        {scannedItems.length > 0  && <p className={"px-4 mb-2"}>Last added books (max {MAX_LATEST_BOOKS}).</p>}
 
         {/* Scanned Items Tab */}
         {activeTab === 'scanned' && (
@@ -287,44 +300,48 @@ export default function InventoryScan() {
                 No books scanned yet. Use the search above to add books.
               </div>
             ) : (
-              scannedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 border-b last:border-b-0 flex justify-between items-start"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+              <>
+              {
+                  scannedItems.slice(0, MAX_LATEST_BOOKS).map((item) => (
+                  <div
+                      key={item.id}
+                      className="p-4 border-b last:border-b-0 flex justify-between items-start"
+                  >
+                      <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
                       <span
-                        className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white"
-                        style={{ background: '#667eea' }}
+                          className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white"
+                          style={{ background: '#667eea' }}
                       >
                         {item.book.code}
                       </span>
-                      <h3 className="font-semibold" style={{ color: '#111827' }}>
-                        {item.book.title}
-                      </h3>
-                    </div>
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: isBookMisplaced(item) ? '#ef4444' : '#6b7280',
-                        fontWeight: isBookMisplaced(item) ? 600 : 400,
-                      }}
-                    >
-                      Location: {item.book.location?.name || 'Unknown'}
-                      {isBookMisplaced(item) && ' (MISPLACED)'}
-                      {item.book.loans?.length && <span className={"ml-2"}>Borrowed by {item.book.loans[0].borrower.katakana}</span>}
-                    </p>
+                              <h3 className="font-semibold" style={{ color: '#111827' }}>
+                                  {item.book.title}
+                              </h3>
+                          </div>
+                          <p
+                              className="text-sm"
+                              style={{
+                                  color: isBookMisplaced(item) ? '#ef4444' : '#6b7280',
+                                  fontWeight: isBookMisplaced(item) ? 600 : 400,
+                              }}
+                          >
+                              Location: {item.book.location?.name || 'Unknown'}
+                              {isBookMisplaced(item) && ' (MISPLACED)'}
+                              {item.book.loans?.length ? <span className={"ml-2"}>Borrowed by {item.book.loans[0].borrower.katakana}</span>: ''}
+                          </p>
+                      </div>
+                      <button
+                          onClick={() => handleRemoveItem(item.id)}
+                          className="px-3 py-2 rounded-md text-white font-medium ml-2"
+                          style={{ background: '#ef4444' }}
+                      >
+                          X
+                      </button>
                   </div>
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="px-3 py-2 rounded-md text-white font-medium ml-2"
-                    style={{ background: '#ef4444' }}
-                  >
-                    X
-                  </button>
-                </div>
-              ))
+                  ))
+              }
+              </>
             )}
           </div>
         )}
@@ -337,7 +354,7 @@ export default function InventoryScan() {
                 No misplaced books found.
               </div>
             ) : (
-              misplacedItems.map((item) => (
+              misplacedItems.slice(0, MAX_LATEST_BOOKS).map((item) => (
                 <div key={item.id} className="p-4 border-b last:border-b-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span
@@ -370,7 +387,7 @@ export default function InventoryScan() {
                 No books scanned yet.
               </div>
             ) : (
-              Object.entries(byLocationItems).map(([locationName, items]) => (
+              Object.entries(byLocationItems).slice(0, MAX_LATEST_BOOKS).map(([locationName, items]) => (
                 <div key={locationName} className="bg-white rounded-xl overflow-hidden shadow-sm">
                   <div className="px-4 py-3" style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                     <h3 className="font-semibold" style={{ color: '#111827' }}>

@@ -4,6 +4,8 @@ import { inventoryService } from '../services/inventory';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import type { Inventory, InventoryItem, Book } from '../types';
+import Loading from "../components/Loading.tsx";
+import Badge from "../components/Badge.tsx";
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
@@ -140,15 +142,7 @@ export default function InventoryScan() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-        <div className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="max-w-3xl mx-auto px-4 py-4">
-            <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>Loading...</h1>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading title={"Inventory scan"} />;
   }
 
   if (!inventory) {
@@ -166,7 +160,6 @@ export default function InventoryScan() {
   }
 
   // TODO display user location next to the title
-
     return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       {/* Header */}
@@ -248,7 +241,7 @@ export default function InventoryScan() {
                       <span className="font-medium">{book.title}</span>
                     </div>
                     <div className="text-xs text-gray-600 mt-1">
-                      Location: {book.location?.name || 'Unknown'}
+                      <Badge content={book.location?.name || 'Unknown'} type={"location"} />
                     </div>
                   </div>
                 ))}

@@ -32,8 +32,8 @@ export class BooksService {
   async searchByCode(query: string): Promise<Book[]> {
     return this.booksRepository.find({
       where: {
-        code: Like(`%${query}%`),
-        deleted: false,
+        code: Number(query),
+        deleted: 0,
       },
       relations: ['location'],
       take: 10,
@@ -53,7 +53,7 @@ export class BooksService {
     return book;
   }
 
-  async findByCode(code: string): Promise<Book> {
+  async findByCode(code: number): Promise<Book> {
     const book = await this.booksRepository.findOne({
       where: { code },
       relations: ['location', 'loans', 'loans.borrower'],
@@ -76,7 +76,7 @@ export class BooksService {
       throw new NotFoundException(`Book with ID ${bookId} not found`);
     }
 
-    const currentLoan = book.loans.find(loan => loan.returnDate === null);
+    const currentLoan = book.loans.find(loan => loan.stoppedAt === null);
     return currentLoan || null;
   }
 
@@ -95,20 +95,20 @@ export class BooksService {
 
   async findAll(): Promise<Book[]> {
     return this.booksRepository.find({
-      where: { deleted: false },
+      where: { deleted: 0 },
       relations: ['location'],
     });
   }
 
   async getStats() {
     const total = await this.booksRepository.count({
-      where: { deleted: false },
+      where: { deleted: 0 },
     });
 
     const booksWithLoans = await this.booksRepository
       .createQueryBuilder('book')
       .leftJoin('book.loans', 'loan')
-      .where('book.deleted = :deleted', { deleted: false })
+      .where('book.deleted = :deleted', { deleted: 0 })
       .andWhere('loan.returnDate IS NULL')
       .getCount();
 

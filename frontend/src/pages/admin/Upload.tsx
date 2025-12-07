@@ -64,7 +64,7 @@ export default function Upload() {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Upload Borrowers</h2>
             <p className="text-sm text-gray-600 mb-4">
-              Expected columns: firstname, lastname, katakana, frenchSurname
+              Expected columns: firstname, surname, katakana, frenchSurname
             </p>
 
             <input

@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, IsNumber, IsOptional, IsBoolean } from 'class-val
 export class CreateBookDto {
   @IsNotEmpty()
   @IsString()
-  code: string;
+  code: number;
 
   @IsNotEmpty()
   @IsString()
@@ -15,5 +15,5 @@ export class CreateBookDto {
 
   @IsOptional()
   @IsBoolean()
-  deleted?: boolean;
+  deleted?: number;
 }

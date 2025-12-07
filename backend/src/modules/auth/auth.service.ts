@@ -10,23 +10,23 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string) {
-    const user = await this.usersService.findByUsername(username);
+  async validateUser(email: string, password: string) {
+    const user = await this.usersService.findByEmail(email);
     if (!user) {
       return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return null;
     }
 
     return {
       userId: user.id,
-      username: user.username,
-      isAdmin: user.isAdmin,
+      email: user.email,
+      roles: user.roles,
       firstname: user.firstname,
-      lastname: user.lastname,
+      surname: user.surname,
       locationId: user.locationId,
     };
   }
@@ -34,18 +34,18 @@ export class AuthService {
   async login(user: any) {
     const payload = {
       sub: user.userId,
-      username: user.username,
-      isAdmin: user.isAdmin,
+      email: user.email,
+      roles: user.roles,
     };
 
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.userId,
-        username: user.username,
-        isAdmin: user.isAdmin,
+        email: user.email,
+        roles: user.roles,
         firstname: user.firstname,
-        lastname: user.lastname,
+        surname: user.surname,
         locationId: user.locationId,
       },
     };

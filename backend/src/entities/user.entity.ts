@@ -1,30 +1,33 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Location } from './location.entity';
 
-@Entity('users')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })
-  username: string;
+  email: string;
 
-  @Column({ name: 'password_hash' })
-  passwordHash: string;
+  @Column({ nullable: true, length: 100 })
+  firstname: string | null;
 
-  @Column({ name: 'is_admin', default: false })
-  isAdmin: boolean;
+  @Column({ nullable: true, length: 100 })
+  surname: string | null;
 
-  @Column()
-  firstname: string;
+  @Column({ length: 100 })
+  password: string;
 
-  @Column()
-  lastname: string;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @Column({ length: 255 })
+  roles: string;
 
   @Column({ name: 'location_id', nullable: true })
   locationId: number | null;
 
-  @ManyToOne(() => Location, location => location.users, { nullable: true })
+  @ManyToOne(() => Location, { nullable: true })
   @JoinColumn({ name: 'location_id' })
   location: Location | null;
 }

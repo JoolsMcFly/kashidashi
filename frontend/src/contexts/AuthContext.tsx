@@ -4,7 +4,7 @@ import { authService } from '../services/auth';
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -25,8 +25,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (username: string, password: string) => {
-    const data = await authService.login(username, password);
+  const login = async (email: string, password: string) => {
+    const data = await authService.login(email, password);
     authService.saveAuth(data);
     setUser(data.user);
   };
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     isAuthenticated: !!user,
-    isAdmin: user?.isAdmin || false,
+    isAdmin: user?.roles?.includes('ROLE_ADMIN') || false,
     loading,
   };
 

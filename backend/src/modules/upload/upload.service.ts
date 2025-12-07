@@ -30,7 +30,7 @@ export class UploadService {
       try {
         await this.borrowersService.create({
           firstname: row.firstname || row.Firstname || '',
-          lastname: row.lastname || row.Lastname || '',
+          surname: row.surname || row.Lastname || '',
           katakana: row.katakana || row.Katakana || '',
           frenchSurname: row.frenchSurname || row.FrenchSurname || row.french_surname || '',
         });
@@ -69,7 +69,7 @@ export class UploadService {
           code: row.code || row.Code || '',
           title: row.title || row.Title || '',
           locationId: parseInt(row.locationId || row.LocationId || row.location_id || '1'),
-          deleted: row.deleted === true || row.deleted === 'true' || false,
+          deleted: (row.deleted === true || row.deleted === 'true' ? 1 : 0) || 0,
         });
         results.success++;
       } catch (error) {

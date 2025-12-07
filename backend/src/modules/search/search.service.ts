@@ -31,8 +31,8 @@ export class SearchService {
       // Search books by code
       books = await this.booksRepository.find({
         where: {
-          code: Like(`%${query}%`),
-          deleted: false,
+          code: Number(query),
+          deleted: 0,
         },
         relations: ['location'],
         take: 10,

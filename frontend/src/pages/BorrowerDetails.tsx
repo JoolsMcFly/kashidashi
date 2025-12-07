@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
-import type { Borrower, Book } from '../types';
+import type { Book, Borrower } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
+import Logout from "../components/Logout.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
@@ -79,8 +80,8 @@ export default function BorrowerDetails() {
     const startDate = new Date(start);
     const endDate = new Date(end);
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   if (loading) {
@@ -113,24 +114,28 @@ export default function BorrowerDetails() {
 
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-2 py-2 rounded-lg text-xl"
-            style={{ background: '#f3f4f6' }}
-          >
-            ←
-          </button>
-          <div>
-            <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
-              {borrower.katakana}
-            </h1>
-            <p className="text-sm text-gray-600">{borrower.frenchSurname}</p>
-          </div>
-        </div>
-      </div>
+      <div className="bg-white shadow-sm sticky top-0 z-10 mx-auto px-4 py-4" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+          <div className="flex justify-between items-start mb-3">
+              <div>
+                  <div className="max-w-3xl mx-auto flex items-center gap-4">
+                      <button
+                        onClick={() => navigate(-1)}
+                        className="px-2 py-2 rounded-lg text-xl"
+                        style={{ background: '#f3f4f6' }}
+                      >
+                        ←
+                      </button>
+                      <div>
+                        <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
+                          {borrower.katakana}
+                        </h1>
+                        <p className="text-sm text-gray-600">{borrower.frenchSurname}</p>
+                      </div>
+                  </div>
+                </div>
+                <Logout />
+              </div>
+            </div>
 
       <div className="max-w-3xl mx-auto px-4 py-4">
         {/* Search Box */}

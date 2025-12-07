@@ -4,6 +4,8 @@ import api from '../services/api';
 import Layout from '../components/Layout';
 import type { Borrower, Book } from '../types';
 import Badge from "../components/Badge.tsx";
+import { inventoryService } from '../services/inventory';
+import type { Inventory } from "../types";
 
 interface SearchResult {
   books: Book[];
@@ -15,7 +17,17 @@ export default function Search() {
   const [borrowerResults, setBorrowerResults] = useState<Borrower[]>([]);
   const [bookResults, setBookResults] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentInventory, setCurrentInventory] = useState<Inventory | null>(null);
   const navigate = useNavigate();
+
+  const loadCurrentInventory = async () => {
+    const currentInventory = await inventoryService.getCurrent();
+    setCurrentInventory(currentInventory);
+  };
+
+  useEffect(() => {
+    loadCurrentInventory();
+  }, []);
 
   useEffect(() => {
     const delaySearch = setTimeout(() => {
@@ -45,9 +57,16 @@ export default function Search() {
     }
   };
 
-  return (
+  const joinInventory = () => {
+      if (currentInventory) {
+        navigate('/inventory');
+      }
+  };
+
+    return (
     <Layout title="KashiDashi">
       <div className="max-w-2xl mx-auto">
+        {currentInventory && <div className={"mb-6 px-2 py-2 bg-yellow-100 rounded-lg shadow-md text-gray-600 text-center"} onClick={joinInventory}><a><span className={"mr-2"}>📋</span> Join the open inventory!</a></div>}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
           <input
             type="text"

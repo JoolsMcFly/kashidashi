@@ -163,6 +163,7 @@ export default function InventoryScan() {
     );
   }
 
+  // TODO display user location next to the title
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       {/* Header */}
@@ -312,6 +313,7 @@ export default function InventoryScan() {
                     >
                       Location: {item.book.location?.name || 'Unknown'}
                       {isBookMisplaced(item) && ' (MISPLACED)'}
+                      {item.book.loans?.length && <span className={"ml-2"}>Borrowed by {item.book.loans[0].borrower.katakana}</span>}
                     </p>
                   </div>
                   <button

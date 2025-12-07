@@ -57,7 +57,7 @@ export class InventoryService {
   async findCurrent(): Promise<Inventory | null> {
     return this.inventoryRepository.findOne({
       where: { stoppedAt: IsNull() },
-      relations: ['items', 'items.book', 'items.book.location', 'items.foundAt', 'items.belongsAt'],
+      relations: ['items', 'items.book', 'items.book.location', 'items.foundAt', 'items.belongsAt', 'items.book.loans', 'items.book.loans.borrower'],
     });
   }
 
@@ -132,7 +132,7 @@ export class InventoryService {
     // Return item with relations
     return this.inventoryItemRepository.findOne({
       where: { id: savedItem.id },
-      relations: ['book', 'book.location', 'foundAt', 'belongsAt'],
+      relations: ['book', 'book.location', 'foundAt', 'belongsAt', 'book.loans', 'book.loans.borrower'],
     });
   }
 

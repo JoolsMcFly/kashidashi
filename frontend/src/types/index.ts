@@ -18,6 +18,7 @@ export type Book = {
   title: string | null;
   locationId: number | null;
   location?: Location;
+  loans?: Loan[];
   deleted: number | null;
 };
 
@@ -33,11 +34,11 @@ export type Borrower = {
 export type Loan = {
   id: number;
   borrowerId: number;
-  borrower?: Borrower;
+  borrower: Borrower;
   bookId: number;
-  book?: Book;
+  book: Book;
   creatorId: number | null;
-  creator?: User;
+  creator: User;
   startedAt: string;
   stoppedAt: string | null;
 };

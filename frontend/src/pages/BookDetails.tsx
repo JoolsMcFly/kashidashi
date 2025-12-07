@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import type { Book, Loan } from '../types';
+import Loading from "../components/Loading.tsx";
+import Badge from "../components/Badge.tsx";
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
@@ -45,25 +47,7 @@ export default function BookDetails() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-        <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-2 py-2 rounded-lg text-xl"
-              style={{ background: '#f3f4f6' }}
-            >
-              ←
-            </button>
-            <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
-              Book Details
-            </h1>
-          </div>
-        </div>
-        <div className="max-w-3xl mx-auto px-4 py-4">Loading...</div>
-      </div>
-    );
+    return <Loading title={"Book Details"} />;
   }
 
   if (!book) {
@@ -112,18 +96,8 @@ export default function BookDetails() {
             {book.title}
           </h2>
           <div className="flex gap-2 flex-wrap mb-3">
-            <span
-              className="inline-block px-3 py-1 rounded-md text-sm font-semibold text-white"
-              style={{ background: '#667eea' }}
-            >
-              Code: {book.code}
-            </span>
-            <span
-              className="inline-block px-3 py-1 rounded-md text-sm font-semibold text-white"
-              style={{ background: '#10b981' }}
-            >
-              {book.location?.name}
-            </span>
+            <Badge content={book.code} type={"code"} />
+            {book.location?.name && <Badge content={book.location.name} type={"location"} />}
           </div>
           <p className="text-gray-600 text-sm">Borrowed {borrowCount} times</p>
         </div>

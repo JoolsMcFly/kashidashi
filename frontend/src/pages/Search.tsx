@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import type { Borrower, Book } from '../types';
+import Badge from "../components/Badge.tsx";
 
 interface SearchResult {
   books: Book[];
@@ -98,7 +99,7 @@ export default function Search() {
                 >
                   <div className="font-medium">{book.title}</div>
                   <div className="text-sm text-gray-600">
-                    Code: {book.code} | Location: {book.location?.name}
+                    <Badge content={book.code} type={"code"} /> {book.location?.name && <Badge content={book.location.name} type={"location"} />}
                   </div>
                 </li>
               ))}

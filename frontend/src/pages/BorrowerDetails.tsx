@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import type { Borrower, Book } from '../types';
+import Loading from "../components/Loading.tsx";
+import Badge from "../components/Badge.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
@@ -82,24 +84,7 @@ export default function BorrowerDetails() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-        <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-2 py-2 rounded-lg text-xl"
-              style={{ background: '#f3f4f6' }}
-            >
-              ←
-            </button>
-            <div>
-              <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>Loading...</h1>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading title={"Borrower details"} />;
   }
 
   if (!borrower) {
@@ -170,7 +155,7 @@ export default function BorrowerDetails() {
                     onClick={() => handleCheckout(book.id)}
                     className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
                   >
-                    <strong>{book.code}</strong> - {book.title}
+                    <Badge content={book.code} type={"code"} /> <span className={"ml-2"}>{book.title}</span>
                   </div>
                 ))}
               </div>

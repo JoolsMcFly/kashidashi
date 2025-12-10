@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../services/api';
 import type { Book, Borrower } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
-import Logout from "../components/Logout.tsx";
-import PageHeader from "../components/PageHeader.tsx";
-import PageWrapper from "../components/PageWrapper.tsx";
+import Layout from "../components/Layout.tsx";
+import RoundedCard from "../components/RoundedCard.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [borrower, setBorrower] = useState<Borrower | null>(null);
   const [bookQuery, setBookQuery] = useState('');
   const [bookSuggestions, setBookSuggestions] = useState<Book[]>([]);
@@ -87,163 +85,137 @@ export default function BorrowerDetails() {
   };
 
   if (loading) {
-    return (
-        <PageWrapper>
-            <PageHeader notFoundHeader={"Borrower details"} returnTo={"/search"} />
-            <Loading title={"Borrower details"} />
-        </PageWrapper>
-    );
+      return (
+          <Layout title={"Borrower details"}>
+              <Loading />
+          </Layout>
+      );
   }
 
   if (!borrower) {
-    return (
-        <PageWrapper>
-            <PageHeader notFoundHeader={"Borrower details"} returnTo={"/search"} />
-        </PageWrapper>
-    );
+      return (
+          <Layout title={"Borrower details"}>
+              <RoundedCard>Borrower not found</RoundedCard>
+          </Layout>
+      );
   }
 
   const activeLoans = borrower.loans?.filter((loan) => !loan.stoppedAt) || [];
   const loanHistory = borrower.loans?.filter((loan) => loan.stoppedAt) || [];
 
   return (
-    <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-      <div className="bg-white shadow-sm sticky top-0 z-10 mx-auto px-4 py-4" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-          <div className="flex justify-between items-start mb-3">
-              <div>
-                  <div className="max-w-3xl mx-auto flex items-center gap-4">
-                      <button
-                        onClick={() => navigate(-1)}
-                        className="px-2 py-2 rounded-lg text-xl"
-                        style={{ background: '#f3f4f6' }}
-                      >
-                        ←
-                      </button>
-                      <div>
-                        <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
-                          {borrower.katakana}
-                        </h1>
-                        <p className="text-sm text-gray-600">{borrower.frenchSurname}</p>
+      <Layout title={borrower.katakana}>
+          {/* Search Box */}
+          <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+              <label className="block text-gray-700 font-medium mb-2 text-sm">
+                  Add a book by Code
+              </label>
+              <div className="relative">
+                  <input
+                      type="text"
+                      value={bookQuery}
+                      onChange={(e) => setBookQuery(e.target.value)}
+                      placeholder="Enter book code..."
+                      className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
+                      disabled={checkingOut}
+                  />
+                  {bookSuggestions.length > 0 && (
+                      <div className="mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden">
+                          {bookSuggestions.map((book) => (
+                              <div
+                                  key={book.id}
+                                  onClick={() => handleCheckout(book.id)}
+                                  className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                              >
+                                  <Badge content={book.code} type={"code"} /> <span className={"ml-2"}>{book.title}</span>
+                              </div>
+                          ))}
                       </div>
-                  </div>
-                </div>
-                <Logout />
+                  )}
               </div>
-            </div>
-
-      <div className="max-w-3xl mx-auto px-4 py-4">
-        {/* Search Box */}
-        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
-          <label className="block text-gray-700 font-medium mb-2 text-sm">
-            Add a book by Code
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={bookQuery}
-              onChange={(e) => setBookQuery(e.target.value)}
-              placeholder="Enter book code..."
-              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-              disabled={checkingOut}
-            />
-            {bookSuggestions.length > 0 && (
-              <div className="mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden">
-                {bookSuggestions.map((book) => (
-                  <div
-                    key={book.id}
-                    onClick={() => handleCheckout(book.id)}
-                    className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                  >
-                    <Badge content={book.code} type={"code"} /> <span className={"ml-2"}>{book.title}</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Active Loans */}
-        <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-          Active Loans
-        </h3>
-        <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6">
-          {activeLoans.length > 0 ? (
-            activeLoans.map((loan) => (
-              <div
-                key={loan.id}
-                className="p-4 border-b last:border-b-0 flex justify-between items-start"
-              >
-                <div>
-                  <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
-                    <Badge content={loan.book.code} type={"code"} />
-                    <span className={"ml-2"}>{loan.book.title}</span>
-                  </h3>
-                  {loan.book.location?.name && <Badge content={loan.book.location.name} type={"location"} />}
-                  <p className="text-sm text-gray-600">
-                    Since {new Date(loan.startedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit'
-                    })}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleReturn(loan.id)}
-                  className="px-3 py-2 rounded-md text-white font-medium"
-                  style={{ background: '#ef4444' }}
-                >
-                  X
-                </button>
-              </div>
-            ))
-          ) : (
-            <div className="p-4 text-center text-gray-500 text-sm">
-              Add a book by using the above search
-            </div>
-          )}
-        </div>
+          {/* Active Loans */}
+          <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+              Active Loans
+          </h3>
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6">
+              {activeLoans.length > 0 ? (
+                  activeLoans.map((loan) => (
+                      <div
+                          key={loan.id}
+                          className="p-4 border-b last:border-b-0 flex justify-between items-start"
+                      >
+                          <div>
+                              <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
+                                  <Badge content={loan.book.code} type={"code"} />
+                                  <span className={"ml-2"}>{loan.book.title}</span>
+                              </h3>
+                              {loan.book.location?.name && <Badge content={loan.book.location.name} type={"location"} />}
+                              <p className="text-sm text-gray-600">
+                                  Since {new Date(loan.startedAt).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit'
+                              })}
+                              </p>
+                          </div>
+                          <button
+                              onClick={() => handleReturn(loan.id)}
+                              className="px-3 py-2 rounded-md text-white font-medium"
+                              style={{ background: '#ef4444' }}
+                          >
+                              X
+                          </button>
+                      </div>
+                  ))
+              ) : (
+                  <div className="p-4 text-center text-gray-500 text-sm">
+                      Add a book by using the above search
+                  </div>
+              )}
+          </div>
 
-        {/* Loan History */}
-        {loanHistory.length > 0 && (
-          <>
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className="w-full text-left flex items-center justify-between text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3 hover:text-gray-800 transition-colors"
-            >
-              <span>Loan History ({loanHistory.length})</span>
-              <span className="text-lg">{showHistory ? '▼' : '▶'}</span>
-            </button>
-            {showHistory && (
-              <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
-                {loanHistory.map((loan) => (
-                  <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
-                    <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
+          {/* Loan History */}
+          {loanHistory.length > 0 && (
+              <>
+                  <button
+                      onClick={() => setShowHistory(!showHistory)}
+                      className="w-full text-left flex items-center justify-between text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3 hover:text-gray-800 transition-colors"
+                  >
+                      <span>Loan History ({loanHistory.length})</span>
+                      <span className="text-lg">{showHistory ? '▼' : '▶'}</span>
+                  </button>
+                  {showHistory && (
+                      <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
+                          {loanHistory.map((loan) => (
+                              <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
+                                  <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
                       <span
-                        className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
-                        style={{ background: '#667eea' }}
+                          className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
+                          style={{ background: '#667eea' }}
                       >
                         {loan.book?.code}
                       </span>
-                      {loan.book?.title}
-                    </h4>
-                    <p className="text-xs text-gray-600">
-                      From {new Date(loan.startedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                      })} to {new Date(loan.stoppedAt!).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                      })} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+                                      {loan.book?.title}
+                                  </h4>
+                                  <p className="text-xs text-gray-600">
+                                      From {new Date(loan.startedAt).toLocaleDateString('en-US', {
+                                      year: 'numeric',
+                                      month: '2-digit',
+                                      day: '2-digit'
+                                  })} to {new Date(loan.stoppedAt!).toLocaleDateString('en-US', {
+                                      year: 'numeric',
+                                      month: '2-digit',
+                                      day: '2-digit'
+                                  })} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
+                                  </p>
+                              </div>
+                          ))}
+                      </div>
+                  )}
+              </>
+          )}
+      </Layout>
   );
 }

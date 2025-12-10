@@ -33,7 +33,7 @@ export default function Layout({
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       <header className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-start">
+        <div className="flex justify-between max-w-5xl mx-auto px-4 py-4 items-start">
           <h1 className="text-xl font-bold" style={{ color: '#111827' }}>
             {title}
           </h1>
@@ -93,7 +93,7 @@ export default function Layout({
           </div>
         </div>
       </header>
-      <main className="max-w-5xl mx-auto px-6 py-6">{children}</main>
+      <main className="max-w-5xl mx-auto px-2 py-2">{children}</main>
     </div>
   );
 }

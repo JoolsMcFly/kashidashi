@@ -7,6 +7,7 @@ import type { Inventory, InventoryItem, Book } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
 import Logout from "../components/Logout.tsx";
+import Layout from "../components/Layout.tsx";
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
@@ -136,9 +137,11 @@ export default function InventoryScan() {
     return item.book.locationId !== user?.locationId;
   };
 
-  if (loading) {
-    return <Loading title={"Inventory scan"} />;
-  }
+    if (loading) {
+        return <Layout title={"Inventory"}>;
+            <Loading />
+        </Layout>;
+    }
 
   if (!inventory) {
     return (
@@ -154,7 +157,8 @@ export default function InventoryScan() {
     );
   }
 
-  // TODO display user location next to the title
+    // TODO display user location next to the title
+    //  TODO use Layout
     return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>

@@ -64,7 +64,7 @@ export default function Search() {
   };
 
     return (
-    <Layout title="KashiDashi">
+    <Layout title="KashiDashi" showBackButton={false}>
       <div className="max-w-2xl mx-auto">
         {currentInventory && <div className={"mb-6 px-2 py-2 bg-yellow-100 rounded-lg shadow-md text-gray-600 text-center"} onClick={joinInventory}><a><span className={"mr-2"}>📋</span> Join the open inventory!</a></div>}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">

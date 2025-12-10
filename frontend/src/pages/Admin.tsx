@@ -193,6 +193,7 @@ export default function Admin() {
     }
   };
 
+  // TODO refactor to remove menu and add rounded cards instead?
   return (
     <Layout
       showMenu={true}

@@ -5,6 +5,8 @@ import type { Book, Borrower } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
 import Logout from "../components/Logout.tsx";
+import PageHeader from "../components/PageHeader.tsx";
+import PageWrapper from "../components/PageWrapper.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
@@ -85,27 +87,19 @@ export default function BorrowerDetails() {
   };
 
   if (loading) {
-    return <Loading title={"Borrower details"} />;
+    return (
+        <PageWrapper>
+            <PageHeader notFoundHeader={"Borrower details"} returnTo={"/search"} />
+            <Loading title={"Borrower details"} />
+        </PageWrapper>
+    );
   }
 
   if (!borrower) {
     return (
-      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-        <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
-          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-2 py-2 rounded-lg text-xl"
-              style={{ background: '#f3f4f6' }}
-            >
-              ←
-            </button>
-            <div>
-              <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>Borrower not found</h1>
-            </div>
-          </div>
-        </div>
-      </div>
+        <PageWrapper>
+            <PageHeader notFoundHeader={"Borrower details"} returnTo={"/search"} />
+        </PageWrapper>
     );
   }
 

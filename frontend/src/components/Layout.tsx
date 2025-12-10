@@ -11,7 +11,7 @@ interface LayoutProps {
 
 export default function Layout({
   children,
-  title = 'Admin Panel',
+  title = 'Kashidashi',
   showMenu = false,
   activeMenuItem,
   onMenuItemClick
@@ -34,7 +34,7 @@ export default function Layout({
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       <header className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-start">
-          <h1 className="text-2xl font-bold" style={{ color: '#111827' }}>
+          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>
             {title}
           </h1>
           <div className="flex items-start gap-4">

@@ -104,7 +104,7 @@ export default function BorrowerDetails() {
   const loanHistory = borrower.loans?.filter((loan) => loan.stoppedAt) || [];
 
   return (
-      <Layout title={borrower.katakana}>
+      <Layout title={borrower.katakana} subtitle={borrower.katakana}>
           {/* Search Box */}
           <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
               <label className="block text-gray-700 font-medium mb-2 text-sm">

@@ -3,11 +3,11 @@ import Logout from "./Logout.tsx";
 import type { Path } from "react-router-dom";
 
 interface NotFoundProps {
-    notFoundHeader: string;
+    title: string;
     returnTo: string| Partial<Path>;
 }
 
-export default function PageHeader({notFoundHeader, returnTo}: NotFoundProps) {
+export default function PageHeader({title, returnTo}: NotFoundProps) {
     const navigate = useNavigate();
 
     return <div className="flex justify-between items-start mb-3">
@@ -21,7 +21,7 @@ export default function PageHeader({notFoundHeader, returnTo}: NotFoundProps) {
                             🏠
                         </button>
                         <div>
-                            <h1 className="text-xl font-semibold" style={{color: '#111827'}}>{notFoundHeader}</h1>
+                            <h1 className="text-xl font-semibold" style={{color: '#111827'}}>{title}</h1>
                         </div>
                     </div>
                 </div>

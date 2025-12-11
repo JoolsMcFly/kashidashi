@@ -7,23 +7,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2 # Check out your repository code
 
-      - name: SSH and run commands
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: |
-          echo "Set up"
-          echo "$SSH_USER @ $SSH_HOST"
-          echo "$PRIVATE_KEY" > private_key.pem # Write the private key to a file
-          chmod 600 private_key.pem # Set the appropriate permissions for the key file
-          
-          # Establish an SSH connection and execute commands on the remote server
-          ssh -o StrictHostKeyChecking=no -v -i private_key.pem fmye8380@source.o2switch.net <<EOF
-            echo "Hello" > /tmp/from-github
-          EOF
+      - name: Get runner's public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
 
-          rm -f private_key.pem # Remove the private key file after use for security
+      - name: Whitelisting the runner IP
+        run: |
+          curl -sm 45 -H'Authorization: cpanel ${{ secrets.CPANEL_USERNAME }}:${{ secrets.CPANEL_API_TOKEN }}' \
+          'https://${{ secrets.CPANEL_SERVER }}:2083/execute/SshWhitelist/add?address=${{ steps.ip.outputs.ipv4 }}&port=22'
+
+      - name: Making sure the IP is whitelisted
+        run: |
+          curl -sm 45 -H'Authorization: cpanel ${{ secrets.CPANEL_USERNAME }}:${{ secrets.CPANEL_API_TOKEN }}' \
+          'https://${{ secrets.CPANEL_SERVER }}:2083/execute/SshWhitelist/list' | grep ${{ steps.ip.outputs.ipv4 }}
+      
+      - name: Installing the SSH Key
+        run: |
+           eval $(ssh-agent -s)
+           mkdir -p ~/.ssh       
+           chmod 700 ~/.ssh 
+           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+           chmod 0400 ~/.ssh/id_rsa
+
+      - name: Cleaning SSH keys
+        if: always()
+        run: rm -fr ~/.ssh
+
     permissions:
       contents: read
       actions: write

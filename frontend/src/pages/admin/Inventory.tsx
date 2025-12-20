@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { inventoryService } from '../../services/inventory';
 import Layout from '../../components/Layout';
 import type { Inventory } from '../../types';
@@ -8,8 +7,6 @@ export default function InventoryAdmin() {
   const [inventories, setInventories] = useState<Inventory[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const navigate = useNavigate();
-
   useEffect(() => {
     loadInventories();
   }, []);
@@ -49,19 +46,10 @@ export default function InventoryAdmin() {
       alert(error.response?.data?.message || 'Failed to close inventory');
     }
   };
-
-  const handleMenuItemClick = (item: string) => {
-    if (item === 'inventory') {
-      // Already on inventory page
-      return;
-    }
-    navigate('/admin');
-  };
-
   const hasOpenInventory = inventories.some((inv) => !inv.stoppedAt);
 
   return (
-    <Layout title="Admin Panel" showMenu={true} activeMenuItem="inventory" onMenuItemClick={handleMenuItemClick}>
+    <Layout title="Admin Panel">
       <div className="bg-white rounded-xl p-6 shadow-sm">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>

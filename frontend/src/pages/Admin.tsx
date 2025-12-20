@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import type { User, Location, UploadResult } from '../types';
@@ -7,8 +6,7 @@ import type { User, Location, UploadResult } from '../types';
 type Tab = 'users' | 'books' | 'borrowers' | 'inventory';
 
 export default function Admin() {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>('users');
+  const [activeTab] = useState<Tab>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [showUserForm, setShowUserForm] = useState(false);
@@ -184,22 +182,9 @@ export default function Admin() {
       setUploading(false);
     }
   };
-
-  const handleMenuItemClick = (item: string) => {
-    if (item === 'inventory') {
-      navigate('/admin/inventory');
-    } else {
-      setActiveTab(item as Tab);
-    }
-  };
-
-  // TODO refactor to remove menu and add rounded cards instead?
+// TODO refactor to remove menu and add rounded cards instead?
   return (
-    <Layout
-      showMenu={true}
-      activeMenuItem={activeTab}
-      onMenuItemClick={handleMenuItemClick}
-    >
+    <Layout>
 
       {/* Users Tab */}
       {activeTab === 'users' && (

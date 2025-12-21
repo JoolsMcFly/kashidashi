@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
-import { Location } from '../entities/location.entity';
-import { Borrower } from '../entities/borrower.entity';
-import { Book } from '../entities/book.entity';
+import { User } from '../entities';
+import { Location } from '../entities';
+import { Borrower } from '../entities';
+import { Book } from '../entities';
 import { UsersSeed } from './seeds/users.seed';
 import { LocationsSeed } from './seeds/locations.seed';
 import { BorrowersSeed } from './seeds/borrowers.seed';

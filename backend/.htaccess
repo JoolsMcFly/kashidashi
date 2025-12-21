@@ -1,0 +1,25 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /api
+
+  # Preserve the original request URI and query string
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Proxy all requests to Node.js backend
+  # Update the port number (3000) to match your host Node.js port
+  RewriteRule ^(.*)$ http://localhost:3000/$1 [P,L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Enable CORS if needed
+  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+<IfModule mod_proxy.c>
+  # Proxy settings for better performance and reliability
+  ProxyPreserveHost On
+  ProxyTimeout 300
+</IfModule>

@@ -1,4 +1,20 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: kashidashi-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+      - phpmyadmin
+
   db:
     image: mariadb:11.4.9
     container_name: kashidashi-db
@@ -24,8 +40,8 @@ services:
       dockerfile: Dockerfile
     container_name: kashidashi-backend
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       NODE_ENV: development
       DB_HOST: db
@@ -48,10 +64,10 @@ services:
       dockerfile: Dockerfile
     container_name: kashidashi-frontend
     restart: unless-stopped
-    ports:
-      - "5173:5173"
+    expose:
+      - "5173"
     environment:
-      VITE_API_URL: http://localhost:3000
+      VITE_API_URL: https://kashidashi.local/api
     volumes:
       - ./frontend:/app
       - ./package.json:/package.json:ro
@@ -64,16 +80,19 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: kashidashi-phpmyadmin
     restart: unless-stopped
-    ports:
-      - "8080:80"
+    expose:
+      - "80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
       PMA_USER: kashidashi
       PMA_PASSWORD: kashidashi
       MYSQL_ROOT_PASSWORD: root
+      PMA_ABSOLUTE_URI: https://kashidashi.local/phpmyadmin
     depends_on:
       - db
 
 volumes:
   db_data:
+  caddy_data:
+  caddy_config:

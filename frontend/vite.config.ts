@@ -11,6 +11,7 @@ const rootPackageJson = JSON.parse(
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/app',
   plugins: [
       react(),
       tailwindcss(),
@@ -18,4 +19,7 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(rootPackageJson.version),
   },
+  server: {
+      allowedHosts: ['kashidashi.local']
+  }
 })

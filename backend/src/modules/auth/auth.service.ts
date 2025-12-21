@@ -16,7 +16,9 @@ export class AuthService {
       return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Convert $2y$ (PHP) to $2b$ (Node.js) for Symfony compatibility
+    const normalizedHash = user.password.replace(/^\$2y\$/, '$2b$');
+    const isPasswordValid = await bcrypt.compare(password, normalizedHash);
     if (!isPasswordValid) {
       return null;
     }

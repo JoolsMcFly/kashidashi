@@ -17,9 +17,3 @@
   Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   Header set Access-Control-Allow-Headers "Content-Type, Authorization"
 </IfModule>
-
-<IfModule mod_proxy.c>
-  # Proxy settings for better performance and reliability
-  ProxyPreserveHost On
-  ProxyTimeout 300
-</IfModule>

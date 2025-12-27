@@ -50,6 +50,7 @@ services:
       DB_PASSWORD: kashidashi
       DB_DATABASE: kashidashi
       JWT_SECRET: change-me-in-production
+      FRONT_URL: https://kashidashi.local
     volumes:
       - ./backend:/app
 #      - /app/node_modules
@@ -67,7 +68,7 @@ services:
     expose:
       - "5173"
     environment:
-      VITE_API_URL: https://kashidashi.local/api
+      VITE_API_URL: https://api.kashidashi.local
     volumes:
       - ./frontend:/app
       - ./package.json:/package.json:ro
@@ -88,7 +89,7 @@ services:
       PMA_USER: kashidashi
       PMA_PASSWORD: kashidashi
       MYSQL_ROOT_PASSWORD: root
-      PMA_ABSOLUTE_URI: https://kashidashi.local/phpmyadmin
+      PMA_ABSOLUTE_URI: https://phpmyadmin.kashidashi.local
     depends_on:
       - db
 

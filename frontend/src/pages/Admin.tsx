@@ -6,7 +6,7 @@ import type { User, Location, UploadResult } from '../types';
 type Tab = 'users' | 'books' | 'borrowers' | 'inventory';
 
 export default function Admin() {
-  const [activeTab] = useState<Tab>('users');
+  const [activeTab, setActiveTab] = useState<Tab>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [showUserForm, setShowUserForm] = useState(false);
@@ -185,6 +185,11 @@ export default function Admin() {
 // TODO refactor to remove menu and add rounded cards instead?
   return (
     <Layout>
+        <div className="bg-white rounded-xl shadow-sm mb-2 flex w-full">
+            {["users", "borrowers", "books", "inventory"].map((item: Tab) => (
+                <div className={`w-full p-6 text-center ${activeTab === item ? "" : "bg-gray-100"}`} onClick={() => setActiveTab(item)}>{item.substr(0, 1).toUpperCase()+item.substr(1)}</div>
+            ))}
+        </div>
 
       {/* Users Tab */}
       {activeTab === 'users' && (

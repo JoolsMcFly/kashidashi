@@ -38,19 +38,18 @@ loans
 
 The project uses Docker Compose for local development with Caddy as a reverse proxy.
 
-### Local Development URL
+### Local Development URLs
 
-**https://kashidashi.local** with the following routes:
-- `/app` - Frontend (React/Vite)
-- `/api` - Backend API (NestJS)
-- `/phpmyadmin` - Database management interface
+- **https://kashidashi.local** - Frontend (React/Vite)
+- **https://api.kashidashi.local** - Backend API (NestJS)
+- **https://phpmyadmin.kashidashi.local** - Database management interface
 
 ### Services
 
 - **Caddy (Reverse Proxy)**: Ports 80/443
   - Container: `kashidashi-caddy`
-  - Auto-generates self-signed SSL certificate
-  - Routes traffic to frontend/backend/phpMyAdmin
+  - Auto-generates self-signed SSL certificates
+  - Routes subdomains to respective services
 
 - **Database (MariaDB 11.4.9)**: Port 3306
   - Container: `kashidashi-db`
@@ -63,22 +62,24 @@ The project uses Docker Compose for local development with Caddy as a reverse pr
   - Container: `kashidashi-backend`
   - Auto-reloads on code changes (dev mode)
   - Waits for database health check before starting
-  - Accessible via https://kashidashi.local/api
+  - Accessible via https://api.kashidashi.local
 
 - **Frontend (React/Vite)**: Internal only
   - Container: `kashidashi-frontend`
   - Hot module replacement enabled
-  - Accessible via https://kashidashi.local/app
+  - Accessible via https://kashidashi.local
 
 - **phpMyAdmin**: Internal only
   - Container: `kashidashi-phpmyadmin`
-  - Accessible via https://kashidashi.local/phpmyadmin
+  - Accessible via https://phpmyadmin.kashidashi.local
 
 ### Setup
 
 1. Add to `/etc/hosts`:
    ```
    127.0.0.1 kashidashi.local
+   127.0.0.1 api.kashidashi.local
+   127.0.0.1 phpmyadmin.kashidashi.local
    ```
 
 2. Start services:
@@ -86,7 +87,7 @@ The project uses Docker Compose for local development with Caddy as a reverse pr
    docker compose up
    ```
 
-3. Accept the self-signed certificate warning in your browser
+3. Accept the self-signed certificate warnings in your browser for each subdomain
 
 4. Access the app at https://kashidashi.local
 

@@ -83,12 +83,12 @@ export default function BookDetails() {
                 {currentLoan ? (
                     <div className="bg-red-50 p-3 rounded-lg">
                         <button
-                            onClick={() => navigate(`/borrower/${currentLoan.borrower?.id}`)}
+                            onClick={() => navigate(`/borrower/${currentLoan?.borrowerId}`)}
                             className="font-semibold hover:underline"
                             style={{color: '#667eea'}}
                         >
-                            {currentLoan.borrower?.firstname} {currentLoan.borrower?.surname} (
-                            {currentLoan.borrower?.katakana})
+                            {currentLoan?.borrower.firstname} {currentLoan?.borrower.surname} (
+                            {currentLoan?.borrower.katakana})
                         </button>
                         <p className="text-gray-600 text-sm mt-2">
                             Start Date: {new Date(currentLoan.startedAt).toLocaleDateString('en-US', {

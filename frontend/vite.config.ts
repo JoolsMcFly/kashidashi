@@ -11,7 +11,6 @@ const rootPackageJson = JSON.parse(
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/app',
   plugins: [
       react(),
       tailwindcss(),

@@ -6,7 +6,6 @@ import Search from './pages/Search';
 import BorrowerDetails from './pages/BorrowerDetails';
 import BookDetails from './pages/BookDetails';
 import Admin from './pages/Admin';
-import InventoryAdmin from './pages/admin/Inventory';
 import InventoryScan from './pages/InventoryScan';
 import { useAuth } from './contexts/AuthContext';
 
@@ -68,10 +67,10 @@ function App() {
           />
 
           <Route
-            path="/admin/inventory"
+            path="/admin/:tab"
             element={
               <ProtectedRoute adminOnly>
-                <InventoryAdmin />
+                <Admin />
               </ProtectedRoute>
             }
           />

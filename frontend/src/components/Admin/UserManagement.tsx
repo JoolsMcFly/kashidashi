@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
-import type { User, Location } from '../types';
+import api from '../../services/api';
+import type { User, Location } from '../../types';
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);

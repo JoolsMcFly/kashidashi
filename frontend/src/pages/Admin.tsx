@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import Layout from '../components/Layout';
-import type { User, Location, UploadResult } from '../types';
+import UserManagement from '../components/UserManagement';
+import type { UploadResult } from '../types';
 
 type Tab = 'users' | 'books' | 'borrowers' | 'inventory';
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState<Tab>('users');
-  const [users, setUsers] = useState<User[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [showUserForm, setShowUserForm] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [booksFile, setBooksFile] = useState<File | null>(null);
   const [borrowersFile, setBorrowersFile] = useState<File | null>(null);
   const [booksResult, setBooksResult] = useState<UploadResult | null>(null);
@@ -18,46 +15,11 @@ export default function Admin() {
   const [uploading, setUploading] = useState(false);
   const [booksStats, setBooksStats] = useState<{ total: number; onLoan: number } | null>(null);
   const [borrowersStats, setBorrowersStats] = useState<{ total: number } | null>(null);
-  const [formData, setFormData] = useState<{
-    email: string;
-    password: string;
-    firstname: string;
-    surname: string;
-    roles: string;
-    locationId: number | undefined;
-  }>({
-    email: '',
-    password: '',
-    firstname: '',
-    surname: '',
-    roles: '',
-    locationId: 1,
-  });
 
   useEffect(() => {
-    loadUsers();
-    loadLocations();
     loadBooksStats();
     loadBorrowersStats();
   }, []);
-
-  const loadUsers = async () => {
-    try {
-      const response = await api.get<User[]>('/users');
-      setUsers(response.data);
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
-  };
-
-  const loadLocations = async () => {
-    try {
-      const response = await api.get<Location[]>('/locations');
-      setLocations(response.data);
-    } catch (error) {
-      console.error('Error loading locations:', error);
-    }
-  };
 
   const loadBooksStats = async () => {
     try {
@@ -75,66 +37,6 @@ export default function Admin() {
     } catch (error) {
       console.error('Error loading borrowers stats:', error);
     }
-  };
-
-  const handleUserSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      if (editingUser) {
-        await api.put(`/users/${editingUser.id}`, {
-          email: formData.email,
-          firstname: formData.firstname,
-          surname: formData.surname,
-          roles: formData.roles,
-          locationId: formData.locationId,
-        });
-      } else {
-        await api.post('/users', formData);
-      }
-
-      resetUserForm();
-      await loadUsers();
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to save user');
-    }
-  };
-
-  const handleEditUser = (user: User) => {
-    setEditingUser(user);
-    setFormData({
-      email: user.email,
-      password: '',
-      firstname: user.firstname || '',
-      surname: user.surname || '',
-      roles: user.roles,
-      locationId: user.locationId || 1,
-    });
-    setShowUserForm(true);
-  };
-
-  const handleDeleteUser = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-
-    try {
-      await api.delete(`/users/${id}`);
-      await loadUsers();
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to delete user');
-    }
-  };
-
-  const resetUserForm = () => {
-    setFormData({
-      email: '',
-      password: '',
-      firstname: '',
-      surname: '',
-      roles: '',
-      locationId: locations[0]?.id || 1,
-    });
-    setEditingUser(null);
-    setShowUserForm(false);
   };
 
   const handleBooksUpload = async () => {
@@ -192,126 +94,7 @@ export default function Admin() {
         </div>
 
       {/* Users Tab */}
-      {activeTab === 'users' && (
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold mb-4" style={{ color: '#111827' }}>
-            Users
-          </h2>
-            {!showUserForm && <button
-            onClick={() => setShowUserForm(!showUserForm)}
-            className="mb-6 px-6 py-3 text-white font-semibold rounded-lg transition-colors"
-            style={{ background: '#667eea' }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#5568d3')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = '#667eea')}
-          >
-            + Add User
-          </button>}
-
-          {showUserForm && (
-            <form onSubmit={handleUserSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                    required
-                  />
-                </div>
-                {!editingUser && (
-                  <div>
-                    <label className="block text-gray-700 font-medium mb-2 text-sm">Password</label>
-                    <input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                      required={!editingUser}
-                      minLength={6}
-                    />
-                  </div>
-                )}
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">First Name</label>
-                  <input
-                    type="text"
-                    value={formData.firstname}
-                    onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
-                    className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">Surname</label>
-                  <input
-                    type="text"
-                    value={formData.surname}
-                    onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                    className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">Role</label>
-                  <select
-                    value={formData.roles}
-                    onChange={(e) => setFormData({ ...formData, roles: e.target.value })}
-                    className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                    required
-                  >
-                    <option value="">Select Role</option>
-                    <option value="ROLE_USER">User</option>
-                    <option value="ROLE_ADMIN">Admin</option>
-                    <option value="ROLE_INVENTORY">Inventory</option>
-                  </select>
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="px-6 py-2 text-white font-semibold rounded-lg"
-                style={{ background: '#667eea' }}
-              >
-                {editingUser ? 'Update' : 'Create'}
-              </button>
-              <button
-                type="button"
-                onClick={resetUserForm}
-                className="px-6 py-2 ml-2 text-white bg-gray-300 font-semibold rounded-lg"
-              >
-                Cancel
-              </button>
-            </form>
-          )}
-
-            {!showUserForm && <div className="flex flex-col gap-3">
-            {users.map((user) => (
-              <div
-                key={user.id}
-                className="flex justify-between items-center p-4 rounded-lg"
-                style={{ background: '#f9fafb' }}
-              >
-                <span className="font-medium" style={{ color: '#111827' }}>
-                  {user.firstname} {user.surname}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEditUser(user)}
-                    className="text-xl p-1 border-none bg-transparent cursor-pointer hover:opacity-70"
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(user.id)}
-                    className="text-xl p-1 border-none bg-transparent cursor-pointer hover:opacity-70"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>}
-        </div>
-      )}
+      {activeTab === 'users' && <UserManagement />}
 
       {/* Books Tab */}
       {activeTab === 'books' && (

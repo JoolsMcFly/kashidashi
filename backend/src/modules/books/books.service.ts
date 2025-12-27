@@ -107,9 +107,8 @@ export class BooksService {
 
     const booksWithLoans = await this.booksRepository
       .createQueryBuilder('book')
-      .leftJoin('book.loans', 'loan')
+      .innerJoin('book.loans', 'loan')
       .where('book.deleted = :deleted', { deleted: 0 })
-      .andWhere('loan.returnDate IS NULL')
       .getCount();
 
     return {

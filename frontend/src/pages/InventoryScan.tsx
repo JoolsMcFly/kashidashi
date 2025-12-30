@@ -14,6 +14,39 @@ type Tab = 'scanned' | 'misplaced' | 'by-location';
 
 const MAX_LATEST_BOOKS: number = 2;
 
+interface PadButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  variant?: 'normal' | 'clear';
+  className?: string;
+  children: React.ReactNode;
+}
+
+function PadButton({ onClick, disabled, variant = 'normal', className = '', children }: PadButtonProps) {
+  const baseStyle = "py-4 rounded-lg transition-colors font-semibold " + className;
+
+  const styles = variant === 'clear'
+    ? {
+        background: disabled ? '#fee2e2' : '#fecaca',
+        color: disabled ? '#9ca3af' : '#dc2626',
+      }
+    : {
+        background: disabled ? '#e5e7eb' : '#f3f4f6',
+        color: disabled ? '#9ca3af' : '#111827',
+      };
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={baseStyle}
+      style={styles}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function InventoryScan() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -208,57 +241,42 @@ export default function InventoryScan() {
         {/* Search Box */}
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <label className="block text-gray-700 font-medium mb-2 text-sm">
-            Scan book by Code
+            Scan book by code
           </label>
             {/* Virtual Numpad */}
             <div className="grid grid-cols-3 gap-2 mt-4">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                    <button
+                    <PadButton
                         key={num}
                         onClick={() => setBookQuery(bookQuery + num)}
                         disabled={adding}
-                        className="py-4 text-2xl font-bold rounded-lg transition-colors"
-                        style={{
-                            background: adding ? '#e5e7eb' : '#f3f4f6',
-                            color: adding ? '#9ca3af' : '#111827',
-                        }}
+                        className="text-2xl"
                     >
                         {num}
-                    </button>
+                    </PadButton>
                 ))}
-                <button
+                <PadButton
                     onClick={() => setBookQuery('')}
                     disabled={adding}
-                    className="py-4 text-lg font-semibold rounded-lg transition-colors"
-                    style={{
-                        background: adding ? '#fee2e2' : '#fecaca',
-                        color: adding ? '#9ca3af' : '#dc2626',
-                    }}
+                    variant="clear"
+                    className="text-lg"
                 >
                     Clear
-                </button>
-                <button
+                </PadButton>
+                <PadButton
                     onClick={() => setBookQuery(bookQuery + '0')}
                     disabled={adding}
-                    className="py-4 text-2xl font-bold rounded-lg transition-colors"
-                    style={{
-                        background: adding ? '#e5e7eb' : '#f3f4f6',
-                        color: adding ? '#9ca3af' : '#111827',
-                    }}
+                    className="text-2xl"
                 >
                     0
-                </button>
-                <button
+                </PadButton>
+                <PadButton
                     onClick={() => setBookQuery(bookQuery.slice(0, -1))}
                     disabled={adding}
-                    className="py-4 text-xl font-semibold rounded-lg transition-colors"
-                    style={{
-                        background: adding ? '#e5e7eb' : '#f3f4f6',
-                        color: adding ? '#9ca3af' : '#111827',
-                    }}
+                    className="text-xl"
                 >
                     ⌫
-                </button>
+                </PadButton>
             </div>
           <div className="relative">
             <input
@@ -266,8 +284,8 @@ export default function InventoryScan() {
               ref={searchRef}
               value={bookQuery}
               readOnly
-              placeholder="Enter book code..."
-              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea] text-center text-2xl font-bold"
+              placeholder="Use numpad to enter book code..."
+              className="w-full px-3 py-3 border-2 border-none rounded-lg focus:outline-none focus:border-none text-center text-xl font-semibold placeholder:text-sm"
               disabled={adding}
             />
             {bookSuggestions.length > 0 && (

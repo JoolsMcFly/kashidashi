@@ -24,7 +24,7 @@ export class UsersSeed {
         password: adminPasswordHash,
         firstname: 'Admin',
         surname: 'User',
-        roles: 'ROLE_ADMIN',
+        roles: ['ROLE_ADMIN'],
         locationId: null,
       });
       await this.usersRepository.save(admin);
@@ -45,7 +45,7 @@ export class UsersSeed {
         password: userPasswordHash,
         firstname: 'Regular',
         surname: 'User',
-        roles: 'ROLE_USER',
+        roles: ['ROLE_USER'],
         locationId: null, // Will need to be updated manually or via migration
       });
       await this.usersRepository.save(user);

@@ -3,7 +3,7 @@ export type User = {
   email: string;
   firstname: string | null;
   surname: string | null;
-  roles: string;
+  roles: string[];
   locationId: number | null;
 };
 

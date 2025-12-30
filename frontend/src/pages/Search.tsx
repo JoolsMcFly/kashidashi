@@ -76,61 +76,63 @@ export default function Search() {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
+          {borrowerResults.length <= 0 && bookResults.length <= 0 &&
           <p className="mt-3 text-sm text-gray-500">
             💡 Tip: Type at least 2 characters.<br />Use numbers for books, text for borrowers.
           </p>
+          }
+            {borrowerResults.length > 0 && (
+                <div className="bg-white rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold p-4 border-b">Borrowers</h2>
+                    <ul className="divide-y">
+                        {borrowerResults.map((borrower) => (
+                            <li
+                                key={borrower.id}
+                                onClick={() => navigate(`/borrower/${borrower.id}`)}
+                                className="p-4 hover:bg-gray-50 cursor-pointer"
+                            >
+                                <div className="font-medium">
+                                    {borrower.firstname} {borrower.surname}
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                    {borrower.katakana} / {borrower.frenchSurname}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {bookResults.length > 0 && (
+                <div className="bg-white rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold p-4 border-b">Books</h2>
+                    <ul className="divide-y">
+                        {bookResults.map((book) => (
+                            <li
+                                key={book.id}
+                                onClick={() => navigate(`/book/${book.id}`)}
+                                className="p-4 hover:bg-gray-50 cursor-pointer"
+                            >
+                                <div className="font-medium">{book.title}</div>
+                                <div className="text-sm text-gray-600">
+                                    <Badge content={book.code} type={"code"} /> {book.location?.name && <Badge content={book.location.name} type={"location"} />}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {!loading && borrowerResults.length === 0 && bookResults.length === 0 && query && (
+                <div className="bg-white p-8 rounded-lg shadow-md text-center text-gray-500">
+                    No results found
+                </div>
+            )}
           {loading && (
             <p className="mt-2 text-sm text-gray-500">Searching...</p>
           )}
         </div>
 
-        {borrowerResults.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold p-4 border-b">Borrowers</h2>
-            <ul className="divide-y">
-              {borrowerResults.map((borrower) => (
-                <li
-                  key={borrower.id}
-                  onClick={() => navigate(`/borrower/${borrower.id}`)}
-                  className="p-4 hover:bg-gray-50 cursor-pointer"
-                >
-                  <div className="font-medium">
-                    {borrower.firstname} {borrower.surname}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {borrower.katakana} / {borrower.frenchSurname}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {bookResults.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold p-4 border-b">Books</h2>
-            <ul className="divide-y">
-              {bookResults.map((book) => (
-                <li
-                  key={book.id}
-                  onClick={() => navigate(`/book/${book.id}`)}
-                  className="p-4 hover:bg-gray-50 cursor-pointer"
-                >
-                  <div className="font-medium">{book.title}</div>
-                  <div className="text-sm text-gray-600">
-                    <Badge content={book.code} type={"code"} /> {book.location?.name && <Badge content={book.location.name} type={"location"} />}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {!loading && borrowerResults.length === 0 && bookResults.length === 0 && query && (
-          <div className="bg-white p-8 rounded-lg shadow-md text-center text-gray-500">
-            No results found
-          </div>
-        )}
       </div>
     </Layout>
   );

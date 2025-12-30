@@ -21,8 +21,8 @@ export class User {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ length: 255 })
-  roles: string;
+  @Column("json")
+  roles: string[];
 
   @Column({ name: 'location_id', nullable: true })
   locationId: number | null;

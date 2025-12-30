@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /app
+  RewriteBase /
 
   # Do not rewrite existing files or directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]

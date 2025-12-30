@@ -8,6 +8,7 @@ import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
 import Logout from "../components/Logout.tsx";
 import Layout from "../components/Layout.tsx";
+import { useRef } from "react";
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
@@ -25,6 +26,7 @@ export default function InventoryScan() {
   const [activeTab, setActiveTab] = useState<Tab>('scanned');
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const searchRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     loadCurrentInventory();
@@ -91,6 +93,11 @@ export default function InventoryScan() {
       alert(error.response?.data?.message || 'Failed to add book to inventory');
     } finally {
       setAdding(false);
+      setTimeout(() => {
+        if (searchRef.current) {
+          searchRef.current.focus();
+        }
+      }, 10);
     }
   };
 
@@ -206,6 +213,7 @@ export default function InventoryScan() {
           <div className="relative">
             <input
               type="text"
+              ref={searchRef}
               value={bookQuery}
               onChange={(e) => setBookQuery(e.target.value)}
               placeholder="Enter book code..."
@@ -219,6 +227,7 @@ export default function InventoryScan() {
                   <div
                     key={book.id}
                     onClick={() => handleAddBook(book)}
+                    onMouseDown={(e) => e.preventDefault()}
                     className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
                   >
                     <div className="flex items-center gap-2">

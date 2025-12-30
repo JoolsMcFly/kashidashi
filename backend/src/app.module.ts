@@ -25,7 +25,7 @@ import { DatabaseModule } from './database/database.module';
       password: process.env.DB_PASSWORD || 'kashidashi',
       database: process.env.DB_DATABASE || 'kashidashi',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.NODE_ENV === 'development',
+      synchronize: false, //process.env.NODE_ENV === 'development',
       logging: process.env.NODE_ENV === 'development',
     }),
     AuthModule,

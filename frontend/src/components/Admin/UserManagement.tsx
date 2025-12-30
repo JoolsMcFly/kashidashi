@@ -12,14 +12,14 @@ export default function UserManagement() {
     password: string;
     firstname: string;
     surname: string;
-    roles: string;
+    roles: string[];
     locationId: number | undefined;
   }>({
     email: '',
     password: '',
     firstname: '',
     surname: '',
-    roles: '',
+    roles: [],
     locationId: 1,
   });
 
@@ -57,6 +57,7 @@ export default function UserManagement() {
           surname: formData.surname,
           roles: formData.roles,
           locationId: formData.locationId,
+          password: formData.password,
         });
       } else {
         await api.post('/users', formData);
@@ -92,33 +93,26 @@ export default function UserManagement() {
       alert(error.response?.data?.message || 'Failed to delete user');
     }
   };
-
-  const handleResetPassword = async (id: number) => {
-    const newPassword = prompt('Enter new password (minimum 6 characters):');
-    if (!newPassword || newPassword.length < 6) {
-      alert('Password must be at least 6 characters');
-      return;
-    }
-
-    try {
-      await api.post(`/users/${id}/reset-password`, { newPassword });
-      alert('Password reset successfully');
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to reset password');
-    }
-  };
-
-  const resetForm = () => {
+    const resetForm = () => {
     setFormData({
       email: '',
       password: '',
       firstname: '',
       surname: '',
-      roles: '',
+      roles: [],
       locationId: locations[0]?.id || 1,
     });
     setEditingUser(null);
     setShowForm(false);
+  };
+
+  const handleRolesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const roles = Array.from(e.target.selectedOptions, o => o.value);
+
+      setFormData(prev => ({
+          ...prev,
+          roles,
+      }));
   };
 
     return (
@@ -151,19 +145,17 @@ export default function UserManagement() {
                   required
                 />
               </div>
-              {!editingUser && (
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2 text-sm">Password</label>
-                  <input
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
-                    required={!editingUser}
-                    minLength={6}
-                  />
-                </div>
-              )}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 text-sm">Password</label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
+                  required={!editingUser}
+                  minLength={6}
+                />
+              </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm">First Name</label>
                 <input
@@ -186,9 +178,10 @@ export default function UserManagement() {
                 <label className="block text-gray-700 font-medium mb-2 text-sm">Role</label>
                 <select
                   value={formData.roles}
-                  onChange={(e) => setFormData({ ...formData, roles: e.target.value })}
+                  onChange={handleRolesChange}
                   className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                   required
+                  multiple={true}
                 >
                   <option value="">Select Role</option>
                   <option value="ROLE_USER">User</option>

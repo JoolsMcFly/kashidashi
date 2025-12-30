@@ -210,16 +210,65 @@ export default function InventoryScan() {
           <label className="block text-gray-700 font-medium mb-2 text-sm">
             Scan book by Code
           </label>
+            {/* Virtual Numpad */}
+            <div className="grid grid-cols-3 gap-2 mt-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                    <button
+                        key={num}
+                        onClick={() => setBookQuery(bookQuery + num)}
+                        disabled={adding}
+                        className="py-4 text-2xl font-bold rounded-lg transition-colors"
+                        style={{
+                            background: adding ? '#e5e7eb' : '#f3f4f6',
+                            color: adding ? '#9ca3af' : '#111827',
+                        }}
+                    >
+                        {num}
+                    </button>
+                ))}
+                <button
+                    onClick={() => setBookQuery('')}
+                    disabled={adding}
+                    className="py-4 text-lg font-semibold rounded-lg transition-colors"
+                    style={{
+                        background: adding ? '#fee2e2' : '#fecaca',
+                        color: adding ? '#9ca3af' : '#dc2626',
+                    }}
+                >
+                    Clear
+                </button>
+                <button
+                    onClick={() => setBookQuery(bookQuery + '0')}
+                    disabled={adding}
+                    className="py-4 text-2xl font-bold rounded-lg transition-colors"
+                    style={{
+                        background: adding ? '#e5e7eb' : '#f3f4f6',
+                        color: adding ? '#9ca3af' : '#111827',
+                    }}
+                >
+                    0
+                </button>
+                <button
+                    onClick={() => setBookQuery(bookQuery.slice(0, -1))}
+                    disabled={adding}
+                    className="py-4 text-xl font-semibold rounded-lg transition-colors"
+                    style={{
+                        background: adding ? '#e5e7eb' : '#f3f4f6',
+                        color: adding ? '#9ca3af' : '#111827',
+                    }}
+                >
+                    ⌫
+                </button>
+            </div>
           <div className="relative">
             <input
               type="text"
               ref={searchRef}
               value={bookQuery}
-              onChange={(e) => setBookQuery(e.target.value)}
+              readOnly
               placeholder="Enter book code..."
-              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
+              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea] text-center text-2xl font-bold"
               disabled={adding}
-              autoFocus
             />
             {bookSuggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden shadow-lg z-20">

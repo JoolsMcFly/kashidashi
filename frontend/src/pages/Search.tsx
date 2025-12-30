@@ -6,6 +6,7 @@ import type { Borrower, Book } from '../types';
 import Badge from "../components/Badge.tsx";
 import { inventoryService } from '../services/inventory';
 import type { Inventory } from "../types";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 interface SearchResult {
   books: Book[];
@@ -19,8 +20,13 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [currentInventory, setCurrentInventory] = useState<Inventory | null>(null);
   const navigate = useNavigate();
+  const {isInventoryUser} = useAuth();
 
   const loadCurrentInventory = async () => {
+    if (!isInventoryUser) {
+        return;
+    }
+
     const currentInventory = await inventoryService.getCurrent();
     setCurrentInventory(currentInventory);
   };
@@ -66,7 +72,7 @@ export default function Search() {
     return (
     <Layout title="KashiDashi" showBackButton={false}>
       <div className="max-w-2xl mx-auto">
-        {currentInventory && <div className={"mb-6 px-2 py-2 bg-yellow-100 rounded-lg shadow-md text-gray-600 text-center"} onClick={joinInventory}><a><span className={"mr-2"}>📋</span> Join the open inventory!</a></div>}
+        {currentInventory && isInventoryUser && <div className={"mb-6 px-2 py-2 bg-yellow-100 rounded-lg shadow-md text-gray-600 text-center"} onClick={joinInventory}><a><span className={"mr-2"}>📋</span> Join the open inventory!</a></div>}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
           <input
             type="text"

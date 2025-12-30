@@ -104,7 +104,7 @@ export default function BorrowerDetails() {
   const loanHistory = borrower.loans?.filter((loan) => loan.stoppedAt) || [];
 
   return (
-      <Layout title={borrower.katakana} subtitle={borrower.katakana}>
+      <Layout title={borrower.katakana} subtitle={borrower.frenchSurname}>
           {/* Search Box */}
           <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
               <label className="block text-gray-700 font-medium mb-2 text-sm">
@@ -153,11 +153,7 @@ export default function BorrowerDetails() {
                               </h3>
                               {loan.book.location?.name && <Badge content={loan.book.location.name} type={"location"} />}
                               <p className="text-sm text-gray-600">
-                                  Since {new Date(loan.startedAt).toLocaleDateString('en-US', {
-                                  year: 'numeric',
-                                  month: '2-digit',
-                                  day: '2-digit'
-                              })}
+                                  Since {new Date(loan.startedAt).toISOString().slice(0, 10)}
                               </p>
                           </div>
                           <button
@@ -191,24 +187,16 @@ export default function BorrowerDetails() {
                           {loanHistory.map((loan) => (
                               <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
                                   <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
-                      <span
-                          className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
-                          style={{ background: '#667eea' }}
-                      >
-                        {loan.book?.code}
-                      </span>
+                                      <span
+                                          className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
+                                          style={{ background: '#667eea' }}
+                                      >
+                                        {loan.book?.code}
+                                      </span>
                                       {loan.book?.title}
                                   </h4>
                                   <p className="text-xs text-gray-600">
-                                      From {new Date(loan.startedAt).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: '2-digit',
-                                      day: '2-digit'
-                                  })} to {new Date(loan.stoppedAt!).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: '2-digit',
-                                      day: '2-digit'
-                                  })} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
+                                      From {new Date(loan.startedAt).toISOString().slice(0, 10)} to {new Date(loan.stoppedAt!).toISOString().slice(0, 10)} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
                                   </p>
                               </div>
                           ))}

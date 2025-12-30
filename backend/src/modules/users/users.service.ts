@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -29,7 +29,7 @@ export class UsersService {
       firstname: createUserDto.firstname,
       surname: createUserDto.surname,
       password: hashedPassword,
-      roles: createUserDto.roles || 'ROLE_USER',
+      roles: createUserDto.roles || ['ROLE_USER'],
       locationId: createUserDto.locationId,
     });
 
@@ -73,6 +73,12 @@ export class UsersService {
       }
     }
 
+    if (updateUserDto.password) {
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, 13);
+    } else {
+        delete updateUserDto.password;
+    }
+
     Object.assign(user, updateUserDto);
     return this.usersRepository.save(user);
   }
@@ -84,8 +90,7 @@ export class UsersService {
 
   async resetPassword(id: number, newPassword: string): Promise<void> {
     const user = await this.findOne(id);
-    const hashedPassword = await bcrypt.hash(newPassword, 13);
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(newPassword, 13);
     await this.usersRepository.save(user);
   }
 }

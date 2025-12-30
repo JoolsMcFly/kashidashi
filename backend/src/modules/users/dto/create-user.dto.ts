@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsEmail, IsNumber, IsOptional, MinLength } from 'class-validator';
+import { IsArray } from "class-validator";
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -19,8 +20,8 @@ export class CreateUserDto {
   surname?: string;
 
   @IsOptional()
-  @IsString()
-  roles?: string;
+  @IsArray()
+  roles?: string[];
 
   @IsOptional()
   @IsNumber()

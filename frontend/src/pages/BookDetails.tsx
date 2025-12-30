@@ -91,11 +91,7 @@ export default function BookDetails() {
                             {currentLoan?.borrower.katakana})
                         </button>
                         <p className="text-gray-600 text-sm mt-2">
-                            Start Date: {new Date(currentLoan.startedAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
+                            Start Date: {new Date(currentLoan.startedAt).toISOString().slice(0, 10)}
                         </p>
                         <button
                             onClick={handleReturn}

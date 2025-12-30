@@ -19,7 +19,7 @@ export default function Layout({
 
   return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-      <header className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+      <header className="bg-white shadow-sm" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
         <div className="flex justify-between max-w-5xl mx-auto px-4 py-4 items-start">
             <div>
                 <div className="max-w-3xl mx-auto flex items-center gap-4">

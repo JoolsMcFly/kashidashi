@@ -73,7 +73,7 @@ export default function Search() {
     <Layout title="KashiDashi" showBackButton={false}>
       <div className="max-w-2xl mx-auto">
         {currentInventory && isInventoryUser && <div className={"mb-6 px-2 py-2 bg-yellow-100 rounded-lg shadow-md text-gray-600 text-center"} onClick={joinInventory}><a><span className={"mr-2"}>📋</span> Join the open inventory!</a></div>}
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div className="bg-white p-6 rounded-lg shadow-md mb-6 relative">
           <input
             type="text"
             value={query}
@@ -82,14 +82,13 @@ export default function Search() {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
-          {borrowerResults.length <= 0 && bookResults.length <= 0 &&
+          {borrowerResults.length <= 0 && bookResults.length <= 0 && query.trim().length <= 0 &&
           <p className="mt-3 text-sm text-gray-500">
             💡 Tip: Type at least 2 characters.<br />Use numbers for books, text for borrowers.
           </p>
           }
             {borrowerResults.length > 0 && (
-                <div className="bg-white rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold p-4 border-b">Borrowers</h2>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-md">
                     <ul className="divide-y">
                         {borrowerResults.map((borrower) => (
                             <li
@@ -110,8 +109,7 @@ export default function Search() {
             )}
 
             {bookResults.length > 0 && (
-                <div className="bg-white rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold p-4 border-b">Books</h2>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-md">
                     <ul className="divide-y">
                         {bookResults.map((book) => (
                             <li

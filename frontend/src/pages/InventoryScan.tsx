@@ -239,7 +239,7 @@ export default function InventoryScan() {
 
       <div className="max-w-3xl mx-auto px-4 py-4">
         {/* Search Box */}
-        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm relative">
           <label className="block text-gray-700 font-medium mb-2 text-sm">
             Scan book by code
           </label>
@@ -278,7 +278,7 @@ export default function InventoryScan() {
                     ⌫
                 </PadButton>
             </div>
-          <div className="relative">
+          <div>
             <input
               type="text"
               ref={searchRef}

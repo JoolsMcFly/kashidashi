@@ -108,7 +108,7 @@ export default function BorrowerDetails() {
           {/* Search Box */}
           <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
               <label className="block text-gray-700 font-medium mb-2 text-sm">
-                  Add a book by Code
+                  Add a book by code
               </label>
               <div className="relative">
                   <input

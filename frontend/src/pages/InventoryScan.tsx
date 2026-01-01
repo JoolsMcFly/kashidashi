@@ -9,6 +9,7 @@ import Badge from "../components/Badge.tsx";
 import Logout from "../components/Logout.tsx";
 import Layout from "../components/Layout.tsx";
 import { useRef } from "react";
+import RoundedCard from "../components/RoundedCard.tsx";
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
@@ -22,7 +23,7 @@ interface PadButtonProps {
   children: React.ReactNode;
 }
 
-function PadButton({ onClick, disabled, variant = 'normal', className = '', children }: PadButtonProps) {
+function PadButton({ onClick, disabled, variant = 'normal', className = 'text-2xl', children }: PadButtonProps) {
   const baseStyle = "py-4 rounded-lg transition-colors font-semibold " + className;
 
   const styles = variant === 'clear'
@@ -178,27 +179,27 @@ export default function InventoryScan() {
   };
 
     if (loading) {
-        return <Layout title={"Inventory"}>;
+        return <Layout title={"Inventory"}>
             <Loading />
         </Layout>;
     }
 
   if (!inventory) {
     return (
-      <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
-        <div className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="max-w-3xl mx-auto px-4 py-4">
-            <h1 className="text-xl font-semibold" style={{ color: '#111827' }}>
-              No Inventory Open
-            </h1>
-          </div>
-        </div>
-      </div>
+      <Layout title={"Inventory"}>
+          <RoundedCard>
+          No open inventory.
+          </RoundedCard>
+      </Layout>
     );
   }
 
+  return <Layout title={"Inventory"}>
+      bonchour
+  </Layout>
+
     // TODO display user location next to the title
-    //  TODO use Layout
+    // TODO use Layout
     return (
     <div className="min-h-screen" style={{ background: '#f3f4f6' }}>
       <div className="bg-white shadow-sm sticky top-0 z-10" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
@@ -250,7 +251,6 @@ export default function InventoryScan() {
                         key={num}
                         onClick={() => setBookQuery(bookQuery + num)}
                         disabled={adding}
-                        className="text-2xl"
                     >
                         {num}
                     </PadButton>
@@ -266,7 +266,6 @@ export default function InventoryScan() {
                 <PadButton
                     onClick={() => setBookQuery(bookQuery + '0')}
                     disabled={adding}
-                    className="text-2xl"
                 >
                     0
                 </PadButton>

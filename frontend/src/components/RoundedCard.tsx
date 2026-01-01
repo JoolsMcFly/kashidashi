@@ -3,7 +3,7 @@ interface RoundedCardProps {
 }
 
 export default function RoundedCard({children}: RoundedCardProps) {
-    return <div className="bg-white rounded-xl p-6 mb-4 shadow-sm">
+    return <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
         {children}
     </div>
 }

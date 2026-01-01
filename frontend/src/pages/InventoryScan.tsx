@@ -195,10 +195,6 @@ export default function InventoryScan() {
     );
   }
 
-  return <Layout title={"Inventory"}>
-      bonchour
-  </Layout>
-
     // TODO display user location next to the title
     // TODO use Layout
     return (

@@ -108,7 +108,7 @@ export default function BorrowerDetails() {
   return (
       <Layout title={borrower.katakana} subtitle={borrower.frenchSurname}>
           {/* Search Box */}
-          <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <RoundedCard>
               <Label>
                   Add a book by code
               </Label>
@@ -134,18 +134,18 @@ export default function BorrowerDetails() {
                       </div>
                   )}
               </div>
-          </div>
+          </RoundedCard>
 
           {/* Active Loans */}
           <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
               Active Loans
           </h3>
-          <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6">
               {activeLoans.length > 0 ? (
                   activeLoans.map((loan) => (
+                    <RoundedCard>
                       <div
                           key={loan.id}
-                          className="p-4 border-b last:border-b-0 flex justify-between items-start"
+                          className="flex justify-between items-start shadow-sm"
                       >
                           <div>
                               <h3 className="font-semibold mb-1" style={{ color: '#111827' }}>
@@ -165,13 +165,13 @@ export default function BorrowerDetails() {
                               X
                           </button>
                       </div>
+                    </RoundedCard>
                   ))
               ) : (
-                  <div className="p-4 text-center text-gray-500 text-sm">
-                      Add a book by using the above search
-                  </div>
+                  <RoundedCard>
+                      <span className="p-4 text-center text-gray-500 text-sm">No active loans. Add a book by using the above search <span className="text-2xl">☝️</span></span>
+                  </RoundedCard>
               )}
-          </div>
 
           {/* Loan History */}
           {loanHistory.length > 0 && (
@@ -183,26 +183,24 @@ export default function BorrowerDetails() {
                       <span>Loan History ({loanHistory.length})</span>
                       <span className="text-lg">{showHistory ? '▼' : '▶'}</span>
                   </button>
-                  {showHistory && (
-                      <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
-                          {loanHistory.map((loan) => (
-                              <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
-                                  <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
-                                      <span
-                                          className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
-                                          style={{ background: '#667eea' }}
-                                      >
-                                        {loan.book?.code}
-                                      </span>
-                                      {loan.book?.title}
-                                  </h4>
-                                  <p className="text-xs text-gray-600">
-                                      From {new Date(loan.startedAt).toISOString().slice(0, 10)} to {new Date(loan.stoppedAt!).toISOString().slice(0, 10)} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
-                                  </p>
-                              </div>
-                          ))}
-                      </div>
-                  )}
+                  {showHistory && loanHistory.map((loan) => (
+                      <RoundedCard>
+                          <div key={loan.id} className="py-3 border-b last:border-b-0" style={{ borderColor: '#f3f4f6' }}>
+                              <h4 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>
+                                  <span
+                                      className="inline-block px-2 py-0.5 rounded text-xs font-semibold text-white mr-2"
+                                      style={{ background: '#667eea' }}
+                                  >
+                                    {loan.book?.code}
+                                  </span>
+                                  {loan.book?.title}
+                              </h4>
+                              <p className="text-xs text-gray-600">
+                                  From {new Date(loan.startedAt).toISOString().slice(0, 10)} to {new Date(loan.stoppedAt!).toISOString().slice(0, 10)} ({getDaysBetween(loan.startedAt, loan.stoppedAt!)} days)
+                              </p>
+                          </div>
+                      </RoundedCard>
+                  ))}
               </>
           )}
       </Layout>

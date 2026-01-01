@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import type { User, Location } from '../../types';
+import TextInput from '../TextInput';
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
@@ -137,41 +138,37 @@ export default function UserManagement() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm">Email</label>
-                <input
+                <TextInput
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                   required
                 />
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm">Password</label>
-                <input
+                <TextInput
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                   required={!editingUser}
                   minLength={6}
                 />
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm">First Name</label>
-                <input
+                <TextInput
                   type="text"
                   value={formData.firstname}
                   onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
-                  className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                 />
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm">Surname</label>
-                <input
+                <TextInput
                   type="text"
                   value={formData.surname}
                   onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                  className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                 />
               </div>
               <div>

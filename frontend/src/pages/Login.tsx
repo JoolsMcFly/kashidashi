@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import TextInput from '../components/TextInput';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -46,14 +47,13 @@ export default function Login() {
             <label htmlFor="email" className="block text-gray-700 font-medium mb-2 text-sm">
               Email
             </label>
-            <input
+            <TextInput
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               autoComplete="email"
-              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea] transition-colors"
               required
               autoFocus
             />
@@ -63,14 +63,13 @@ export default function Login() {
             <label htmlFor="password" className="block text-gray-700 font-medium mb-2 text-sm">
               Password
             </label>
-            <input
+            <TextInput
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               autoComplete="current-password"
-              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea] transition-colors"
               required
             />
           </div>

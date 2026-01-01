@@ -6,6 +6,7 @@ import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
 import Layout from "../components/Layout.tsx";
 import RoundedCard from "../components/RoundedCard.tsx";
+import TextInput from "../components/TextInput.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
@@ -111,12 +112,11 @@ export default function BorrowerDetails() {
                   Add a book by code
               </label>
               <div className="relative">
-                  <input
+                  <TextInput
                       type="text"
                       value={bookQuery}
                       onChange={(e) => setBookQuery(e.target.value)}
                       placeholder="Enter book code..."
-                      className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#667eea]"
                       disabled={checkingOut}
                   />
                   {bookSuggestions.length > 0 && (

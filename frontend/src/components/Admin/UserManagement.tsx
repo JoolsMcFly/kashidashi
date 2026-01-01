@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import type { User, Location } from '../../types';
 import TextInput from '../TextInput';
+import Label from '../Label';
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
@@ -137,7 +138,7 @@ export default function UserManagement() {
           <form onSubmit={handleSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">Email</label>
+                <Label>Email</Label>
                 <TextInput
                   type="email"
                   value={formData.email}
@@ -146,7 +147,7 @@ export default function UserManagement() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">Password</label>
+                <Label>Password</Label>
                 <TextInput
                   type="password"
                   value={formData.password}
@@ -156,7 +157,7 @@ export default function UserManagement() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">First Name</label>
+                <Label>First Name</Label>
                 <TextInput
                   type="text"
                   value={formData.firstname}
@@ -164,7 +165,7 @@ export default function UserManagement() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">Surname</label>
+                <Label>Surname</Label>
                 <TextInput
                   type="text"
                   value={formData.surname}
@@ -172,7 +173,7 @@ export default function UserManagement() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">Role</label>
+                <Label>Role</Label>
                 <select
                   value={formData.roles}
                   onChange={handleRolesChange}

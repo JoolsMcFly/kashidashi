@@ -7,6 +7,7 @@ import Badge from "../components/Badge.tsx";
 import Layout from "../components/Layout.tsx";
 import RoundedCard from "../components/RoundedCard.tsx";
 import TextInput from "../components/TextInput.tsx";
+import Label from "../components/Label.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
@@ -108,9 +109,9 @@ export default function BorrowerDetails() {
       <Layout title={borrower.katakana} subtitle={borrower.frenchSurname}>
           {/* Search Box */}
           <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
-              <label className="block text-gray-700 font-medium mb-2 text-sm">
+              <Label>
                   Add a book by code
-              </label>
+              </Label>
               <div className="relative">
                   <TextInput
                       type="text"

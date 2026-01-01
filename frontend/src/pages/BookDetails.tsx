@@ -64,7 +64,7 @@ export default function BookDetails() {
 
     return (
         <Layout title={"Book Details"}>
-            <div className="bg-white rounded-xl p-6 mb-4 shadow-sm">
+            <RoundedCard>
                 <h2 className="text-2xl font-bold mb-3" style={{color: '#111827'}}>
                     {book.title}
                 </h2>
@@ -73,10 +73,10 @@ export default function BookDetails() {
                     {book.location?.name && <Badge content={book.location.name} type={"location"}/>}
                 </div>
                 <p className="text-gray-600 text-sm">Borrowed {borrowCount} times</p>
-            </div>
+            </RoundedCard>
 
             {/* Current Loan Status Card */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <RoundedCard>
                 <h3 className="text-lg font-semibold mb-4" style={{color: '#111827'}}>
                     Current Loan
                 </h3>
@@ -97,7 +97,7 @@ export default function BookDetails() {
                             onClick={handleReturn}
                             className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
                         >
-                            Return Book
+                            Mark book as returned
                         </button>
                     </div>
                 ) : (
@@ -108,7 +108,7 @@ export default function BookDetails() {
                         ✓ Available for Loan
                     </div>
                 )}
-            </div>
+            </RoundedCard>
         </Layout>
     );
 }

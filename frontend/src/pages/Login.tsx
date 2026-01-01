@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import TextInput from '../components/TextInput';
+import Label from '../components/Label';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -44,9 +45,9 @@ export default function Login() {
           )}
 
           <div className="mb-6">
-            <label htmlFor="email" className="block text-gray-700 font-medium mb-2 text-sm">
+            <Label htmlFor="email">
               Email
-            </label>
+            </Label>
             <TextInput
               id="email"
               type="email"
@@ -60,9 +61,9 @@ export default function Login() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 font-medium mb-2 text-sm">
+            <Label htmlFor="password">
               Password
-            </label>
+            </Label>
             <TextInput
               id="password"
               type="password"

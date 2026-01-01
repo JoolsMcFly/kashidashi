@@ -10,6 +10,7 @@ import Logout from "../components/Logout.tsx";
 import Layout from "../components/Layout.tsx";
 import { useRef } from "react";
 import RoundedCard from "../components/RoundedCard.tsx";
+import Label from "../components/Label.tsx";
 
 type Tab = 'scanned' | 'misplaced' | 'by-location';
 
@@ -241,9 +242,9 @@ export default function InventoryScan() {
       <div className="max-w-3xl mx-auto px-4 py-4">
         {/* Search Box */}
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm relative">
-          <label className="block text-gray-700 font-medium mb-2 text-sm">
+          <Label>
             Scan book by code
-          </label>
+          </Label>
             {/* Virtual Numpad */}
             <div className="grid grid-cols-3 gap-2 mt-4">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (

@@ -30,6 +30,7 @@ export class BorrowersService {
       where: [
         { katakana: Like(`%${query}%`) },
         { frenchSurname: Like(`%${query}%`) },
+        { surname: Like(`%${query}%`) },
       ],
       take: 20,
     });

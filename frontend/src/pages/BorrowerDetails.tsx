@@ -4,6 +4,7 @@ import api from '../services/api';
 import type { Book, Borrower } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
+import BookSuggestion from "../components/BookSuggestion.tsx";
 import Layout from "../components/Layout.tsx";
 import RoundedCard from "../components/RoundedCard.tsx";
 import TextInput from "../components/TextInput.tsx";
@@ -106,7 +107,7 @@ export default function BorrowerDetails() {
   const loanHistory = borrower.loans?.filter((loan) => loan.stoppedAt) || [];
 
   return (
-      <Layout title={borrower.katakana} subtitle={borrower.frenchSurname}>
+      <Layout title={`${borrower.surname} (${borrower.katakana}) / ${borrower.frenchSurname}`}>
           {/* Search Box */}
           <RoundedCard>
               <Label>
@@ -121,17 +122,15 @@ export default function BorrowerDetails() {
                       disabled={checkingOut}
                   />
                   {bookSuggestions.length > 0 && (
-                      <div className="mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden">
+                      <ul className="mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden divide-y">
                           {bookSuggestions.map((book) => (
-                              <div
+                              <BookSuggestion
                                   key={book.id}
+                                  book={book}
                                   onClick={() => handleCheckout(book.id)}
-                                  className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                              >
-                                  <Badge content={book.code} type={"code"} /> <span className={"ml-2"}>{book.title}</span>
-                              </div>
+                              />
                           ))}
-                      </div>
+                      </ul>
                   )}
               </div>
           </RoundedCard>

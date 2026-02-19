@@ -18,7 +18,7 @@ Book lending management system for tracking books, borrowers, and loans.
 
 ```
 borrowers (individuals/families)
-  - firstname, lastname, katakana, frenchSurname
+  - surname, katakana, frenchSurname
 
 books
   - title, code (unique identifier), location, deleted

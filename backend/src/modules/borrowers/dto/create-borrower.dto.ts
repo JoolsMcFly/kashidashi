@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBorrowerDto {
-  @IsOptional()
-  @IsString()
-  firstname?: string;
-
   @IsNotEmpty()
   @IsString()
   surname: string;

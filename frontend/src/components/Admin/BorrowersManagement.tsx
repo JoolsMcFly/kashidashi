@@ -7,8 +7,9 @@ export default function BorrowersManagement() {
         title: 'Borrowers',
         icon: '📤',
         uploadEndpoint: '/upload/borrowers',
+        downloadEndpoint: '/borrowers/download',
         statsEndpoint: '/borrowers/stats/count',
-        expectedColumns: 'firstname, surname, katakana, frenchSurname',
+        expectedColumns: 'surname, katakana, frenchSurname',
         fileInputId: 'borrowers-file-input',
         entityName: 'borrowers',
         renderStats: (stats: { total: number }) => (

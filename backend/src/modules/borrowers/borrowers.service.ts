@@ -16,6 +16,15 @@ export class BorrowersService {
     return this.borrowersRepository.save(borrower);
   }
 
+  async update(id: number, updateData: Partial<CreateBorrowerDto>): Promise<Borrower> {
+    const borrower = await this.borrowersRepository.findOne({ where: { id } });
+    if (!borrower) {
+      throw new NotFoundException(`Borrower with ID ${id} not found`);
+    }
+    Object.assign(borrower, updateData);
+    return this.borrowersRepository.save(borrower);
+  }
+
   async search(query: string): Promise<Borrower[]> {
     return this.borrowersRepository.find({
       where: [

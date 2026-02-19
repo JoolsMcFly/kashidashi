@@ -29,4 +29,8 @@ export class LocationsService {
 
     return location;
   }
+
+  async findByName(name: string): Promise<Location | null> {
+    return this.locationsRepository.findOne({ where: { name } });
+  }
 }

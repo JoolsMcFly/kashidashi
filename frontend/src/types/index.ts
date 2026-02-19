@@ -24,7 +24,6 @@ export type Book = {
 
 export type Borrower = {
   id: number;
-  firstname: string | null;
   surname: string;
   katakana: string;
   frenchSurname: string;
@@ -49,7 +48,8 @@ export type AuthResponse = {
 };
 
 export type UploadResult = {
-  success: number;
+  created: number;
+  updated: number;
   failed: number;
   errors: Array<{ row: any; error: string }>;
 };

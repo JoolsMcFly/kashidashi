@@ -16,17 +16,17 @@ export class BooksService {
     return this.booksRepository.save(book);
   }
 
-  async upsertByCode(createBookDto: CreateBookDto): Promise<Book> {
+  async upsertByCode(createBookDto: CreateBookDto): Promise<{ book: Book; isNew: boolean }> {
     const existingBook = await this.booksRepository.findOne({
       where: { code: createBookDto.code },
     });
 
     if (existingBook) {
       Object.assign(existingBook, createBookDto);
-      return this.booksRepository.save(existingBook);
+      return { book: await this.booksRepository.save(existingBook), isNew: false };
     }
 
-    return this.create(createBookDto);
+    return { book: await this.create(createBookDto), isNew: true };
   }
 
   async searchByCode(query: string): Promise<Book[]> {

@@ -7,6 +7,7 @@ export default function BooksManagement() {
         title: 'Books',
         icon: '📚',
         uploadEndpoint: '/upload/books',
+        downloadEndpoint: '/books/download',
         statsEndpoint: '/books/stats/count',
         expectedColumns: 'title, code, location, deleted',
         fileInputId: 'books-file-input',

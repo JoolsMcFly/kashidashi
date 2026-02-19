@@ -20,61 +20,51 @@ export class BorrowersSeed {
 
     const borrowers = [
       {
-        firstname: 'Yuki',
         surname: 'Tanaka',
         katakana: 'タナカ ユキ',
         frenchSurname: 'Dupont',
       },
       {
-        firstname: 'Haruto',
         surname: 'Sato',
         katakana: 'サトウ ハルト',
         frenchSurname: 'Martin',
       },
       {
-        firstname: 'Sakura',
         surname: 'Suzuki',
         katakana: 'スズキ サクラ',
         frenchSurname: 'Bernard',
       },
       {
-        firstname: 'Ren',
         surname: 'Takahashi',
         katakana: 'タカハシ レン',
         frenchSurname: 'Dubois',
       },
       {
-        firstname: 'Hina',
         surname: 'Watanabe',
         katakana: 'ワタナベ ヒナ',
         frenchSurname: 'Thomas',
       },
       {
-        firstname: 'Sota',
         surname: 'Ito',
         katakana: 'イトウ ソウタ',
         frenchSurname: 'Robert',
       },
       {
-        firstname: 'Aoi',
         surname: 'Yamamoto',
         katakana: 'ヤマモト アオイ',
         frenchSurname: 'Petit',
       },
       {
-        firstname: 'Kaito',
         surname: 'Nakamura',
         katakana: 'ナカムラ カイト',
         frenchSurname: 'Richard',
       },
       {
-        firstname: 'Mei',
         surname: 'Kobayashi',
         katakana: 'コバヤシ メイ',
         frenchSurname: 'Durand',
       },
       {
-        firstname: 'Riku',
         surname: 'Kato',
         katakana: 'カトウ リク',
         frenchSurname: 'Moreau',

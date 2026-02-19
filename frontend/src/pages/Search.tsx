@@ -97,7 +97,7 @@ export default function Search() {
                                 className="p-4 hover:bg-gray-50 cursor-pointer"
                             >
                                 <div className="font-medium">
-                                    {borrower.firstname} {borrower.surname}
+                                    {borrower.surname}
                                 </div>
                                 <div className="text-sm text-gray-600">
                                     {borrower.katakana} / {borrower.frenchSurname}

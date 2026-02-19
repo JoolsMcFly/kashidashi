@@ -43,6 +43,7 @@ export class SearchService {
         where: [
           { katakana: Like(`%${query}%`) },
           { frenchSurname: Like(`%${query}%`) },
+          { surname: Like(`%${query}%`) },
         ],
         take: 20,
       });

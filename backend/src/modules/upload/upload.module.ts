@@ -3,9 +3,10 @@ import { UploadService } from './upload.service';
 import { UploadController } from './upload.controller';
 import { BorrowersModule } from '../borrowers/borrowers.module';
 import { BooksModule } from '../books/books.module';
+import { LocationsModule } from '../locations/locations.module';
 
 @Module({
-  imports: [BorrowersModule, BooksModule],
+  imports: [BorrowersModule, BooksModule, LocationsModule],
   controllers: [UploadController],
   providers: [UploadService],
 })

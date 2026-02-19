@@ -2,13 +2,10 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, In
 import { Loan } from './loan.entity';
 
 @Entity('borrower')
-@Index(['surname', 'firstname'])
+@Index(['surname'])
 export class Borrower {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ nullable: true, length: 100 })
-  firstname: string | null;
 
   @Column({ length: 100 })
   surname: string;

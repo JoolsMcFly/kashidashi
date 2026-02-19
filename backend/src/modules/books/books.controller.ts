@@ -5,9 +5,12 @@ import {
   Body,
   Param,
   Query,
+  Res,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
+import { Response } from 'express';
+import * as XLSX from 'xlsx';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -30,6 +33,23 @@ export class BooksController {
   @Get('stats/count')
   async getStats() {
     return this.booksService.getStats();
+  }
+
+  @Get('download')
+  async download(@Res() res: Response) {
+    const books = await this.booksService.findAll();
+    const data = books.map(b => ({
+      Code: b.code,
+      Title: b.title,
+      Location: b.location?.name || '',
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Books');
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=books.xlsx');
+    res.send(buffer);
   }
 
   @Get('code/:code')

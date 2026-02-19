@@ -6,6 +6,7 @@ interface UploadConfig {
   title: string;
   icon: string;
   uploadEndpoint: string;
+  downloadEndpoint: string;
   statsEndpoint: string;
   expectedColumns: string;
   fileInputId: string;
@@ -21,6 +22,7 @@ export default function UploadManagement({ config }: UploadManagementProps) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
@@ -59,6 +61,25 @@ export default function UploadManagement({ config }: UploadManagementProps) {
     }
   };
 
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const response = await api.get(config.downloadEndpoint, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${config.entityName}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(`Error downloading ${config.entityName}:`, error);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm">
       <h2 className="text-xl font-semibold mb-4" style={{ color: '#111827' }}>
@@ -67,6 +88,13 @@ export default function UploadManagement({ config }: UploadManagementProps) {
       {stats && (
         <div className="mb-6 pb-6 border-b border-gray-200 text-center">
           {config.renderStats(stats)}
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="mt-3 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+          >
+            {downloading ? 'Downloading...' : `Download ${config.title} XLSX`}
+          </button>
         </div>
       )}
       <div
@@ -118,7 +146,11 @@ export default function UploadManagement({ config }: UploadManagementProps) {
       {result && (
         <div className="mt-6 pt-6 border-t border-gray-200 text-center">
           <p className="text-gray-600 text-sm">
-            Uploaded: <strong>{result.success}</strong> • Failed: <strong>{result.failed}</strong>
+            {[
+              result.created ? `Created: ${result.created}` : '',
+              result.updated ? `Updated: ${result.updated}` : '',
+              result.failed ? `Failed: ${result.failed}` : '',
+            ].filter(Boolean).join(' • ') || 'No changes'}
           </p>
         </div>
       )}

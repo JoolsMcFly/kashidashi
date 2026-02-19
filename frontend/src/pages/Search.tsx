@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import type { Borrower, Book } from '../types';
-import Badge from "../components/Badge.tsx";
+import BorrowerSuggestion from "../components/BorrowerSuggestion.tsx";
+import BookSuggestion from "../components/BookSuggestion.tsx";
 import { inventoryService } from '../services/inventory';
 import type { Inventory } from "../types";
 import { useAuth } from "../contexts/AuthContext.tsx";
@@ -91,18 +92,11 @@ export default function Search() {
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-md">
                     <ul className="divide-y">
                         {borrowerResults.map((borrower) => (
-                            <li
+                            <BorrowerSuggestion
                                 key={borrower.id}
+                                borrower={borrower}
                                 onClick={() => navigate(`/borrower/${borrower.id}`)}
-                                className="p-4 hover:bg-gray-50 cursor-pointer"
-                            >
-                                <div className="font-medium">
-                                    {borrower.surname}
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                    {borrower.katakana} / {borrower.frenchSurname}
-                                </div>
-                            </li>
+                            />
                         ))}
                     </ul>
                 </div>
@@ -112,23 +106,18 @@ export default function Search() {
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-md">
                     <ul className="divide-y">
                         {bookResults.map((book) => (
-                            <li
+                            <BookSuggestion
                                 key={book.id}
+                                book={book}
                                 onClick={() => navigate(`/book/${book.id}`)}
-                                className="p-4 hover:bg-gray-50 cursor-pointer"
-                            >
-                                <div className="font-medium">{book.title}</div>
-                                <div className="text-sm text-gray-600">
-                                    <Badge content={book.code} type={"code"} /> {book.location?.name && <Badge content={book.location.name} type={"location"} />}
-                                </div>
-                            </li>
+                            />
                         ))}
                     </ul>
                 </div>
             )}
 
             {!loading && borrowerResults.length === 0 && bookResults.length === 0 && query && (
-                <div className="bg-white p-8 rounded-lg shadow-md text-center text-gray-500">
+                <div className="mt-2 p-4 rounded-lg text-center text-sm text-gray-500">
                     No results found
                 </div>
             )}

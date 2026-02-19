@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import type { Book, Loan } from '../types';
+import type { Book, Borrower, Loan } from '../types';
 import Loading from "../components/Loading.tsx";
 import Badge from "../components/Badge.tsx";
 import Layout from "../components/Layout.tsx";
 import RoundedCard from "../components/RoundedCard.tsx";
+import TextInput from "../components/TextInput.tsx";
+import Label from "../components/Label.tsx";
+import BorrowerSuggestion from "../components/BorrowerSuggestion.tsx";
 
 export default function BookDetails() {
     const {id} = useParams<{ id: string }>();
@@ -14,10 +17,21 @@ export default function BookDetails() {
     const [currentLoan, setCurrentLoan] = useState<Loan | null>(null);
     const [borrowCount, setBorrowCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [borrowerQuery, setBorrowerQuery] = useState('');
+    const [borrowerSuggestions, setBorrowerSuggestions] = useState<Borrower[]>([]);
+    const [checkingOut, setCheckingOut] = useState(false);
 
     useEffect(() => {
         loadBook();
     }, [id]);
+
+    useEffect(() => {
+        if (borrowerQuery.length > 1) {
+            searchBorrowers(borrowerQuery);
+        } else {
+            setBorrowerSuggestions([]);
+        }
+    }, [borrowerQuery]);
 
     const loadBook = async () => {
         try {
@@ -34,6 +48,34 @@ export default function BookDetails() {
             console.error('Error loading book:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const searchBorrowers = async (query: string) => {
+        try {
+            const response = await api.get<Borrower[]>(`/borrowers/search?q=${encodeURIComponent(query)}`);
+            setBorrowerSuggestions(response.data);
+        } catch (error) {
+            console.error('Error searching borrowers:', error);
+        }
+    };
+
+    const handleCheckout = async (borrowerId: number) => {
+        if (!id) return;
+
+        setCheckingOut(true);
+        try {
+            await api.post('/loans', {
+                borrowerId,
+                bookId: parseInt(id),
+            });
+            setBorrowerQuery('');
+            setBorrowerSuggestions([]);
+            await loadBook();
+        } catch (error: any) {
+            alert(error.response?.data?.message || 'Failed to checkout book');
+        } finally {
+            setCheckingOut(false);
         }
     };
 
@@ -101,11 +143,39 @@ export default function BookDetails() {
                         </button>
                     </div>
                 ) : (
-                    <div
-                        className="p-3 rounded-lg text-center font-semibold"
-                        style={{background: '#d1fae5', color: '#065f46'}}
-                    >
-                        ✓ Available for Loan
+                    <div>
+                        <div
+                            className="p-3 rounded-lg text-center font-semibold mb-4"
+                            style={{background: '#d1fae5', color: '#065f46'}}
+                        >
+                            ✓ Available for Loan
+                        </div>
+                        <Label>Lend to borrower</Label>
+                        <div className="relative">
+                            <TextInput
+                                type="text"
+                                value={borrowerQuery}
+                                onChange={(e) => setBorrowerQuery(e.target.value)}
+                                placeholder="Search by name or katakana..."
+                                disabled={checkingOut}
+                            />
+                            {borrowerSuggestions.length > 0 && (
+                                <ul className="mt-2 border border-gray-200 rounded-lg bg-white overflow-hidden divide-y">
+                                    {borrowerSuggestions.map((borrower) => (
+                                        <BorrowerSuggestion
+                                            key={borrower.id}
+                                            borrower={borrower}
+                                            onClick={() => handleCheckout(borrower.id)}
+                                        />
+                                    ))}
+                                </ul>
+                            )}
+                            {borrowerSuggestions.length === 0 && borrowerQuery.length > 1 && (
+                                <div className="mt-2 p-4 rounded-lg text-center text-sm text-gray-500">
+                                    No results found
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </RoundedCard>

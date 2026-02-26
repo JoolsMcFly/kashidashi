@@ -25,7 +25,7 @@ export class Book {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ type: 'longtext', nullable: true })
+  @Column({ type: 'text', nullable: true })
   stats: string | null;
 
   @Column({ type: 'smallint', nullable: true })

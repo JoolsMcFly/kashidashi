@@ -107,6 +107,19 @@ docker compose down
 docker compose up --build
 ```
 
+### Versioning
+
+```bash
+npm version patch   # 1.0.0 → 1.0.1
+npm version minor   # 1.0.0 → 1.1.0
+npm version major   # 1.0.0 → 2.0.0
+```
+
+Restart the frontend container locally for version changes to be picked up:
+```bash
+docker compose restart frontend
+```
+
 ## Deployment
 
 The application is deployed with the following structure:
@@ -119,6 +132,21 @@ The application is deployed with the following structure:
   - Apache proxies requests to Node.js backend (default port 3000)
   - `.htaccess` configured to proxy all `/api` requests
   - Update port in backend/.htaccess if web host assigns different port
+
+### Deployment Steps (o2switch / CPanel)
+
+1. Build both projects via Docker (use `--user` to avoid root-owned output):
+   ```bash
+   make build
+   ```
+2. ZIP each dist folder for upload:
+   ```bash
+   cd frontend/dist && zip -r ../../frontend-dist.zip . && cd ../..
+   cd backend/dist && zip -r ../../backend-dist.zip . && cd ../..
+   ```
+3. Upload to o2switch via CPanel File Manager:
+   - Upload `frontend-dist.zip` to `/app`, extract in place
+   - Upload `backend-dist.zip` to `/api`, extract in place
 
 ### Deployment Notes
 

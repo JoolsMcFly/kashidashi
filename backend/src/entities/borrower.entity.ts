@@ -19,7 +19,7 @@ export class Borrower {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ type: 'longtext', nullable: true })
+  @Column({ type: 'text', nullable: true })
   stats: string | null;
 
   @OneToMany(() => Loan, loan => loan.borrower)

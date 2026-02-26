@@ -21,7 +21,7 @@ export class User {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column("json")
+  @Column("simple-json")
   roles: string[];
 
   @Column({ name: 'location_id', nullable: true })

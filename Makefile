@@ -1,61 +1,67 @@
-.PHONY: up down restart logs fi bi fd bd be fe db seed
+.PHONY: help up down restart logs build build-staging rebuild fi bi fd bd be fe db seed
 
-# Docker Compose commands
-up:
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
+
+up: ## Start all services
 	docker compose up -d
 
-down:
+down: ## Stop all services
 	docker compose down
 
-restart:
+restart: ## Restart all services
 	docker compose restart
 
-logs:
+logs: ## Follow container logs
 	docker compose logs -f
 
-build:
+build: ## Build frontend & backend for production
+	docker compose run --user $$(id -u):$$(id -g) frontend npm run build
+	docker compose run --user $$(id -u):$$(id -g) backend npm run build
+
+build-staging: ## Build frontend & backend for staging
+	docker compose run --user $$(id -u):$$(id -g) frontend npm run build-staging
+	docker compose run --user $$(id -u):$$(id -g) backend npm run build
+
+rebuild: ## Rebuild Docker images
 	docker compose up -d --build --remove-orphans
 
-# Shell access
-be:
+be: ## Shell into backend container
 	docker compose exec backend sh
 
-fe:
+fe: ## Shell into frontend container
 	docker compose exec frontend sh
 
-db:
+db: ## Shell into database container
 	docker compose exec db bash
 
-# Frontend dependency management
-fi:
+fi: ## Install frontend dep (DEP_NAME=pkg)
 	@if [ -z "$(DEP_NAME)" ]; then \
 		echo "Usage: make fi DEP_NAME=<package-name>"; \
 		exit 1; \
 	fi
 	docker compose exec frontend npm install $(DEP_NAME)
 
-fd:
+fd: ## Install frontend dev dep (DEP_NAME=pkg)
 	@if [ -z "$(DEP_NAME)" ]; then \
 		echo "Usage: make fd DEP_NAME=<package-name>"; \
 		exit 1; \
 	fi
 	docker compose exec frontend npm install --save-dev $(DEP_NAME)
 
-# Backend dependency management
-bi:
+bi: ## Install backend dep (DEP_NAME=pkg)
 	@if [ -z "$(DEP_NAME)" ]; then \
 		echo "Usage: make bi DEP_NAME=<package-name>"; \
 		exit 1; \
 	fi
 	docker compose exec backend npm install $(DEP_NAME)
 
-bd:
+bd: ## Install backend dev dep (DEP_NAME=pkg)
 	@if [ -z "$(DEP_NAME)" ]; then \
 		echo "Usage: make bd DEP_NAME=<package-name>"; \
 		exit 1; \
 	fi
 	docker compose exec backend npm install --save-dev $(DEP_NAME)
 
-# Database seeding
-seed:
+seed: ## Seed the database
 	docker compose exec backend npm run seed

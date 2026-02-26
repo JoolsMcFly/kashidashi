@@ -67,8 +67,6 @@ services:
     restart: unless-stopped
     expose:
       - "5173"
-    environment:
-      VITE_API_URL: https://api.kashidashi.local
     volumes:
       - ./frontend:/app
       - ./package.json:/package.json:ro

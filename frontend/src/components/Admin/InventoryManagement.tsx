@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { inventoryService } from '../../services/inventory';
 import type { Inventory } from '../../types';
 
 export default function InventoryManagement() {
+  const navigate = useNavigate();
   const [inventories, setInventories] = useState<Inventory[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -86,7 +88,15 @@ export default function InventoryManagement() {
           {inventories.map((inventory) => (
             <div
               key={inventory.id}
-              className="p-4 rounded-lg border-2"
+              onClick={() => navigate(`/admin/inventory/${inventory.id}`)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  navigate(`/admin/inventory/${inventory.id}`);
+                }
+              }}
+              className="p-4 rounded-lg border-2 cursor-pointer hover:shadow-md transition-shadow"
               style={{
                 background: inventory.stoppedAt ? '#f9fafb' : '#eef2ff',
                 borderColor: inventory.stoppedAt ? '#e5e7eb' : '#667eea',
@@ -138,7 +148,10 @@ export default function InventoryManagement() {
                 <div className="flex gap-2">
                   {!inventory.stoppedAt && (
                     <button
-                      onClick={() => handleClose(inventory.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClose(inventory.id);
+                      }}
                       className="px-4 py-2 rounded-lg text-white font-medium transition-colors"
                       style={{ background: '#ef4444' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = '#dc2626')}

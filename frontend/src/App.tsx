@@ -6,6 +6,7 @@ import Search from './pages/Search';
 import BorrowerDetails from './pages/BorrowerDetails';
 import BookDetails from './pages/BookDetails';
 import Admin from './pages/Admin';
+import InventoryDetails from './pages/admin/InventoryDetails';
 import InventoryScan from './pages/InventoryScan';
 import { useAuth } from './contexts/AuthContext';
 
@@ -71,6 +72,15 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <Admin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/inventory/:id"
+            element={
+              <ProtectedRoute adminOnly>
+                <InventoryDetails />
               </ProtectedRoute>
             }
           />

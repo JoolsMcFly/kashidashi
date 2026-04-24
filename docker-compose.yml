@@ -49,6 +49,7 @@ services:
       DB_USERNAME: kashidashi
       DB_PASSWORD: kashidashi
       DB_DATABASE: kashidashi
+      DB_SYNCHRONIZE: "true"
       JWT_SECRET: change-me-in-production
       FRONT_URL: https://kashidashi.local
     volumes:

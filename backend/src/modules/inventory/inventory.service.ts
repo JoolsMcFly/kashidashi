@@ -207,4 +207,58 @@ export class InventoryService {
 
     return inventory.items.filter(item => item.foundAtId !== item.belongsAtId);
   }
+
+  async getBooksToMove(inventoryId: number): Promise<Array<{ code: number; title: string | null; previousLocation: string }>> {
+    const inventory = await this.findOne(inventoryId);
+
+    return inventory.items
+      .filter(item => item.belongsAtId === null || item.belongsAtId !== item.foundAtId)
+      .map(item => ({
+        code: item.book.code,
+        title: item.book.title,
+        previousLocation: item.belongsAt?.name || 'Unspecified',
+      }));
+  }
+
+  async getMissingBooks(
+    inventoryId: number,
+  ): Promise<Array<{ code: number; title: string | null; location: string | null; borrower: string | null; loanStart: string | null }>> {
+    const inventory = await this.findOne(inventoryId);
+    const scannedBookIds = inventory.items.map(i => i.bookId);
+
+    const qb = this.bookRepository
+      .createQueryBuilder('book')
+      .leftJoinAndSelect('book.location', 'location')
+      .leftJoinAndSelect('book.loans', 'loan', 'loan.stoppedAt IS NULL')
+      .leftJoinAndSelect('loan.borrower', 'borrower')
+      .where('book.deleted = 0');
+
+    if (scannedBookIds.length > 0) {
+      qb.andWhere('book.id NOT IN (:...scannedBookIds)', { scannedBookIds });
+    }
+
+    const books = await qb.getMany();
+
+    return books.map(book => {
+      const activeLoan = book.loans?.[0] ?? null;
+      return {
+        code: book.code,
+        title: book.title,
+        location: book.location?.name ?? null,
+        borrower: activeLoan
+          ? `${activeLoan.borrower.katakana} / ${activeLoan.borrower.frenchSurname}`
+          : null,
+        loanStart: activeLoan ? new Date(activeLoan.startedAt).toISOString() : null,
+      };
+    });
+  }
+
+  async getStats(inventoryId: number): Promise<{ toMove: number; missing: number }> {
+    const [toMove, missing] = await Promise.all([
+      this.getBooksToMove(inventoryId),
+      this.getMissingBooks(inventoryId),
+    ]);
+
+    return { toMove: toMove.length, missing: missing.length };
+  }
 }

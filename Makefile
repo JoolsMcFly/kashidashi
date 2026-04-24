@@ -1,4 +1,18 @@
-.PHONY: help up down restart logs build build-staging rebuild fi bi fd bd be fe db seed
+.PHONY: help up down restart logs build build-staging rebuild fi bi fd bd be fe db seed \
+        deploy deploy-frontend deploy-backend deploy-ssh restart-api
+
+# --- Deployment config (override via env or `make deploy VAR=value`) ---
+# o2switch SSH host and user (same convention as the zikos project)
+SSH_HOST ?= source.o2switch.net
+SSH_USER ?= fmye8380
+
+# Remote target folders (o2switch: one subdomain = one document root)
+REMOTE_FRONTEND_DIR ?= ~/tosyo-staging.juliendephix.fr
+REMOTE_BACKEND_DIR  ?= ~/api.tosyo-staging.juliendephix.fr
+
+# rsync flags
+RSYNC_DIST_FLAGS ?= -avz --delete --progress
+RSYNC_FILE_FLAGS ?= -avz --progress
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -65,3 +79,35 @@ bd: ## Install backend dev dep (DEP_NAME=pkg)
 
 seed: ## Seed the database
 	docker compose exec backend npm run seed
+
+deploy: build-staging deploy-frontend deploy-backend ## Build (staging) + push frontend & backend to o2switch
+	@echo ""
+	@echo "Deploy complete."
+	@echo "  - Frontend: https://tosyo-staging.juliendephix.fr"
+	@echo "  - Backend:  https://api.tosyo-staging.juliendephix.fr"
+	@echo ""
+	@echo "If backend dependencies changed, click 'Run NPM Install' in the cPanel Node.js app,"
+	@echo "then restart the app (or run: make restart-api)."
+
+deploy-frontend: ## Sync the built frontend to the staging host
+	@test -d frontend/dist || { echo "frontend/dist missing — run 'make build-staging' first"; exit 1; }
+	rsync $(RSYNC_DIST_FLAGS) \
+		frontend/dist/ \
+		$(SSH_USER)@$(SSH_HOST):$(REMOTE_FRONTEND_DIR)/
+
+deploy-backend: ## Sync the built backend to the staging host (dist + package manifests)
+	@test -d backend/dist || { echo "backend/dist missing — run 'make build' first"; exit 1; }
+	rsync $(RSYNC_DIST_FLAGS) --exclude 'node_modules' \
+		backend/dist/ \
+		$(SSH_USER)@$(SSH_HOST):$(REMOTE_BACKEND_DIR)/dist/
+	rsync $(RSYNC_FILE_FLAGS) \
+		backend/package.json backend/package-lock.json \
+		$(SSH_USER)@$(SSH_HOST):$(REMOTE_BACKEND_DIR)/
+
+restart-api: ## Try to restart the backend Node.js app via Passenger (touch tmp/restart.txt)
+	ssh $(SSH_USER)@$(SSH_HOST) "mkdir -p $(REMOTE_BACKEND_DIR)/tmp && touch $(REMOTE_BACKEND_DIR)/tmp/restart.txt"
+	@echo "Touched $(REMOTE_BACKEND_DIR)/tmp/restart.txt — if your cPanel Node.js app uses Passenger this triggers a reload."
+	@echo "If it does not reload, open cPanel > Setup Node.js App and click Restart."
+
+deploy-ssh: ## Open an SSH shell on the staging host
+	ssh $(SSH_USER)@$(SSH_HOST)

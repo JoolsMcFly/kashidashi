@@ -50,4 +50,35 @@ export const inventoryService = {
     const response = await api.get<Record<string, InventoryItem[]>>(`/inventory/${inventoryId}/by-location`);
     return response.data;
   },
+
+  async getOne(id: number): Promise<Inventory> {
+    const response = await api.get<Inventory>(`/inventory/${id}`);
+    return response.data;
+  },
+
+  async getStats(id: number): Promise<{ toMove: number; missing: number }> {
+    const response = await api.get<{ toMove: number; missing: number }>(`/inventory/${id}/stats`);
+    return response.data;
+  },
+
+  async downloadBooksToMove(id: number): Promise<void> {
+    const response = await api.get(`/inventory/${id}/download/books-to-move`, { responseType: 'blob' });
+    triggerBlobDownload(response.data, `inventory-${id}-books-to-move.xlsx`);
+  },
+
+  async downloadMissingBooks(id: number): Promise<void> {
+    const response = await api.get(`/inventory/${id}/download/missing`, { responseType: 'blob' });
+    triggerBlobDownload(response.data, `inventory-${id}-missing-books.xlsx`);
+  },
 };
+
+function triggerBlobDownload(data: BlobPart, filename: string) {
+  const url = window.URL.createObjectURL(new Blob([data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}

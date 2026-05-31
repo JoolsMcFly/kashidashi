@@ -148,18 +148,18 @@ export default function Search() {
             <ul className="space-y-1 text-gray-700">
               <li>Book count: <span className="font-semibold">{stats.books}</span></li>
               <li>Active loan count: <span className="font-semibold">{stats.loans.count}</span></li>
+              <li>Family count: <span className="font-semibold">{stats.borrowers}</span></li>
               {stats.loans.overdue > 0 && (
                 <li>
                   <a
                     href="/loans/overdue"
                     onClick={(e) => { e.preventDefault(); navigate('/loans/overdue'); }}
-                    className="text-red-600 hover:underline"
+                    className="text-red-600 underline"
                   >
                     Overdue loans: <span className="font-semibold">{stats.loans.overdue}</span>
                   </a>
                 </li>
               )}
-              <li>Family count: <span className="font-semibold">{stats.borrowers}</span></li>
             </ul>
           </div>
         )}

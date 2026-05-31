@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull, Not } from 'typeorm';
 import { Inventory } from '../../entities/inventory.entity';
 import { InventoryItem } from '../../entities/inventory-item.entity';
+import { InventoryMissingBook } from '../../entities/inventory-missing-book.entity';
 import { Book } from '../../entities/book.entity';
 import { Loan } from '../../entities/loan.entity';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
@@ -16,6 +17,8 @@ export class InventoryService {
     private inventoryRepository: Repository<Inventory>,
     @InjectRepository(InventoryItem)
     private inventoryItemRepository: Repository<InventoryItem>,
+    @InjectRepository(InventoryMissingBook)
+    private inventoryMissingBookRepository: Repository<InventoryMissingBook>,
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
     @InjectRepository(Loan)
@@ -181,9 +184,62 @@ export class InventoryService {
         .execute();
     }
 
+    // Snapshot the missing books so the list stays frozen after close.
+    await this.snapshotMissingBooks(inventoryId, bookIds);
+
     // Close the inventory
     inventory.stoppedAt = stoppedAt;
     return this.inventoryRepository.save(inventory);
+  }
+
+  private async snapshotMissingBooks(inventoryId: number, scannedBookIds: number[]): Promise<void> {
+    const missing = await this.queryMissingBooksLive(scannedBookIds);
+
+    if (missing.length > 0) {
+      const rows = missing.map(m =>
+        this.inventoryMissingBookRepository.create({
+          inventory: { id: inventoryId } as Inventory,
+          bookCode: m.code,
+          title: m.title,
+          location: m.location,
+          borrower: m.borrower,
+          loanStart: m.loanStart ? new Date(m.loanStart) : null,
+        }),
+      );
+      await this.inventoryMissingBookRepository.save(rows);
+    }
+
+    await this.inventoryRepository.update(inventoryId, { missingSnapshotAt: new Date() });
+  }
+
+  private async queryMissingBooksLive(
+    scannedBookIds: number[],
+  ): Promise<Array<{ code: number; title: string | null; location: string | null; borrower: string | null; loanStart: string | null }>> {
+    const qb = this.bookRepository
+      .createQueryBuilder('book')
+      .leftJoinAndSelect('book.location', 'location')
+      .leftJoinAndSelect('book.loans', 'loan', 'loan.stoppedAt IS NULL')
+      .leftJoinAndSelect('loan.borrower', 'borrower')
+      .where('book.deleted = 0');
+
+    if (scannedBookIds.length > 0) {
+      qb.andWhere('book.id NOT IN (:...scannedBookIds)', { scannedBookIds });
+    }
+
+    const books = await qb.getMany();
+
+    return books.map(book => {
+      const activeLoan = book.loans?.[0] ?? null;
+      return {
+        code: book.code,
+        title: book.title,
+        location: book.location?.name ?? null,
+        borrower: activeLoan
+          ? `${activeLoan.borrower.katakana} / ${activeLoan.borrower.frenchSurname}`
+          : null,
+        loanStart: activeLoan ? new Date(activeLoan.startedAt).toISOString() : null,
+      };
+    });
   }
 
   async getItemsByLocation(inventoryId: number): Promise<{ [locationName: string]: InventoryItem[] }> {
@@ -224,33 +280,31 @@ export class InventoryService {
     inventoryId: number,
   ): Promise<Array<{ code: number; title: string | null; location: string | null; borrower: string | null; loanStart: string | null }>> {
     const inventory = await this.findOne(inventoryId);
-    const scannedBookIds = inventory.items.map(i => i.bookId);
 
-    const qb = this.bookRepository
-      .createQueryBuilder('book')
-      .leftJoinAndSelect('book.location', 'location')
-      .leftJoinAndSelect('book.loans', 'loan', 'loan.stoppedAt IS NULL')
-      .leftJoinAndSelect('loan.borrower', 'borrower')
-      .where('book.deleted = 0');
+    if (inventory.stoppedAt) {
+      // Closed inventories: read from the frozen snapshot. Backfill on first access
+      // for inventories closed before this snapshot feature existed.
+      if (!inventory.missingSnapshotAt) {
+        const scannedBookIds = inventory.items.map(i => i.bookId);
+        await this.snapshotMissingBooks(inventoryId, scannedBookIds);
+      }
 
-    if (scannedBookIds.length > 0) {
-      qb.andWhere('book.id NOT IN (:...scannedBookIds)', { scannedBookIds });
+      const snapshot = await this.inventoryMissingBookRepository.find({
+        where: { inventory: { id: inventoryId } },
+        order: { bookCode: 'ASC' },
+      });
+
+      return snapshot.map(m => ({
+        code: m.bookCode,
+        title: m.title,
+        location: m.location,
+        borrower: m.borrower,
+        loanStart: m.loanStart ? m.loanStart.toISOString() : null,
+      }));
     }
 
-    const books = await qb.getMany();
-
-    return books.map(book => {
-      const activeLoan = book.loans?.[0] ?? null;
-      return {
-        code: book.code,
-        title: book.title,
-        location: book.location?.name ?? null,
-        borrower: activeLoan
-          ? `${activeLoan.borrower.katakana} / ${activeLoan.borrower.frenchSurname}`
-          : null,
-        loanStart: activeLoan ? new Date(activeLoan.startedAt).toISOString() : null,
-      };
-    });
+    const scannedBookIds = inventory.items.map(i => i.bookId);
+    return this.queryMissingBooksLive(scannedBookIds);
   }
 
   async getStats(inventoryId: number): Promise<{ toMove: number; missing: number }> {

@@ -5,3 +5,4 @@ export { User } from './user.entity';
 export { Loan } from './loan.entity';
 export { Inventory } from './inventory.entity';
 export { InventoryItem } from './inventory-item.entity';
+export { InventoryMissingBook } from './inventory-missing-book.entity';

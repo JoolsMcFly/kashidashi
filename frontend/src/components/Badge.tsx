@@ -1,4 +1,4 @@
-type Type = "code" | "location";
+type Type = "code" | "location" | "danger";
 
 interface BadgeProps {
     content: string | number;
@@ -8,7 +8,8 @@ interface BadgeProps {
 
 const backgroundByType: {[key: string]: string} = {
     "code": "#667eea",
-    "location": "#10b981"
+    "location": "#10b981",
+    "danger": "#dc2626"
 }
 
 export default function Badge({content, type, small=false}: BadgeProps) {

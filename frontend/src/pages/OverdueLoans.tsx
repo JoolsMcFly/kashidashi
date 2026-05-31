@@ -87,24 +87,24 @@ export default function OverdueLoans() {
                     {loan.book.location?.name && (
                       <Badge content={loan.book.location.name} type="location" />
                     )}
+                    <Badge content={`${durationInDays(loan.startedAt)} days`} type="danger" />
                   </div>
                   <button
                     onClick={() => navigate(`/book/${loan.book.id}`)}
-                    className="font-medium text-gray-800 hover:underline text-left"
+                    className="mt-2 mb-2 block font-medium text-gray-800 underline text-left"
                   >
                     {loan.book.title || '(untitled)'}
                   </button>
-                  <p className="text-sm text-red-600 mt-1">
-                    Started {new Date(loan.startedAt).toISOString().slice(0, 10)} ({durationInDays(loan.startedAt)} days)
-                  </p>
                   <button
                     onClick={() => navigate(`/borrower/${loan.borrowerId}`)}
-                    className="text-sm text-gray-600 hover:underline"
+                    className="mt-1 inline-flex items-center gap-1 text-sm text-blue-600 underline"
                   >
-                    {loan.borrower.surname} ({loan.borrower.katakana})
-                    {loan.borrower.frenchSurname && loan.borrower.frenchSurname !== loan.borrower.surname
-                      ? ` ${loan.borrower.frenchSurname}`
-                      : ''}
+                    <span>
+                      {loan.borrower.surname} ({loan.borrower.katakana})
+                      {loan.borrower.frenchSurname && loan.borrower.frenchSurname !== loan.borrower.surname
+                        ? ` ${loan.borrower.frenchSurname}`
+                        : ''}
+                    </span>
                   </button>
                 </li>
               ))}

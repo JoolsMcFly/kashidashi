@@ -10,6 +10,7 @@ import { LocationsModule } from './modules/locations/locations.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { SearchModule } from './modules/search/search.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
+import { StatsModule } from './modules/stats/stats.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -37,6 +38,7 @@ import { DatabaseModule } from './database/database.module';
     UploadModule,
     SearchModule,
     InventoryModule,
+    StatsModule,
     DatabaseModule,
   ],
 })

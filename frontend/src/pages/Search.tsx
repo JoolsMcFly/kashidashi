@@ -6,6 +6,7 @@ import type { Borrower, Book } from '../types';
 import BorrowerSuggestion from "../components/BorrowerSuggestion.tsx";
 import BookSuggestion from "../components/BookSuggestion.tsx";
 import { inventoryService } from '../services/inventory';
+import { statsService, type Stats } from '../services/stats';
 import type { Inventory } from "../types";
 import { useAuth } from "../contexts/AuthContext.tsx";
 
@@ -20,8 +21,9 @@ export default function Search() {
   const [bookResults, setBookResults] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentInventory, setCurrentInventory] = useState<Inventory | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
   const navigate = useNavigate();
-  const {isInventoryUser} = useAuth();
+  const {isInventoryUser, isAdmin} = useAuth();
 
   const loadCurrentInventory = async () => {
     if (!isInventoryUser) {
@@ -32,8 +34,22 @@ export default function Search() {
     setCurrentInventory(currentInventory);
   };
 
+  const loadStats = async () => {
+    if (isAdmin) {
+      return;
+    }
+
+    try {
+      const data = await statsService.get();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
+
   useEffect(() => {
     loadCurrentInventory();
+    loadStats();
   }, []);
 
   useEffect(() => {
@@ -126,6 +142,27 @@ export default function Search() {
           )}
         </div>
 
+        {stats && (
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 className="text-lg font-semibold mb-3 text-gray-800">Library stats</h2>
+            <ul className="space-y-1 text-gray-700">
+              <li>Book count: <span className="font-semibold">{stats.books}</span></li>
+              <li>Active loan count: <span className="font-semibold">{stats.loans.count}</span></li>
+              {stats.loans.overdue > 0 && (
+                <li>
+                  <a
+                    href="/loans/overdue"
+                    onClick={(e) => { e.preventDefault(); navigate('/loans/overdue'); }}
+                    className="text-red-600 hover:underline"
+                  >
+                    Overdue loans: <span className="font-semibold">{stats.loans.overdue}</span>
+                  </a>
+                </li>
+              )}
+              <li>Family count: <span className="font-semibold">{stats.borrowers}</span></li>
+            </ul>
+          </div>
+        )}
       </div>
     </Layout>
   );

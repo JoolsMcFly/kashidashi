@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Search from './pages/Search';
 import BorrowerDetails from './pages/BorrowerDetails';
 import BookDetails from './pages/BookDetails';
+import OverdueLoans from './pages/OverdueLoans';
 import Admin from './pages/Admin';
 import InventoryDetails from './pages/admin/InventoryDetails';
 import InventoryScan from './pages/InventoryScan';
@@ -54,6 +55,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <BookDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/loans/overdue"
+            element={
+              <ProtectedRoute>
+                <OverdueLoans />
               </ProtectedRoute>
             }
           />

@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { Repository, IsNull, LessThan } from 'typeorm';
 import { Loan } from '../../entities/loan.entity';
 import { CreateLoanDto } from './dto/create-loan.dto';
+import { overdueThresholdDate } from '../stats/stats.service';
 
 @Injectable()
 export class LoansService {
@@ -70,6 +71,17 @@ export class LoansService {
       where: { borrowerId },
       relations: ['book', 'book.location', 'creator'],
       order: { startedAt: 'DESC' },
+    });
+  }
+
+  async findOverdueLoans(): Promise<Loan[]> {
+    return this.loansRepository.find({
+      where: {
+        stoppedAt: IsNull(),
+        startedAt: LessThan(overdueThresholdDate()),
+      },
+      relations: ['borrower', 'book', 'book.location'],
+      order: { startedAt: 'ASC' },
     });
   }
 

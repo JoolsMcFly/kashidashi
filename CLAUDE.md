@@ -1,160 +1,36 @@
-# Claude Notes - Kashidashi v2
+See @README.md for project overview, local setup, deploy flow, and data model.
 
-## Project Context
+# Non-obvious project rules
 
-Book lending management system for tracking books, borrowers, and loans.
+- **Mobile-first UI.** All views must be designed and tested at mobile widths first. Don't introduce desktop-only patterns without an explicit mobile fallback.
+- **Book identity is `book.code`, not `book.id`.** XLSX uploads upsert on `code`. Don't write features that compare books by primary key when `code` is the user-facing identifier.
+- **`book.deleted` is a soft-delete flag (`0`/`1`).** Queries on books must include `WHERE deleted = 0` unless you specifically want deleted ones.
+- **Closed inventories are frozen.** Missing-book counts and lists for a closed inventory come from `inventory_missing_book` (snapshotted at close), NOT a live query. New code touching missing-book logic must respect this — see [backend/src/modules/inventory/inventory.service.ts](backend/src/modules/inventory/inventory.service.ts).
 
-## Key Requirements
+# Database migrations
 
-- **Mobile-first** responsive design
-- **Admin users**: Upload XLSX files for borrowers and books
-- **Regular users**: Search and manage loans
-- **Borrower search**: By katakana or frenchSurname
-- **Book search**: By code with autocomplete
-- **Loan tracking**: History with start and return dates
-- **Book upsert**: Use `code` field as truth when uploading XLSX
+- TypeORM migrations live in [backend/src/migrations/](backend/src/migrations/) and run automatically on backend startup (`migrationsRun: true`).
+- **New migrations must be idempotent** — guard with `hasTable` / `hasColumn`. Dev DBs may already have the schema from `synchronize=true`.
+- Local dev runs with `DB_SYNCHRONIZE=true` (set in [docker-compose.yml](docker-compose.yml)); prod runs with it unset. Never enable synchronize on prod.
 
-## Data Model
+# Deploy gotchas
 
-```
-borrowers (individuals/families)
-  - surname, katakana, frenchSurname
+- `make deploy` does NOT restart the backend Node app. After deploying, restart via cPanel "Setup Node.js App" → Restart (or `make restart-api`).
+- Staging (`tosyo-staging.juliendephix.fr`) currently points at the **prod database** for beta testers. Treat any deploy as prod-affecting.
+- If `package.json` / `package-lock.json` changed, run NPM Install in cPanel before restarting.
 
-books
-  - title, code (unique identifier), location, deleted
-
-loans
-  - borrower_id, book_id, start_date, return_date
-```
-
-## Tech Stack
-
-- Backend: NestJS + TypeORM + MariaDB
-- Frontend: React + TypeScript + Vite + TailwindCSS
-- XLSX: SheetJS
-- Node.js: v22
-
-## Docker Compose
-
-The project uses Docker Compose for local development with Caddy as a reverse proxy.
-
-### Local Development URLs
-
-- **https://kashidashi.local** - Frontend (React/Vite)
-- **https://api.kashidashi.local** - Backend API (NestJS)
-- **https://phpmyadmin.kashidashi.local** - Database management interface
-
-### Services
-
-- **Caddy (Reverse Proxy)**: Ports 80/443
-  - Container: `kashidashi-caddy`
-  - Auto-generates self-signed SSL certificates
-  - Routes subdomains to respective services
-
-- **Database (MariaDB 11.4.9)**: Port 3306
-  - Container: `kashidashi-db`
-  - Credentials: kashidashi/kashidashi
-  - Root password: root
-  - Persistent storage via Docker volume
-  - Direct access on localhost:3306
-
-- **Backend (NestJS)**: Internal only
-  - Container: `kashidashi-backend`
-  - Auto-reloads on code changes (dev mode)
-  - Waits for database health check before starting
-  - Accessible via https://api.kashidashi.local
-
-- **Frontend (React/Vite)**: Internal only
-  - Container: `kashidashi-frontend`
-  - Hot module replacement enabled
-  - Accessible via https://kashidashi.local
-
-- **phpMyAdmin**: Internal only
-  - Container: `kashidashi-phpmyadmin`
-  - Accessible via https://phpmyadmin.kashidashi.local
-
-### Setup
-
-1. Add to `/etc/hosts`:
-   ```
-   127.0.0.1 kashidashi.local
-   127.0.0.1 api.kashidashi.local
-   127.0.0.1 phpmyadmin.kashidashi.local
-   ```
-
-2. Start services:
-   ```bash
-   docker compose up
-   ```
-
-3. Accept the self-signed certificate warnings in your browser for each subdomain
-
-4. Access the app at https://kashidashi.local
-
-### Commands
+# Commands worth knowing
 
 ```bash
-# Start all services
-docker compose up
-
-# Start in background
-docker compose up -d
-
-# Stop services
-docker compose down
-
-# Rebuild containers
-docker compose up --build
+make migrate          # run pending DB migrations
+make migrate-show     # show migration status
+make build-staging    # build frontend (vite --mode staging) + backend
+make deploy           # build-staging + rsync to o2switch (still need to restart in cPanel)
+docker compose run --rm --user $(id -u):$(id -g) backend npm test
 ```
 
-### Versioning
+# When uncertain
 
-```bash
-npm version patch   # 1.0.0 → 1.0.1
-npm version minor   # 1.0.0 → 1.1.0
-npm version major   # 1.0.0 → 2.0.0
-```
-
-Restart the frontend container locally for version changes to be picked up:
-```bash
-docker compose restart frontend
-```
-
-## Deployment
-
-The application is deployed with the following structure:
-
-- **Frontend**: sub.mydomain.com/app (static files)
-  - Served via Apache with SPA routing
-  - `.htaccess` configured with RewriteBase `/app`
-
-- **Backend**: sub.mydomain.com/api (Node.js proxy)
-  - Apache proxies requests to Node.js backend (default port 3000)
-  - `.htaccess` configured to proxy all `/api` requests
-  - Update port in backend/.htaccess if web host assigns different port
-
-### Deployment Steps (o2switch / CPanel)
-
-1. Build both projects via Docker (use `--user` to avoid root-owned output):
-   ```bash
-   make build
-   ```
-2. ZIP each dist folder for upload:
-   ```bash
-   cd frontend/dist && zip -r ../../frontend-dist.zip . && cd ../..
-   cd backend/dist && zip -r ../../backend-dist.zip . && cd ../..
-   ```
-3. Upload to o2switch via CPanel File Manager:
-   - Upload `frontend-dist.zip` to `/app`, extract in place
-   - Upload `backend-dist.zip` to `/api`, extract in place
-
-### Deployment Notes
-
-- Backend `.htaccess` requires `mod_proxy` and `mod_rewrite` enabled
-- Update Node.js port in backend/.htaccess to match web host configuration
-- Frontend built files go to `frontend/dist` and deploy to `/app` directory
-- Backend runs as Node.js application on assigned port
-
-## Current Status
-
-Most features are implemented. Some tweaks will be needed in the inventory.
+- Routine bug fixes / small features → just edit the code.
+- New entity, schema change, deploy flow change → write a migration; check README.md for the deploy/migration sections.
+- Anything touching production data or external services → confirm with the user before acting.

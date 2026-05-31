@@ -1,4 +1,5 @@
 .PHONY: help up down restart logs build build-staging rebuild fi bi fd bd be fe db seed \
+        migrate migrate-revert migrate-show \
         deploy deploy-frontend deploy-backend deploy-ssh restart-api
 
 # --- Deployment config (override via env or `make deploy VAR=value`) ---
@@ -30,12 +31,12 @@ logs: ## Follow container logs
 	docker compose logs -f
 
 build: ## Build frontend & backend for production
-	docker compose run --user $$(id -u):$$(id -g) frontend npm run build
-	docker compose run --user $$(id -u):$$(id -g) backend npm run build
+	docker compose run --rm --user $$(id -u):$$(id -g) frontend npm run build
+	docker compose run --rm --user $$(id -u):$$(id -g) backend npm run build
 
 build-staging: ## Build frontend & backend for staging
-	docker compose run --user $$(id -u):$$(id -g) frontend npm run build-staging
-	docker compose run --user $$(id -u):$$(id -g) backend npm run build
+	docker compose run --rm --user $$(id -u):$$(id -g) frontend npm run build-staging
+	docker compose run --rm --user $$(id -u):$$(id -g) backend npm run build
 
 rebuild: ## Rebuild Docker images
 	docker compose up -d --build --remove-orphans
@@ -80,6 +81,15 @@ bd: ## Install backend dev dep (DEP_NAME=pkg)
 seed: ## Seed the database
 	docker compose exec backend npm run seed
 
+migrate: ## Run pending DB migrations (inside backend container)
+	docker compose exec backend npm run migration:run
+
+migrate-revert: ## Revert the last DB migration
+	docker compose exec backend npm run migration:revert
+
+migrate-show: ## Show migration status
+	docker compose exec backend npm run migration:show
+
 deploy: build-staging deploy-frontend deploy-backend ## Build (staging) + push frontend & backend to o2switch
 	@echo ""
 	@echo "Deploy complete."
@@ -88,6 +98,7 @@ deploy: build-staging deploy-frontend deploy-backend ## Build (staging) + push f
 	@echo ""
 	@echo "If backend dependencies changed, click 'Run NPM Install' in the cPanel Node.js app,"
 	@echo "then restart the app (or run: make restart-api)."
+	@echo "Pending DB migrations run automatically on backend startup (DB_RUN_MIGRATIONS=false to skip)."
 
 deploy-frontend: ## Sync the built frontend to the staging host
 	@test -d frontend/dist || { echo "frontend/dist missing — run 'make build-staging' first"; exit 1; }

@@ -18,6 +18,9 @@ export class Inventory {
   @Column({ name: 'available_book_count', type: 'int', default: 0 })
   availableBookCount: number;
 
+  @Column({ name: 'missing_snapshot_at', type: 'datetime', nullable: true })
+  missingSnapshotAt: Date | null;
+
   @OneToMany(() => InventoryItem, item => item.inventory)
   items: InventoryItem[];
 }

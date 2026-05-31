@@ -108,7 +108,7 @@ export default function InventoryDetails() {
   }
 
   const duration = formatDuration(inventory);
-  const missing = Math.max(inventory.availableBookCount - inventory.bookCount, 0);
+  const missing = stats?.missing ?? null;
   const isOpen = !inventory.stoppedAt;
 
   return (
@@ -134,7 +134,7 @@ export default function InventoryDetails() {
             <span className="inline-block w-6">📖</span>
             {inventory.bookCount} / {inventory.availableBookCount}
           </p>
-          {missing > 0 && (
+          {missing !== null && missing > 0 && (
             <p>
               <span className="inline-block w-6">☠️</span>
               {missing} missing books.

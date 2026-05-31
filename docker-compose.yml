@@ -40,6 +40,7 @@ services:
       dockerfile: Dockerfile
     container_name: kashidashi-backend
     restart: unless-stopped
+    user: "${UID:-1000}:${GID:-1000}"
     expose:
       - "3000"
     environment:
@@ -66,6 +67,7 @@ services:
       dockerfile: Dockerfile
     container_name: kashidashi-frontend
     restart: unless-stopped
+    user: "${UID:-1000}:${GID:-1000}"
     expose:
       - "5173"
     volumes:

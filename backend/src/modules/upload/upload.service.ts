@@ -83,7 +83,18 @@ export class UploadService {
     for (const row of data as any[]) {
       try {
         const locationName = row.Location || '';
-        const locationId = locationLookup[locationName] || 1;
+        let locationId: number;
+        if (locationName) {
+          if (locationLookup[locationName]) {
+            locationId = locationLookup[locationName];
+          } else {
+            const created = await this.locationsService.create({ name: locationName });
+            locationId = created.id;
+            locationLookup[locationName] = locationId;
+          }
+        } else {
+          locationId = 1;
+        }
 
         const { isNew } = await this.booksService.upsertByCode({
           code: row.Code,

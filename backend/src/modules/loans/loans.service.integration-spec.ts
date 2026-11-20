@@ -3,6 +3,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { LoansService } from './loans.service';
+import { borrowerExportName } from './loans.controller';
 import { Loan, Book, Borrower, Location } from '../../entities';
 import { TestDbModule, TestEntitiesModule, clearTables } from '../../test/test-db.helper';
 import {
@@ -53,6 +54,26 @@ describe('LoansService (integration)', () => {
       expect(loan.borrowerId).toBe(borrower.id);
       expect(loan.stoppedAt).toBeNull();
       expect(loan.startedAt).toBeInstanceOf(Date);
+    });
+
+    it('should reject a loan for a deleted borrower', async () => {
+      const location = await createLocation(locationRepo);
+      const book = await createBook(bookRepo, { locationId: location.id });
+      const borrower = await createBorrower(borrowerRepo, { deletedAt: new Date() });
+
+      await expect(
+        service.createLoan({ borrowerId: borrower.id, bookId: book.id }),
+      ).rejects.toThrow(BadRequestException);
+      expect(await dataSource.getRepository(Loan).count()).toBe(0);
+    });
+
+    it('should reject a loan for a non-existent borrower', async () => {
+      const location = await createLocation(locationRepo);
+      const book = await createBook(bookRepo, { locationId: location.id });
+
+      await expect(
+        service.createLoan({ borrowerId: 9999, bookId: book.id }),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should reject duplicate active loan for same book', async () => {
@@ -215,6 +236,18 @@ describe('LoansService (integration)', () => {
       expect(active[0].borrower).toBeDefined();
       expect(active[0].book).toBeDefined();
       expect(active[0].book.location).toBeDefined();
+    });
+  });
+
+  describe('borrowerExportName (overdue CSV)', () => {
+    it('returns the name for an active borrower', async () => {
+      const b = await createBorrower(borrowerRepo, { surname: 'Doe', frenchSurname: 'Dupont' });
+      expect(borrowerExportName(b)).toBe('Doe Dupont');
+    });
+
+    it('hides the name for a deleted borrower', async () => {
+      const b = await createBorrower(borrowerRepo, { surname: 'Doe', frenchSurname: 'Dupont', deletedAt: new Date() });
+      expect(borrowerExportName(b)).toBe('Deleted Borrower');
     });
   });
 });

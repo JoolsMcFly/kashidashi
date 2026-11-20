@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull, LessThan } from 'typeorm';
 import { Loan } from '../../entities/loan.entity';
+import { Borrower } from '../../entities/borrower.entity';
 import { CreateLoanDto } from './dto/create-loan.dto';
 import { overdueThresholdDate } from '../stats/stats.service';
 
@@ -10,9 +11,21 @@ export class LoansService {
   constructor(
     @InjectRepository(Loan)
     private loansRepository: Repository<Loan>,
+    @InjectRepository(Borrower)
+    private borrowersRepository: Repository<Borrower>,
   ) {}
 
   async createLoan(createLoanDto: CreateLoanDto): Promise<Loan> {
+    const borrower = await this.borrowersRepository.findOne({
+      where: { id: createLoanDto.borrowerId },
+    });
+    if (!borrower) {
+      throw new NotFoundException(`Borrower with ID ${createLoanDto.borrowerId} not found`);
+    }
+    if (borrower.deletedAt) {
+      throw new BadRequestException('Cannot create a loan for a deleted borrower');
+    }
+
     // Check if book is already loaned out
     const existingLoan = await this.loansRepository.findOne({
       where: {

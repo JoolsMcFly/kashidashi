@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, IsNull } from 'typeorm';
 import { Book } from '../../entities/book.entity';
 import { Borrower } from '../../entities/borrower.entity';
 
@@ -41,9 +41,9 @@ export class SearchService {
       // Search borrowers by katakana or French surname
       borrowers = await this.borrowersRepository.find({
         where: [
-          { katakana: Like(`%${query}%`) },
-          { frenchSurname: Like(`%${query}%`) },
-          { surname: Like(`%${query}%`) },
+          { katakana: Like(`%${query}%`), deletedAt: IsNull() },
+          { frenchSurname: Like(`%${query}%`), deletedAt: IsNull() },
+          { surname: Like(`%${query}%`), deletedAt: IsNull() },
         ],
         take: 20,
       });

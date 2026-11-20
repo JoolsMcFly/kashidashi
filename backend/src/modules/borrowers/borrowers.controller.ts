@@ -37,13 +37,7 @@ export class BorrowersController {
 
   @Get('download')
   async download(@Res() res: Response) {
-    const borrowers = await this.borrowersService.findAll();
-    const data = borrowers.map(b => ({
-      ID: b.id,
-      Surname: b.surname,
-      'French surname': b.frenchSurname,
-      Katakana: b.katakana,
-    }));
+    const data = await this.borrowersService.getExportRows();
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Borrowers');

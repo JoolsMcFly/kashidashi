@@ -27,6 +27,7 @@ export type Borrower = {
   surname: string;
   katakana: string;
   frenchSurname: string;
+  deletedAt?: string | null;
   loans?: Loan[];
 };
 

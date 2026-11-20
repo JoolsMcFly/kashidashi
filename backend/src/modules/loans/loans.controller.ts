@@ -61,9 +61,7 @@ export class LoansController {
     const now = Date.now();
     const dayMs = 1000 * 60 * 60 * 24;
     const rows = loans.map((loan) => {
-      const borrowerName = [loan.borrower?.surname, loan.borrower?.frenchSurname]
-        .filter(Boolean)
-        .join(' ');
+      const borrowerName = borrowerExportName(loan.borrower);
       const startedAt = new Date(loan.startedAt);
       const duration = Math.floor((now - startedAt.getTime()) / dayMs);
       return [
@@ -96,6 +94,13 @@ export class LoansController {
   findByBook(@Param('bookId', ParseIntPipe) bookId: number) {
     return this.loansService.findByBook(bookId);
   }
+}
+
+export function borrowerExportName(
+  borrower: { surname?: string | null; frenchSurname?: string | null; deletedAt?: Date | null } | null | undefined,
+): string {
+  if (borrower?.deletedAt) return 'Deleted Borrower';
+  return [borrower?.surname, borrower?.frenchSurname].filter(Boolean).join(' ');
 }
 
 function csvEscape(value: string | number): string {

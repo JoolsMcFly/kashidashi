@@ -95,17 +95,21 @@ export default function OverdueLoans() {
                   >
                     {loan.book.title || '(untitled)'}
                   </button>
-                  <button
-                    onClick={() => navigate(`/borrower/${loan.borrowerId}`)}
-                    className="mt-1 inline-flex items-center gap-1 text-sm text-blue-600 underline"
-                  >
-                    <span>
-                      {loan.borrower.surname} ({loan.borrower.katakana})
-                      {loan.borrower.frenchSurname && loan.borrower.frenchSurname !== loan.borrower.surname
-                        ? ` ${loan.borrower.frenchSurname}`
-                        : ''}
-                    </span>
-                  </button>
+                  {loan.borrower.deletedAt ? (
+                    <span className="mt-1 inline-block text-sm text-gray-500">Deleted Borrower</span>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/borrower/${loan.borrowerId}`)}
+                      className="mt-1 inline-flex items-center gap-1 text-sm text-blue-600 underline"
+                    >
+                      <span>
+                        {loan.borrower.surname} ({loan.borrower.katakana})
+                        {loan.borrower.frenchSurname && loan.borrower.frenchSurname !== loan.borrower.surname
+                          ? ` ${loan.borrower.frenchSurname}`
+                          : ''}
+                      </span>
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,3 +1,4 @@
+import { Borrower } from '../../entities/borrower.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Loan } from '../../entities/loan.entity';
@@ -5,7 +6,7 @@ import { LoansService } from './loans.service';
 import { LoansController } from './loans.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Loan])],
+  imports: [TypeOrmModule.forFeature([Loan, Borrower])],
   controllers: [LoansController],
   providers: [LoansService],
   exports: [LoansService],

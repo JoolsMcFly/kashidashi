@@ -383,7 +383,7 @@ export default function InventoryScan() {
                           >
                               <Badge content={item.book.location?.name || 'Unknown'} type={"location"} small={true} />
                               {isBookMisplaced(item) && ' (MISPLACED)'}
-                              {item.book.loans?.length ? <span className={"ml-2"}>Borrowed by {item.book.loans[0].borrower.katakana}</span>: ''}
+                              {item.book.loans?.length ? <span className={"ml-2"}>Borrowed by {item.book.loans[0].borrower.deletedAt ? 'Deleted Borrower' : item.book.loans[0].borrower.katakana}</span>: ''}
                           </p>
                       </div>
                       <button

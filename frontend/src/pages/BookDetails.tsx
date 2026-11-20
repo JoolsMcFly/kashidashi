@@ -129,8 +129,9 @@ export default function BookDetails() {
                             className="font-semibold hover:underline"
                             style={{color: '#667eea'}}
                         >
-                            {currentLoan?.borrower.surname} (
-                            {currentLoan?.borrower.katakana})
+                            {currentLoan?.borrower.deletedAt
+                                ? 'Deleted Borrower'
+                                : `${currentLoan?.borrower.surname} (${currentLoan?.borrower.katakana})`}
                         </button>
                         <p className="text-gray-600 text-sm mt-2">
                             Start Date: {new Date(currentLoan.startedAt).toISOString().slice(0, 10)}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import type { Book, Borrower } from '../types';
 import Loading from "../components/Loading.tsx";
@@ -12,6 +12,7 @@ import Label from "../components/Label.tsx";
 
 export default function BorrowerDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [borrower, setBorrower] = useState<Borrower | null>(null);
   const [bookQuery, setBookQuery] = useState('');
   const [bookSuggestions, setBookSuggestions] = useState<Book[]>([]);
@@ -34,6 +35,10 @@ export default function BorrowerDetails() {
   const loadBorrower = async () => {
     try {
       const response = await api.get<Borrower>(`/borrowers/${id}`);
+      if (response.data.deletedAt) {
+        navigate('/', { replace: true });
+        return;
+      }
       setBorrower(response.data);
     } catch (error) {
       console.error('Error loading borrower:', error);

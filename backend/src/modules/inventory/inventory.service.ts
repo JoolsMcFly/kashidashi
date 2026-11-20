@@ -235,7 +235,9 @@ export class InventoryService {
         title: book.title,
         location: book.location?.name ?? null,
         borrower: activeLoan
-          ? `${activeLoan.borrower.katakana} / ${activeLoan.borrower.frenchSurname}`
+          ? activeLoan.borrower.deletedAt
+            ? 'Deleted Borrower'
+            : `${activeLoan.borrower.katakana} / ${activeLoan.borrower.frenchSurname}`
           : null,
         loanStart: activeLoan ? new Date(activeLoan.startedAt).toISOString() : null,
       };

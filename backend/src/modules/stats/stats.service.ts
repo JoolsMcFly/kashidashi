@@ -27,7 +27,7 @@ export class StatsService {
   async getStats() {
     const [books, borrowers, activeLoans, overdueLoans] = await Promise.all([
       this.booksRepository.count({ where: { deleted: 0 } }),
-      this.borrowersRepository.count(),
+      this.borrowersRepository.count({ where: { deletedAt: IsNull() } }),
       this.loansRepository.count({ where: { stoppedAt: IsNull() } }),
       this.loansRepository.count({
         where: {

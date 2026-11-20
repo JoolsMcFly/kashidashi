@@ -1,15 +1,19 @@
 .PHONY: help up down restart logs build build-staging rebuild fi bi fd bd be fe db seed \
         migrate migrate-revert migrate-show \
-        deploy deploy-frontend deploy-backend deploy-ssh restart-api
+        deploy deploy-staging deploy-frontend deploy-backend deploy-ssh \
+        restart-api restart-api-staging check-deploy-env
 
-# --- Deployment config (override via env or `make deploy VAR=value`) ---
-# o2switch SSH host and user (same convention as the zikos project)
-SSH_HOST ?= ssh.example.com
-SSH_USER ?= ssh-user
+# --- Deployment config (set in .env, or override via `make deploy VAR=value`) ---
+# SSH_HOST, SSH_USER, PROD_DOMAIN, STAGING_DOMAIN — see .env.example
+-include .env
+DEPLOY_VARS = SSH_HOST SSH_USER PROD_DOMAIN STAGING_DOMAIN
 
 # Remote target folders (o2switch: one subdomain = one document root)
-REMOTE_FRONTEND_DIR ?= ~/staging.example.com
-REMOTE_BACKEND_DIR  ?= ~/api.staging.example.com
+
+# Default target is prod; staging targets override these per invocation
+REMOTE_FRONTEND_DIR ?= ~/$(PROD_DOMAIN)
+REMOTE_BACKEND_DIR  ?= ~/api.$(PROD_DOMAIN)
+STAGING_DIRS = REMOTE_FRONTEND_DIR=~/$(STAGING_DOMAIN) REMOTE_BACKEND_DIR=~/api.$(STAGING_DOMAIN)
 
 # rsync flags
 RSYNC_DIST_FLAGS ?= -avz --delete --progress
@@ -90,23 +94,33 @@ migrate-revert: ## Revert the last DB migration
 migrate-show: ## Show migration status
 	docker compose exec backend npm run migration:show
 
-deploy: build-staging deploy-frontend deploy-backend ## Build (staging) + push frontend & backend to o2switch
+deploy: check-deploy-env build deploy-frontend deploy-backend ## Build (prod) + push frontend & backend to prod
+	@$(MAKE) --no-print-directory deploy-done DOMAIN=$(PROD_DOMAIN) RESTART=restart-api
+
+deploy-staging: check-deploy-env build-staging ## Build (staging) + push frontend & backend to staging
+	@$(MAKE) --no-print-directory deploy-frontend deploy-backend $(STAGING_DIRS)
+	@$(MAKE) --no-print-directory deploy-done DOMAIN=$(STAGING_DOMAIN) RESTART=restart-api-staging
+
+check-deploy-env:
+	@$(foreach v,$(DEPLOY_VARS),test -n "$($(v))" || { echo "$(v) is not set — add it to .env (see .env.example)"; exit 1; };)
+
+deploy-done:
 	@echo ""
 	@echo "Deploy complete."
-	@echo "  - Frontend: https://staging.example.com"
-	@echo "  - Backend:  https://api.staging.example.com"
+	@echo "  - Frontend: https://$(DOMAIN)"
+	@echo "  - Backend:  https://api.$(DOMAIN)"
 	@echo ""
 	@echo "If backend dependencies changed, click 'Run NPM Install' in the cPanel Node.js app,"
-	@echo "then restart the app (or run: make restart-api)."
+	@echo "then restart the app (or run: make $(RESTART))."
 	@echo "Pending DB migrations run automatically on backend startup (DB_RUN_MIGRATIONS=false to skip)."
 
-deploy-frontend: ## Sync the built frontend to the staging host
-	@test -d frontend/dist || { echo "frontend/dist missing — run 'make build-staging' first"; exit 1; }
+deploy-frontend: check-deploy-env ## Sync the built frontend to REMOTE_FRONTEND_DIR (prod by default)
+	@test -d frontend/dist || { echo "frontend/dist missing — run 'make build' first"; exit 1; }
 	rsync $(RSYNC_DIST_FLAGS) \
 		frontend/dist/ \
 		$(SSH_USER)@$(SSH_HOST):$(REMOTE_FRONTEND_DIR)/
 
-deploy-backend: ## Sync the built backend to the staging host (dist + package manifests)
+deploy-backend: check-deploy-env ## Sync the built backend to REMOTE_BACKEND_DIR (prod by default)
 	@test -d backend/dist || { echo "backend/dist missing — run 'make build' first"; exit 1; }
 	rsync $(RSYNC_DIST_FLAGS) --exclude 'node_modules' \
 		backend/dist/ \
@@ -115,10 +129,13 @@ deploy-backend: ## Sync the built backend to the staging host (dist + package ma
 		backend/package.json backend/package-lock.json \
 		$(SSH_USER)@$(SSH_HOST):$(REMOTE_BACKEND_DIR)/
 
-restart-api: ## Try to restart the backend Node.js app via Passenger (touch tmp/restart.txt)
+restart-api: check-deploy-env ## Try to restart the prod backend via Passenger (touch tmp/restart.txt)
 	ssh $(SSH_USER)@$(SSH_HOST) "mkdir -p $(REMOTE_BACKEND_DIR)/tmp && touch $(REMOTE_BACKEND_DIR)/tmp/restart.txt"
 	@echo "Touched $(REMOTE_BACKEND_DIR)/tmp/restart.txt — if your cPanel Node.js app uses Passenger this triggers a reload."
 	@echo "If it does not reload, open cPanel > Setup Node.js App and click Restart."
 
-deploy-ssh: ## Open an SSH shell on the staging host
+restart-api-staging: ## Try to restart the staging backend via Passenger
+	@$(MAKE) --no-print-directory restart-api $(STAGING_DIRS)
+
+deploy-ssh: check-deploy-env ## Open an SSH shell on the o2switch host
 	ssh $(SSH_USER)@$(SSH_HOST)

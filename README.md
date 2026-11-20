@@ -103,28 +103,35 @@ Hosted on o2switch (cPanel). Frontend and backend each have their own subdomain 
 
 ### Target hosts
 
-Currently a single deploy target — staging doubles as prod for beta testers.
+Two targets on the same o2switch account, each with its own cPanel Node.js app:
 
-- Frontend: `https://staging.example.com` → `~/staging.example.com`
-- Backend:  `https://api.staging.example.com` → `~/api.staging.example.com`
+| Env     | Frontend                                 | Backend                                      |
+| ------- | ---------------------------------------- | -------------------------------------------- |
+| Prod    | `https://$PROD_DOMAIN` → `~/$PROD_DOMAIN` | `https://api.$PROD_DOMAIN` → `~/api.$PROD_DOMAIN` |
+| Staging | `https://$STAGING_DOMAIN` → `~/$STAGING_DOMAIN` | `https://api.$STAGING_DOMAIN` → `~/api.$STAGING_DOMAIN` |
 
-SSH host/user and remote paths are configured at the top of [Makefile](Makefile). Override per-invocation if needed: `make deploy SSH_USER=... REMOTE_BACKEND_DIR=...`.
+The frontend API URL is baked in at build time from `frontend/.env.production` (prod) / `frontend/.env.staging` (staging). Both are gitignored — create them locally with `VITE_API_URL=https://api.<domain>`.
+
+SSH host/user and domains (`SSH_HOST`, `SSH_USER`, `PROD_DOMAIN`, `STAGING_DOMAIN`) live in the gitignored root `.env`, which the [Makefile](Makefile) loads. Copy [.env.example](.env.example) to `.env` and fill them in; deploy targets refuse to run if any is empty. Override per-invocation if needed: `make deploy SSH_USER=... PROD_DOMAIN=...`.
 
 ### Deploy commands
 
 ```bash
-make build-staging   # build frontend (vite --mode staging) + backend (nest build)
-make deploy          # build-staging + rsync frontend dist + rsync backend dist & manifests
-make deploy-frontend # rsync only the frontend dist
-make deploy-backend  # rsync only the backend dist + package.json + package-lock.json
-make restart-api     # touch tmp/restart.txt to ask Passenger to reload
+make build                # build frontend (vite, production mode) + backend (nest build)
+make build-staging        # build frontend (vite --mode staging) + backend (nest build)
+make deploy               # PROD: build + rsync frontend dist + backend dist & manifests
+make deploy-staging       # STAGING: build-staging + rsync frontend dist + backend dist & manifests
+make deploy-frontend      # rsync only the frontend dist (prod; pass REMOTE_FRONTEND_DIR to override)
+make deploy-backend       # rsync only the backend dist + manifests (prod; pass REMOTE_BACKEND_DIR to override)
+make restart-api          # touch tmp/restart.txt on prod to ask Passenger to reload
+make restart-api-staging  # same, on staging
 make deploy-ssh      # open an SSH shell on the host
 ```
 
-`make deploy` does **not** restart the backend Node app. After deploying:
+`make deploy` / `make deploy-staging` do **not** restart the backend Node app. After deploying:
 
 1. If `package.json` / `package-lock.json` changed → cPanel → "Setup Node.js App" → **Run NPM Install**.
-2. cPanel → "Setup Node.js App" → **Restart** (or `make restart-api` if Passenger picks up the touch).
+2. cPanel → "Setup Node.js App" → **Restart** (or `make restart-api` / `make restart-api-staging` if Passenger picks up the touch).
 
 ### Database migrations
 
@@ -152,5 +159,6 @@ Set in the cPanel Node.js app's environment:
 
 - `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`
 - `JWT_SECRET`
+- `FRONT_URL` — frontend origin allowed by CORS (`https://$PROD_DOMAIN` on prod, `https://$STAGING_DOMAIN` on staging)
 
 Never set `DB_SYNCHRONIZE=true` on prod. Migrations are the only thing that should change prod schema.

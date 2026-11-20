@@ -2,7 +2,6 @@ services:
   caddy:
     image: caddy:2-alpine
     container_name: kashidashi-caddy
-    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -18,7 +17,6 @@ services:
   db:
     image: mariadb:11.4.9
     container_name: kashidashi-db
-    restart: unless-stopped
     environment:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: kashidashi
@@ -39,7 +37,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: kashidashi-backend
-    restart: unless-stopped
     user: "${UID:-1000}:${GID:-1000}"
     expose:
       - "3000"
@@ -66,7 +63,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: kashidashi-frontend
-    restart: unless-stopped
     user: "${UID:-1000}:${GID:-1000}"
     expose:
       - "5173"
@@ -81,7 +77,6 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: kashidashi-phpmyadmin
-    restart: unless-stopped
     ports:
       - "8080:80"
     environment:

@@ -19,8 +19,8 @@ See @README.md for project overview, local setup, deploy flow, and data model.
 
 # Deploy gotchas
 
-- `make deploy` does NOT restart the backend Node app. After deploying, restart via cPanel "Setup Node.js App" → Restart (or `make restart-api`).
-- Staging (`staging.example.com`) currently points at the **prod database** for beta testers. Treat any deploy as prod-affecting.
+- `make deploy` targets **prod** (`$PROD_DOMAIN`); `make deploy-staging` targets staging (`$STAGING_DOMAIN`). Neither restarts the backend Node app — restart via cPanel "Setup Node.js App" → Restart (or `make restart-api` / `make restart-api-staging`).
+- Staging currently points at the **prod database**. Treat any deploy, staging included, as prod-affecting.
 - If `package.json` / `package-lock.json` changed, run NPM Install in cPanel before restarting.
 
 # Commands worth knowing
@@ -28,8 +28,8 @@ See @README.md for project overview, local setup, deploy flow, and data model.
 ```bash
 make migrate          # run pending DB migrations
 make migrate-show     # show migration status
-make build-staging    # build frontend (vite --mode staging) + backend
-make deploy           # build-staging + rsync to o2switch (still need to restart in cPanel)
+make deploy           # build + rsync to PROD (still need to restart in cPanel)
+make deploy-staging   # build-staging + rsync to STAGING
 docker compose run --rm --user $(id -u):$(id -g) backend npm test
 ```
 

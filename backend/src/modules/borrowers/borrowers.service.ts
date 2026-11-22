@@ -9,7 +9,7 @@ export type BorrowerWriteData = Partial<CreateBorrowerDto> & {
   deleted?: boolean;
 };
 
-export const BORROWER_DELETED_AT_HEADER = 'Deleted At';
+export const BORROWER_DELETED_HEADER = 'Deleted ?';
 
 @Injectable()
 export class BorrowersService {
@@ -48,7 +48,7 @@ export class BorrowersService {
       Surname: b.surname,
       'French surname': b.frenchSurname,
       Katakana: b.katakana,
-      [BORROWER_DELETED_AT_HEADER]: b.deletedAt ? 'Yes' : 'No',
+      [BORROWER_DELETED_HEADER]: b.deletedAt ? 'Yes' : 'No',
     }));
   }
 

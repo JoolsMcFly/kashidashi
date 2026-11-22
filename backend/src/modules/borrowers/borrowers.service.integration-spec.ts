@@ -129,7 +129,7 @@ describe('BorrowersService (integration)', () => {
   });
 
   describe('getExportRows', () => {
-    it('includes a "Deleted At" column with Yes/No', async () => {
+    it('includes a "Deleted ?" column with Yes/No', async () => {
       const active = await createBorrower(borrowerRepo);
       const deleted = await createBorrower(borrowerRepo, { deletedAt: new Date() });
 
@@ -141,14 +141,14 @@ describe('BorrowersService (integration)', () => {
           Surname: active.surname,
           'French surname': active.frenchSurname,
           Katakana: active.katakana,
-          'Deleted At': 'No',
+          'Deleted ?': 'No',
         },
         {
           ID: deleted.id,
           Surname: deleted.surname,
           'French surname': deleted.frenchSurname,
           Katakana: deleted.katakana,
-          'Deleted At': 'Yes',
+          'Deleted ?': 'Yes',
         },
       ]);
     });

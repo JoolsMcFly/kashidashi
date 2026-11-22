@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import {
   BorrowersService,
   BorrowerWriteData,
-  BORROWER_DELETED_AT_HEADER,
+  BORROWER_DELETED_HEADER,
 } from '../borrowers/borrowers.service';
 import { BooksService } from '../books/books.service';
 import { LocationsService } from '../locations/locations.service';
@@ -43,8 +43,8 @@ export class UploadService {
         };
         // Only touch deleted_at when the file actually has the column, so
         // older exports without it don't un-delete borrowers.
-        if (BORROWER_DELETED_AT_HEADER in row) {
-          borrowerData.deleted = String(row[BORROWER_DELETED_AT_HEADER]).trim().toLowerCase() === 'yes';
+        if (BORROWER_DELETED_HEADER in row) {
+          borrowerData.deleted = String(row[BORROWER_DELETED_HEADER]).trim().toLowerCase() === 'yes';
         }
 
         if (id) {

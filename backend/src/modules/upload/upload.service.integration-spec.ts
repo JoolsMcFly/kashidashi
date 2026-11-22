@@ -38,19 +38,19 @@ describe('UploadService (integration)', () => {
     await clearTables(dataSource);
   });
 
-  describe('uploadBorrowers – Deleted At', () => {
+  describe('uploadBorrowers – Deleted ?', () => {
     const base = { Surname: 'Doe', 'French surname': 'Dupont', Katakana: 'ドウ' };
 
-    it.each(['Yes', 'yes', 'YES', ' yes '])('marks new borrower deleted when "Deleted At" is %p', async value => {
-      const result = await service.uploadBorrowers(xlsxFile([{ ...base, 'Deleted At': value }]));
+    it.each(['Yes', 'yes', 'YES', ' yes '])('marks new borrower deleted when "Deleted ?" is %p', async value => {
+      const result = await service.uploadBorrowers(xlsxFile([{ ...base, 'Deleted ?': value }]));
 
       expect(result.created).toBe(1);
       const [b] = await borrowerRepo.find();
       expect(b.deletedAt).toBeInstanceOf(Date);
     });
 
-    it.each(['No', 'no', '', 'oui'])('leaves new borrower active when "Deleted At" is %p', async value => {
-      await service.uploadBorrowers(xlsxFile([{ ...base, 'Deleted At': value }]));
+    it.each(['No', 'no', '', 'oui'])('leaves new borrower active when "Deleted ?" is %p', async value => {
+      await service.uploadBorrowers(xlsxFile([{ ...base, 'Deleted ?': value }]));
 
       const [b] = await borrowerRepo.find();
       expect(b.deletedAt).toBeNull();
@@ -60,7 +60,7 @@ describe('UploadService (integration)', () => {
       const existing = await createBorrower(borrowerRepo);
 
       const result = await service.uploadBorrowers(
-        xlsxFile([{ ID: existing.id, ...base, 'Deleted At': 'Yes' }]),
+        xlsxFile([{ ID: existing.id, ...base, 'Deleted ?': 'Yes' }]),
       );
 
       expect(result.updated).toBe(1);
@@ -68,10 +68,10 @@ describe('UploadService (integration)', () => {
       expect(b.deletedAt).toBeInstanceOf(Date);
     });
 
-    it('restores an existing borrower when "Deleted At" is No', async () => {
+    it('restores an existing borrower when "Deleted ?" is No', async () => {
       const existing = await createBorrower(borrowerRepo, { deletedAt: new Date() });
 
-      await service.uploadBorrowers(xlsxFile([{ ID: existing.id, ...base, 'Deleted At': 'No' }]));
+      await service.uploadBorrowers(xlsxFile([{ ID: existing.id, ...base, 'Deleted ?': 'No' }]));
 
       const b = await borrowerRepo.findOneByOrFail({ id: existing.id });
       expect(b.deletedAt).toBeNull();
